@@ -1,0 +1,28 @@
+%!PS-Adobe-3.0 EPSF-3.0
+% https://sus.ziti.uni-heidelberg.de/Lehre/WS1718_Tools/POSTSCRIPT/PostScript_PeterFischer.pptx.pdf
+%%BoundingBox: 0 0 595 842
+
+2.835 dup scale
+5 4 translate 1 setlinecap
+0 0 200 290 rectstroke
+100 145 translate
+
+/W 10 def
+/W2 { W 2 div } bind def
+
+/DRAWUNIT {
+    gsave translate rotate
+    W2 neg W2 neg W2 0 90 arc stroke
+    W2 W2 W2 180 270 arc stroke
+    grestore
+} def
+
+-95 W 95 {
+    /x exch def
+    -140 W 140 {
+        /y exch def
+        rand 4 mod 90 mul x y DRAWUNIT
+    } for
+} for
+
+showpage
