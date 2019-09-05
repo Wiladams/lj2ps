@@ -1,5 +1,16 @@
 --[[
     Virtual machine for Postscript
+
+    This object represents that Postscript "machine"
+    It is the organization point for things like the 
+    various stacks, dictionaries, graphics connection
+    and whatnot.
+
+    You should be able to program against the VM directly
+    and not just by going through the interpreter.  The
+    interpreter simply uses a scanner and transforms the
+    text of a postscript program into calls against this
+    virtual machine.
 ]]
 
 local collections = require("lj2ps.collections")
@@ -108,52 +119,5 @@ PSVM["END"] = function(self)
     -- simply pop the dictionary stack
     self.DictionaryStack:popDictionary()
 end
-
--- def
--- key value def    Associate key with value in current dictionary
-function PSVM.def(self)
-    local value = self.OperandStack:pop()
-    local key = self.OperandStack:pop()
-
-    return self.DictionaryStack:def(key, value)
-end
-
--- load
--- key load value        search stack for key, place value on operand stack
-function PSVM.load(self)
-    local key = self.OperandStack:pop()
-    local value = self.DictionaryStack:load(key)
-    if not value then
-        self.OperandStack:push(ps_common.NULL)
-    else
-        self.OperandStack:push(value)
-    end
-
-    return true
-end
-
--- key value store -
--- Replace topmost definition of key
-function PSVM.store(self)
-    local value = self.OperandStack:pop()
-    local key = self.OperandStack:pop()
-
-    return self.DictionaryStack:store(key, value)
-end
-
-function PSVM.where(self)
-    local key = self.OperandStack:pop()
-    local d = self.DictionaryStack:where(key)
-    if not d then
-        self.OperandStack:push(false)
-    else
-        self.OperandStack:push(d)
-        self.OperandStack:push(true)
-    end
-
-    return true
-end
-
-
 
 return PSVM

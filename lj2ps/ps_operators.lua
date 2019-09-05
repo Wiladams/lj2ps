@@ -3,8 +3,10 @@ local band, bor = bit.band, bit.bor
 local bnot, bxor = bit.bnot, bit.bxor
 
 local DEGREES, RADIANS = math.deg, math.rad
+
+local ps_common = require("lj2ps.ps_common")
+
 local exports = {}
-exports.MARK = "MARK"
 
 --[[
 -- Stack operators
@@ -84,7 +86,7 @@ end
 
 
 local function mark(vm)
-    vm:push(exports.MARK)
+    vm:push(ps_common.MARK)
     return true;
 end
 exports.mark = mark
@@ -102,10 +104,28 @@ end
 exports.count = count
 
 --counttomark
+local function counttomark(vm)
+    local ct = 0
+
+    for _, item in vm.OperandStack:items() do
+        if item == exports.MARK then
+            break
+        end
+
+        ct = ct + 1
+    end
+
+    vm.OperandStack:push(ct)
+
+    return true
+end
+exports.counttomark = counttomark
+
+-- cleartomark
 local function cleartomark(vm)
     while vm.OperandStack:length() > 0 do 
         local item = vm:pop()
-        if item == exports.MARK then
+        if item == ps_common.MARK then
             break
         end
     end
@@ -285,8 +305,32 @@ end
 --[[
 -- Array, Packed Array, Dictionary, and String Operators
 --]]
---get
+-- get
+-- array index get any
+local function get(vm)
+    local index = vm.OperandStack:pop()
+    local arr = vm.OperandStack:pop()
+    vm.OperandStack:push(arr[index])
 
+    return true
+end
+exports.get = get
+
+--[[
+-- BUGBUG, resolve put overload based on type
+-- of array, or dictionary
+-- array index any -
+local function put(vm)
+    local item = vm.OperandStack:pop()
+    local index = vm.OperandStack:pop()
+    local arr = vm.OperandStack:pop()
+    arr[index] = item
+
+    return true
+end
+--]]
+
+exports.put = put
 -- dict key value put -
 local function put(vm)
     local value = vm:pop()
@@ -298,16 +342,120 @@ local function put(vm)
 end
 exports.put = put
 
---copy
+-- getinterval
+-- putinterval
+
+-- copy
+-- forall
+
+-- Dictionary Operations
+
+
+-- def
+-- key value def    Associate key with value in current dictionary
+local function def(vm)
+    local value = vm.OperandStack:pop()
+    local key = vm.OperandStack:pop()
+
+    return vm.DictionaryStack:def(key, value)
+end
+exports.def = def
+
+-- load
+-- key load value        search stack for key, place value on operand stack
+local function load(vm)
+    local key = vm.OperandStack:pop()
+    local value = vm.DictionaryStack:load(key)
+    if not value then
+        vm.OperandStack:push(ps_common.NULL)
+    else
+        vm.OperandStack:push(value)
+    end
+
+    return true
+end
+
+-- key value store -
+-- Replace topmost definition of key
+local function store(vm)
+    local value = vm.OperandStack:pop()
+    local key = vm.OperandStack:pop()
+
+    return vm.DictionaryStack:store(key, value)
+end
+exports.store = store
+
+local function where(vm)
+    local key = vm.OperandStack:pop()
+    local d = vm.DictionaryStack:where(key)
+    if not d then
+        vm.OperandStack:push(false)
+    else
+        vm.OperandStack:push(d)
+        vm.OperandStack:push(true)
+    end
+
+    return true
+end
+exports.where = where
+
+
 --length
---forall
---getinterval
---putinterval
+-- array length int
+local function length(vm)
+    local arr = vm.OperandStack:pop()
+    vm.OperandStack:push(#arr)
+    
+    return true
+end
+exports.length = length
+
+
 
 
 -- creation of composite objects
+-- Array Creation
+-- astore
+-- aload
+
+--[[
+    [5 4 3]  or
+    mark 5 4 3 counttomark array astore exch pop
+]]
+-- alias for '[', mark
+local function beginArray(vm)
+    vm:mark()
+end
+
+-- alias for ']'
+local function endArray(vm)
+    -- pop all the objects until a mark
+    local tmpStack = Stack()
+    while vm.OperandStack:length() > 0 do 
+        local item = vm.OperandStack:pop()
+        if item == exports.MARK then
+            break;
+        end
+
+        tmpStack:push(item)
+    end
+
+
+
+    -- put them into an array, reversing order
+    local arr = {}
+    for _, item in tmpStack:items() do 
+        table.insert(arr, item)
+    end
+
+    -- put the array on the stack
+    vm.OperandStack:push(arr)
+end
+
 local function array(vm)
+    local size = vm:pop()
     vm:push({})
+
     return true
 end
 

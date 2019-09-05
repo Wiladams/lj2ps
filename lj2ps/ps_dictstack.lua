@@ -21,6 +21,7 @@ function DictionaryStack.new(self, ...)
 end
 
 function DictionaryStack.pushDictionary(self, d)
+    print("DictionaryStack.pushDictionary: ", d)
     self.dicts:push(d)
 end
 
@@ -36,7 +37,9 @@ end
 -- key value def
 -- Associate key and value in current dictionary
 function DictionaryStack.def(self, key, value)
-    rawset(self.dicts:top(), key, value)
+    --print("DictionaryStack.def: ", key, value)
+    local current = self:currentdict()
+    rawset(current, key, value)
 end
 
 function DictionaryStack.load(self, key)
