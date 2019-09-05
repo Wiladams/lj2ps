@@ -61,7 +61,18 @@ end
 
 -- push a value onto the operand stack
 function PSVM.push(self, value)
-    self.OperandStack:push(value)
+    -- check the type of the value
+    -- if it's a string, then look it up
+    -- in the dictionary.  If what is found there
+    -- is executable, then execute it, otherwise
+    -- push the value onto the stack
+    local dvalue = self.DictionaryStack:load(value)
+    if dvalue then
+        self.OperandStack:push(dvalue)
+    else
+        self.OperandStack:push(value)
+    end
+
     return true
 end
 
