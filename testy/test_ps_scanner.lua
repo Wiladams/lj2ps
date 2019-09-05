@@ -1,10 +1,10 @@
 package.path = "../?.lua;"..package.path
 
 
-local ps_common = require("ps_common")
+local ps_common = require("lj2ps.ps_common")
 local TokenType = ps_common.TokenType
-local ps_scanner = require("ps_scanner")
-local octetstream = require("wordplay.octetstream")
+local ps_scanner = require("lj2ps.ps_scanner")
+local octetstream = require("lj2ps.octetstream")
 
 local function test_tokens()
 local bs = octetstream([[

@@ -29,8 +29,10 @@ exports.exch = exch
 
 
 
-local function pop(self)
-    return self.OperandStack:pop()
+local function pop(vm)
+    local item = vm.OperandStack:pop()
+    --print("op.pop: ", item)
+    return item
 end
 exports.pop = pop
 

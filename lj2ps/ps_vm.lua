@@ -2,11 +2,12 @@
     Virtual machine for Postscript
 ]]
 
-local collections = require("wordplay.collections")
-local stack = collections.Stack
-local ps_common = require("ps_common")
-local ops = require("ps_operators")
-local DictionaryStack = require("ps_dictstack")
+local collections = require("lj2ps.collections")
+local Stack = collections.Stack
+
+local ps_common = require("lj2ps.ps_common")
+local ops = require("lj2ps.ps_operators")
+local DictionaryStack = require("lj2ps.ps_dictstack")
 
 -- has-a operand stack
 -- has-a dictionary stack
@@ -34,7 +35,7 @@ local PSVM_mt = {
         -- Next, use the DictionaryStack to determine the name of
         -- something
         if ops[name] then
-            local func = function() ops[name](self) end
+            local func = function() return ops[name](self) end
             return func
         end
     end;
@@ -42,12 +43,12 @@ local PSVM_mt = {
 
 function PSVM.new(self, ...)
     local obj = {
-        OperandStack = stack();
-        ExecutionStack = stack();
+        OperandStack = Stack();
+        ExecutionStack = Stack();
         DictionaryStack = DictionaryStack();
 
-        GraphicsStack = stack();
-        ClippingPathStack = stack();
+        GraphicsStack = Stack();
+        ClippingPathStack = Stack();
     }
     setmetatable(obj, PSVM_mt)
 

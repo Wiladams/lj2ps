@@ -1,4 +1,4 @@
-local collections = require("wordplay.collections")
+local collections = require("collections")
 local Stack = collections.Stack 
 
 --[[

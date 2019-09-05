@@ -1,6 +1,6 @@
 package.path = "../?.lua;"..package.path
 
-local ps_vm = require("ps_vm")
+local ps_vm = require("lj2ps.ps_vm")
 
 local vm = ps_vm()
 

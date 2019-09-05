@@ -1,6 +1,6 @@
-local collections = require("wordplay.collections")
+local collections = require("lj2ps.collections")
 local stack = collections.Stack
-local ops = require("ps_operators")
+local ops = require("lj2ps.ps_operators")
 
 -- OperatorStack is a sub-class of stack
 -- so it inherits push(), pop(), top()

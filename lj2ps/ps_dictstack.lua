@@ -1,4 +1,4 @@
-local collections = require("wordplay.collections")
+local collections = require("lj2ps.collections")
 local stack = collections.Stack
 
 local DictionaryStack = {}

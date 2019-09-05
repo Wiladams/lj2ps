@@ -1,4 +1,4 @@
-local enum = require("wordplay.enum")
+local enum = require("lj2ps.enum")
 
 --[[
 Use TokenType to both indicate a kind of character

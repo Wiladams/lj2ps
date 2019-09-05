@@ -1,5 +1,5 @@
 local ffi = require("ffi")
-local cctype = require("wordplay.cctype")
+local cctype = require("cctype")
 local isdigit = cctype.isdigit
 local isalpha = cctype.isalpha
 local isalnum = cctype.isalnum
