@@ -11,6 +11,12 @@ local exports = {}
 --[[
 -- Stack operators
 --]]
+local function clear(vm)
+    vm.OperandStack:clear()
+    return true;
+end
+exports.clear = clear
+
 local function dup(vm)
     vm:push(vm.OperandStack:top())
     return true
@@ -27,10 +33,6 @@ local function exch(vm)
 end
 exports.exch = exch
 
-
-
-
-
 local function pop(vm)
     local item = vm.OperandStack:pop()
     --print("op.pop: ", item)
@@ -38,12 +40,20 @@ local function pop(vm)
 end
 exports.pop = pop
 
-
+local function roll(vm)
+end
 
 local function top(self)
     return self.OperandStack:top()
 end
 exports.top = top
+
+--[[
+    Interactive Operators
+]]
+local function equalequal(vm)
+    local print(vm.OperandStack:pop())
+end
 
 local function pstack(vm)
     for _, item in vm.OperandStack:items() do 
@@ -76,8 +86,7 @@ exports.copy = copy
 --]]
 
 
-local function roll(vm)
-end
+
 
 local function index(vm)
     local n = vm:pop();
@@ -91,11 +100,7 @@ local function mark(vm)
 end
 exports.mark = mark
 
-local function clear(vm)
-    vm.OperandStack:clear()
-    return true;
-end
-exports.clear = clear
+
 
 local function count(vm)
     vm:push(vm.OperandStack:len())
