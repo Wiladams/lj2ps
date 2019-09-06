@@ -70,6 +70,13 @@ function PSVM.new(self, ...)
     return obj
 end
 
+--[[
+    Built-in functions, NOT operators
+]]
+function PSVM.popTopAndPrint(vm)
+    local print(vm.OperandStack:pop())
+end
+
 -- push a value onto the operand stack
 function PSVM.push(self, value)
     -- check the type of the value

@@ -9,6 +9,61 @@
 --]]
 local setmetatable = setmetatable;
 
+--[[
+	Array
+
+	A fixed size array, with an index starting at '0'
+	Useful when we want a more typical 'C' style array
+	of a fixed size.
+
+	The array guards against writing past its stated
+	capacity.
+
+	local arr = Array(5)
+]]
+local Array = {}
+setmetatable(Array, {
+    __call = function(self, ...)
+        return self:new(...)
+    end;
+})
+local Array_mt = {
+	-- using trying to retrieve a value
+	__index = function(self, idx)
+        return self.__impl[idx+1]
+    end;
+
+	-- user trying to set a value
+	__newindex = function(self, idx, value)
+		idx = tonumber(idx)
+
+		-- protect against non-numeric index
+		if not idx then return false end
+
+		-- protect against index beyond capacity
+        if idx >= self.__capacity then return false end
+
+        self.__impl[idx+1] = value
+    end;
+
+    __len = function(self)
+        return self.__capacity
+    end;
+}
+
+function Array.new(self, cnt)
+    local obj = {
+        __capacity = cnt;
+        __impl = {};
+	}
+	
+    --for i=1,cnt do
+    --    obj.__impl[i]=false;
+    --end
+    setmetatable(obj, Array_mt)
+
+    return obj
+end
 
 --[[
 	A bag behaves similar to a dictionary.
@@ -228,6 +283,7 @@ function Stack.items(self)
 end
 
 return {
+	Array = Array;
 	Bag = Bag;
 	List = List;
 	Stack = Stack;

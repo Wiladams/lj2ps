@@ -51,9 +51,7 @@ exports.top = top
 --[[
     Interactive Operators
 ]]
-local function equalequal(vm)
-    local print(vm.OperandStack:pop())
-end
+
 
 local function pstack(vm)
     for _, item in vm.OperandStack:items() do 
@@ -421,7 +419,36 @@ exports.length = length
 -- creation of composite objects
 -- Array Creation
 -- astore
+-- any0 ... any(n-1) array astore array
+local function astore(vm)
+    local arr = vm.OperandStack:pop()
+    local n = #arr
+
+    for i=1,n do
+        local item = vm.OperandStack:pop()
+        arr[i-1] = item
+    end
+    vm.OperandStack:push(arr)
+
+    return truncate
+end
+
+
 -- aload
+-- array aload any0 ... any(n-1) array
+local function aload(vm)
+    local arr = vm.OperandStack:pop()
+    local n = #arr
+
+    for i=0,n-1 do
+        vm.OperandStack:push(arr[i])
+    end
+    vm.OperandStack:push(arr)
+
+    return true
+end
+
+
 
 --[[
     [5 4 3]  or
@@ -459,7 +486,14 @@ end
 
 local function array(vm)
     local size = vm:pop()
-    vm:push({})
+    local arr = {}
+
+    -- Create an array of the specified size
+    for i=1,size do
+        arr[i-1] = false;
+    end
+
+    vm:push(arr)
 
     return true
 end
