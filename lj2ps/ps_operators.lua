@@ -4,7 +4,11 @@ local bnot, bxor = bit.bnot, bit.bxor
 
 local DEGREES, RADIANS = math.deg, math.rad
 
+local collections = require("lj2ps.collections")
+local Stack = collections.Stack
+
 local ps_common = require("lj2ps.ps_common")
+
 local Array = ps_common.Array
 local Dictionary = ps_common.Dictionary
 
@@ -436,7 +440,7 @@ local function astore(vm)
 
     return truncate
 end
-
+exports.astore = astore
 
 -- aload
 -- array aload any0 ... any(n-1) array
@@ -451,7 +455,7 @@ local function aload(vm)
 
     return true
 end
-
+exports.aload = aload
 
 
 --[[
@@ -462,6 +466,7 @@ end
 local function beginArray(vm)
     vm:mark()
 end
+exports.beginArray = beginArray
 
 -- alias for ']'
 local function endArray(vm)
@@ -487,6 +492,8 @@ local function endArray(vm)
     -- put the array on the stack
     vm.OperandStack:push(arr)
 end
+exports.endArray = endArray
+
 
 local function array(vm)
     local size = vm:pop()
@@ -496,6 +503,7 @@ local function array(vm)
 
     return true
 end
+exports.array = array
 
 local function packedarray(vm)
 end

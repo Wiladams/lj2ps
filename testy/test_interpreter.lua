@@ -11,9 +11,14 @@ local Interpreter = require("lj2ps.ps_interpreter")
 local vm = PSVM();
 local interp = Interpreter(vm)
 
+--[=[
 interp:run([[
 /F { %def
   findfont exch scalefont setfont
 } bind def
 ]])
+--]=]
 
+interp:run([[
+[1 2 3]
+]])

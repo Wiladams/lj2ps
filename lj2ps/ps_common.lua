@@ -41,7 +41,9 @@ local TokenType = enum {
 
     "BEGIN_ARRAY",      -- [
     "END_ARRAY",        -- ]
-
+    "LITERAL_ARRAY",
+    "EXECUTABLE_ARRAY",
+    
     "LITERAL_NAME",     -- /name
     "EXECUTABLE_NAME",  -- name
 

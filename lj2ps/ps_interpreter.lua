@@ -44,9 +44,9 @@ function Interpreter.run(self, bs)
         if token.kind == TokenType.LITERAL_NAME then
             self.Vm:pushLiteralName(token.value)
         else
-            print(token)
+            --print(token)
         end
-        print("-----")
+        print("--- stack ---")
         self.Vm:pstack()
         print("-----")
     end

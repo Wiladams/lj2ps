@@ -64,11 +64,18 @@ lexemeMap[B'\n'] = function(self, bs)
 end
 
 lexemeMap[B'['] = function(self, bs)
-    return Token{kind = TokenType.LEFT_BRACKET, lexeme='[', literal='', line=bs:tell()}; 
+    self.Vm:beginArray()
 end
 
 lexemeMap[B']'] = function(self, bs) 
-    return (Token{kind = TokenType.RIGHT_BRACKET, lexeme=']', literal='', line=bs:tell()}); 
+    self.Vm:endArray()
+    
+    if not self.isBuildingProcedure then
+        local arr = self.Vm:pop()
+        return (Token{kind = TokenType.LITERAL_ARRAY, value = arr, line=bs:tell()}); 
+    else
+        -- just keep the array on the stack
+    end
 end
 
 lexemeMap[B'{'] = function(self, bs)
@@ -109,11 +116,27 @@ lexemeMap[B')'] = function(self, bs)
 end
 
 lexemeMap[B'{'] = function(self, bs) 
-    return (Token{kind = TokenType.BEGIN_PROCEDURE, lexeme='{', line=bs:tell()}); 
+    self.isBuildingProcedure = true
+    self.Vm:mark()
+
+    --return (Token{kind = TokenType.BEGIN_PROCEDURE, lexeme='{', line=bs:tell()}); 
 end
 
 lexemeMap[B'}'] = function(self, bs) 
-    return (Token{kind = TokenType.END_PROCEDURE, lexeme='}', line=bs:tell()}); 
+    -- finish building procedure
+    -- gather up array elements until mark
+    -- array astore array
+    self.Vm:push(1000)
+    self.Vm:array()
+    self.Vm:astore()
+
+    local arr = self.Vm:pop()
+
+    self.isBuildingProcedure = false;
+
+    -- and hand an executable array to the scanner
+    return Token{kind = TokenType.EXECUTABLE_ARRAY, value = arr, line=bs:tell()}
+    --return (Token{kind = TokenType.END_PROCEDURE, lexeme='}', line=bs:tell()}); 
 end
 
 -- processing a comment, consume til end of line or EOF
