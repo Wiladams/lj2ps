@@ -486,12 +486,7 @@ end
 
 local function array(vm)
     local size = vm:pop()
-    local arr = {}
-
-    -- Create an array of the specified size
-    for i=1,size do
-        arr[i-1] = false;
-    end
+    local arr = Array(size)
 
     vm:push(arr)
 
@@ -514,32 +509,25 @@ exports.string = string
 
 --[[
 -- apply to arrays
-aload
-astore
 
 setpacking
 currentpacking
 
 -- dictionaries
-begin -- in VM
-end     -- in VM
-def     -- in VM
-store   -- in VM
-load    -- in VM
-where   -- in VM
 countdictstack  -- in VM
 cleardictstack  -- in VM
 dictstack       -- in VM
 --]]
+
 -- known
 -- dict key known bool
 local function known(vm)
-    local key = vm:pop()
-    local dict = vm:pop()
+    local key = vm.OperandStack:pop()
+    local dict = vm.OperandStack:pop()
     if dict[key] ~= nil then
-        vm:push(true)
+        vm.OperandStack:push(true)
     else
-        vm:push(false)
+        vm.OperandStack:push(false)
     end
 
     return true
