@@ -1,7 +1,7 @@
 package.path = "../?.lua;"..package.path
 
-local collections = require("lj2ps.collections")
-local Array = collections.Array
+local ps_common = require("lj2ps.ps_common")
+local Array = ps_common.Array
 
 local arr = Array(3)
 print("Size: ", #arr)
@@ -14,3 +14,5 @@ print(arr[1])
 print(arr[2])
 print(arr[3])
 print("Array Size, extended: ", #arr)
+
+print("Array.kind: ", arr.kind)

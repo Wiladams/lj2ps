@@ -74,7 +74,7 @@ end
     Built-in functions, NOT operators
 ]]
 function PSVM.popTopAndPrint(vm)
-    local print(vm.OperandStack:pop())
+    print(vm.OperandStack:pop())
 end
 
 -- push a value onto the operand stack
@@ -94,7 +94,11 @@ function PSVM.push(self, value)
     return true
 end
 
-function PSVM.pushStringLiteral(self, value)
+function PSVM.pushExecutableName(self, name)
+end
+
+
+function PSVM.pushLiteralName(self, value)
     self.OperandStack:push(value)
     return true
 end

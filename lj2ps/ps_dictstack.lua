@@ -1,3 +1,13 @@
+--[[
+    The operation of the dictionary stack is complex enough that
+    a standalone object is warranted to deal with it.
+
+    The dictionary stack deals with things like 
+    Finding a key value in stack order
+    Adding dictionaries to the stack
+    removing dictionaries from the stack
+    Setting a value somewhere in the stack
+]]
 local collections = require("lj2ps.collections")
 local stack = collections.Stack
 
@@ -21,7 +31,6 @@ function DictionaryStack.new(self, ...)
 end
 
 function DictionaryStack.pushDictionary(self, d)
-    print("DictionaryStack.pushDictionary: ", d)
     self.dicts:push(d)
 end
 
@@ -37,7 +46,6 @@ end
 -- key value def
 -- Associate key and value in current dictionary
 function DictionaryStack.def(self, key, value)
-    --print("DictionaryStack.def: ", key, value)
     local current = self:currentdict()
     rawset(current, key, value)
 end

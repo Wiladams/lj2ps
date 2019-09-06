@@ -1,11 +1,11 @@
 local ffi = require("ffi")
-local cctype = require("cctype")
+local cctype = require("lj2ps.cctype")
 local isdigit = cctype.isdigit
 local isalpha = cctype.isalpha
 local isalnum = cctype.isalnum
 local isgraph = cctype.isgraph
 
-local ps_common = require("ps_common")
+local ps_common = require("lj2ps.ps_common")
 
 local Token = ps_common.Token;
 local TokenType = ps_common.TokenType;
@@ -55,23 +55,31 @@ end
 -- generating a token to be consumed by whomever is scanning.
 local lexemeMap = {}
 
-lexemeMap[B'['] = function(bs)
+lexemeMap[B' '] = function(self, bs)
+    -- do nothing with it
+end
+
+lexemeMap[B'\n'] = function(self, bs)
+    -- do nothing with it
+end
+
+lexemeMap[B'['] = function(self, bs)
     return Token{kind = TokenType.LEFT_BRACKET, lexeme='[', literal='', line=bs:tell()}; 
 end
 
-lexemeMap[B']'] = function(bs) 
+lexemeMap[B']'] = function(self, bs) 
     return (Token{kind = TokenType.RIGHT_BRACKET, lexeme=']', literal='', line=bs:tell()}); 
 end
 
-lexemeMap[B'{'] = function(bs)
+lexemeMap[B'{'] = function(self, bs)
     return (Token{kind = TokenType.LEFT_BRACE, lexeme='{', literal='', line=bs:tell()}); 
 end
 
-lexemeMap[B'}'] = function(bs)
+lexemeMap[B'}'] = function(self, bs)
     return (Token{kind = TokenType.RIGHT_BRACE, lexeme='}', literal='', line=bs:tell()}); 
 end
 
-lexemeMap[B'('] = function(bs)
+lexemeMap[B'('] = function(self, bs)
     -- start reading a literal text string
     -- until we see a terminating ')'
     local starting = bs:tell()
@@ -96,21 +104,21 @@ lexemeMap[B'('] = function(bs)
     return Token{kind = TokenType.STRING, lexeme='', literal=value, line=bs:tell()}
 end
 
-lexemeMap[B')'] = function(bs) 
+lexemeMap[B')'] = function(self, bs) 
     return (Token{kind = TokenType.RIGHT_PAREN, lexeme=')', literal='', line=bs:tell()}); 
 end
 
-lexemeMap[B'{'] = function(bs) 
-    return (Token{kind = TokenType.LEFT_BRACE, lexeme='{', literal='', line=bs:tell()}); 
+lexemeMap[B'{'] = function(self, bs) 
+    return (Token{kind = TokenType.BEGIN_PROCEDURE, lexeme='{', line=bs:tell()}); 
 end
 
-lexemeMap[B'}'] = function(bs) 
-    return (Token{kind = TokenType.RIGHT_BRACE, lexeme='}', literal='', line=bs:tell()}); 
+lexemeMap[B'}'] = function(self, bs) 
+    return (Token{kind = TokenType.END_PROCEDURE, lexeme='}', line=bs:tell()}); 
 end
 
 -- processing a comment, consume til end of line or EOF
 -- totally throw away comment
-lexemeMap[B'%'] = function(bs)
+lexemeMap[B'%'] = function(self, bs)
     while bs:peekOctet() ~= B'\n' and not bs:isEOF() do
         bs:skip(1)
     end
@@ -119,7 +127,7 @@ end
 -- scan a number
 -- something got us here, it was either
 -- a digit, a '-'
-local function lex_number(bs)
+local function lex_number(self, bs)
     local starting = bs:tell();
     local startPtr = bs:getPositionPointer();
 
@@ -159,7 +167,7 @@ local function lex_number(bs)
 end
 
 -- scan identifiers
-local function lex_name(bs)
+local function lex_name(self, bs)
     --print("lex_name")
     local starting = bs:tell();
     local startPtr = bs:getPositionPointer();
@@ -177,15 +185,37 @@ local function lex_name(bs)
     local len = ending - starting;
     local value = ffi.string(startPtr, len)
 --print("value: ", value)
-    local tok =  Token{kind = TokenType.NAME, lexeme=value, value = value, position=bs:tell()}
+    local tok =  Token{kind = TokenType.EXECUTABLE_NAME, value = value, position=bs:tell()}
 
     return tok
 end
 
-lexemeMap[B'/'] = function(bs) 
-    local tok = lex_name(bs)
+lexemeMap[B'/'] = function(self, bs) 
+    local tok = lex_name(self, bs)
     tok.kind = TokenType.LITERAL_NAME
     return tok
+end
+
+
+
+local Scanner = {}
+setmetatable(Scanner, {
+    __call = function(self, ...)
+        return self:new(...);
+    end;
+})
+local Scanner_mt = {
+    __index = Scanner;
+}
+
+function Scanner.new(self, vm, bs)
+    local obj = {
+        Vm = vm;
+        Stream = bs;
+    }
+    setmetatable(obj, Scanner_mt)
+
+    return obj
 end
 
 --[[
@@ -193,8 +223,8 @@ end
  need to make this pure functional
  create a range on the stream?
 --]]
-local function tokens(bs)
-    
+function Scanner.tokens(self)
+
     local function token_gen(bs, state)
         -- skip any leading whitespace to start
         skipspaces(bs)
@@ -203,7 +233,7 @@ local function tokens(bs)
             local c = bs:readOctet()
 
             if lexemeMap[c] then
-                local tok, err = lexemeMap[c](bs)
+                local tok, err = lexemeMap[c](self, bs)
                 if tok then
                     return bs:tell(), tok;
                 else
@@ -212,20 +242,20 @@ local function tokens(bs)
             else
                 if isdigit(c) or c == B'-' then
                     bs:skip(-1)
-                    local tok = lex_number(bs)
+                    local tok = lex_number(self, bs)
                     return bs:tell(), tok
                 elseif isgraph(c) then
                     bs:skip(-1)
-                    local tok = lex_name(bs)
+                    local tok = lex_name(self, bs)
                     return bs:tell(), tok
                 else
-                    print("UNKNOWN: ", string.char(c)) 
+                    print("UNKNOWN: ", c, string.char(c)) 
                 end
             end
         end
     end
 
-    return token_gen, bs, bs:tell()
+    return token_gen, self.Stream, self.Stream:tell()
 end
 
-return tokens
+return Scanner

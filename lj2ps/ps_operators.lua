@@ -5,6 +5,8 @@ local bnot, bxor = bit.bnot, bit.bxor
 local DEGREES, RADIANS = math.deg, math.rad
 
 local ps_common = require("lj2ps.ps_common")
+local Array = ps_common.Array
+local Dictionary = ps_common.Dictionary
 
 local exports = {}
 
@@ -417,6 +419,8 @@ exports.length = length
 
 
 -- creation of composite objects
+
+
 -- Array Creation
 -- astore
 -- any0 ... any(n-1) array astore array
@@ -546,6 +550,26 @@ local function undef(vm)
 end
 
 -- <<key1,value1, key2,value2...>>
+-- <<, alias for mark
+local function beginDictionary(vm)
+    vm.OperandStack:push(exports.MARK)
+end
+
+local function endDictionary(vm)
+    local tmpDict = Dictionary()
+    while vm.OperandStack:length() > 0 do 
+        local value = vm.OperandStack:pop()
+        if value == exports.MARK then
+            break;
+        end
+
+        local key = vm.OperandStack:pop()
+        if key ~= nil then
+            tmpDict[key] = value;
+        end
+    end
+    vm.OperandStack:push(tmpDict)
+end
 
 
 --[[

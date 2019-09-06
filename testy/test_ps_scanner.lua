@@ -3,11 +3,13 @@ package.path = "../?.lua;"..package.path
 
 local ps_common = require("lj2ps.ps_common")
 local TokenType = ps_common.TokenType
-local ps_scanner = require("lj2ps.ps_scanner")
+local PSVM = require("lj2ps.ps_vm")
+local Scanner = require("lj2ps.ps_scanner")
 local octetstream = require("lj2ps.octetstream")
 
 local function test_tokens()
-local bs = octetstream([[
+    local vm = PSVM()
+    local bs = octetstream([[
 % comment
 123
 (This is a string)
@@ -20,9 +22,10 @@ are the same.)
 (So does this one\n)
 ]])
 
-for _, token in ps_scanner(bs) do
-    print(token)
-end
+    local scnr = Scanner(vm, bs)
+    for _, token in scnr:tokens(bs) do
+        print(token)
+    end
 end
 
 local function test_token_type()
@@ -62,10 +65,10 @@ local function test_procedure()
     end
 end
 
---test_tokens()
+test_tokens()
 --test_token_type()
 --test_name()
 --test_array()
-test_procedure()
+--test_procedure()
 
 
