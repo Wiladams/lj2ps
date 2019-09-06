@@ -57,10 +57,12 @@ local lexemeMap = {}
 
 lexemeMap[B' '] = function(self, bs)
     -- do nothing with it
+    print("[SPACE]")
 end
 
 lexemeMap[B'\n'] = function(self, bs)
     -- do nothing with it
+    print("[NEWLINE]")
 end
 
 lexemeMap[B'['] = function(self, bs)
@@ -76,14 +78,6 @@ lexemeMap[B']'] = function(self, bs)
     else
         -- just keep the array on the stack
     end
-end
-
-lexemeMap[B'{'] = function(self, bs)
-    return (Token{kind = TokenType.LEFT_BRACE, lexeme='{', literal='', line=bs:tell()}); 
-end
-
-lexemeMap[B'}'] = function(self, bs)
-    return (Token{kind = TokenType.RIGHT_BRACE, lexeme='}', literal='', line=bs:tell()}); 
 end
 
 lexemeMap[B'('] = function(self, bs)
@@ -115,11 +109,11 @@ lexemeMap[B')'] = function(self, bs)
     return (Token{kind = TokenType.RIGHT_PAREN, lexeme=')', literal='', line=bs:tell()}); 
 end
 
+-- build up a procedure
 lexemeMap[B'{'] = function(self, bs) 
     self.isBuildingProcedure = true
-    self.Vm:mark()
-
-    --return (Token{kind = TokenType.BEGIN_PROCEDURE, lexeme='{', line=bs:tell()}); 
+    -- in this case, an executable Array
+    self.Vm:beginExecutableArray()
 end
 
 lexemeMap[B'}'] = function(self, bs) 
@@ -136,7 +130,6 @@ lexemeMap[B'}'] = function(self, bs)
 
     -- and hand an executable array to the scanner
     return Token{kind = TokenType.EXECUTABLE_ARRAY, value = arr, line=bs:tell()}
-    --return (Token{kind = TokenType.END_PROCEDURE, lexeme='}', line=bs:tell()}); 
 end
 
 -- processing a comment, consume til end of line or EOF
@@ -184,9 +177,8 @@ local function lex_number(self, bs)
 
     local value = tonumber(ffi.string(startPtr, len))
     
-    -- return the number literal
-    --return (Token{kind = TokenType.NUMBER, lexeme='', literal=value, line=bs:getLine()})
-    return (Token{kind = TokenType.NUMBER, lexeme='', literal=value, line=starting})
+    return value;
+
 end
 
 -- scan identifiers
@@ -214,8 +206,10 @@ local function lex_name(self, bs)
 end
 
 lexemeMap[B'/'] = function(self, bs) 
+    print("LITERAL")
     local tok = lex_name(self, bs)
     tok.kind = TokenType.LITERAL_NAME
+
     return tok
 end
 
@@ -249,28 +243,48 @@ end
 function Scanner.tokens(self)
 
     local function token_gen(bs, state)
-        -- skip any leading whitespace to start
-        skipspaces(bs)
 
         while not bs:isEOF() do
+            -- skip any leading whitespace to start
+            skipspaces(bs)
+            if bs:isEOF() then 
+                break;
+            end
+
             local c = bs:readOctet()
 
             if lexemeMap[c] then
                 local tok, err = lexemeMap[c](self, bs)
                 if tok then
-                    return bs:tell(), tok;
+                    if self.isBuildingProcedure then
+                        self.Vm:push(tok.value)
+                    else
+                        return bs:tell(), tok
+                    end
                 else
                     -- deal with error if there was one
                 end
             else
                 if isdigit(c) or c == B'-' then
                     bs:skip(-1)
-                    local tok = lex_number(self, bs)
-                    return bs:tell(), tok
+                    local value = lex_number(self, bs)
+
+                    if value then
+                        if self.isBuildingProcedure then
+                            self.Vm.OperandStack:push(value)
+                        else
+                            return Token({kind = TokenType.NUMBER, value=value, line=bs:tell()})
+                        end
+                    end
+                    
                 elseif isgraph(c) then
                     bs:skip(-1)
                     local tok = lex_name(self, bs)
-                    return bs:tell(), tok
+                    if self.isBuildingProcedure then
+                        self.Vm.OperandStack:push(tok.value)
+                    else
+                        return bs:tell(), tok
+                    end
                 else
                     print("UNKNOWN: ", c, string.char(c)) 
                 end

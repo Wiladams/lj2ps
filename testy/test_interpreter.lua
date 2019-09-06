@@ -19,6 +19,16 @@ interp:run([[
 ]])
 --]=]
 
-interp:run([[
+local function test_array()
+  interp:run([[
 [1 2 3]
 ]])
+end
+
+local function test_procedure()
+  interp:run([[
+{ 1 3 add}
+]])
+end
+
+test_procedure()

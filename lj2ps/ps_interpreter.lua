@@ -41,10 +41,16 @@ function Interpreter.run(self, bs)
 
     local scnr = Scanner(self.Vm, bs)
     for _, token in scnr:tokens(bs) do
+        print("INTERP: ", token)
+        
         if token.kind == TokenType.LITERAL_NAME then
             self.Vm:pushLiteralName(token.value)
+        elseif token.kind == TokenType.EXECUTABLE_NAME then
+            -- lookup the name
+            -- if found, execute procedure
+            self.Vm:pushExecutableName(token.value)
         else
-            --print(token)
+            self.Vm:push(token.value)
         end
         print("--- stack ---")
         self.Vm:pstack()

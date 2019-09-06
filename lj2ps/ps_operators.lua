@@ -471,6 +471,8 @@ exports.beginArray = beginArray
 -- alias for ']'
 local function endArray(vm)
     -- pop all the objects until a mark
+
+
     local tmpStack = Stack()
     while vm.OperandStack:length() > 0 do 
         local item = vm.OperandStack:pop()
@@ -480,8 +482,6 @@ local function endArray(vm)
 
         tmpStack:push(item)
     end
-
-
 
     -- put them into an array, reversing order
     local arr = {}
@@ -494,6 +494,22 @@ local function endArray(vm)
 end
 exports.endArray = endArray
 
+local function beginExecutableArray(vm)
+    beginArray(vm)
+end
+exports.beginExecutableArray = beginExecutableArray
+
+local function endExecutableArray(vm)
+    --endArray(vm)
+    counttomark(vm)
+    array(vm)
+    astore(vm)
+    exch(vm)
+    pop(vm)
+    print("endExecutableArray, stack: ")
+    pstack(vm)
+end
+exports.endExecutableArray = endExecutableArray
 
 local function array(vm)
     local size = vm:pop()
