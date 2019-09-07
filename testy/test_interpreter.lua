@@ -31,5 +31,14 @@ local function test_procedure()
 ]])
 end
 
+local function test_def()
+  interp:run([[
+/ppi 72 def
+10 ppi mul
+pstack
+  ]])
+end
+
 --test_procedure()
-test_simple()
+--test_simple()
+test_def()

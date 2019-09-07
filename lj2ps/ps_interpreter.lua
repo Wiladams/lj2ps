@@ -52,9 +52,19 @@ function Interpreter.run(self, bs)
 
             -- if found, execute procedure
             if op then
-                op(self.Vm)
+                if type(op) == "function" then
+                    op(self.Vm)
+                else
+                    -- BUGBUG, need to be more subtle and
+                    -- look at whether it is an executable 
+                    -- array or not
+                    self.Vm.OperandStack:push(op)
+                end
             end
-        else
+        elseif token.kind = TokenType.EXECUTABLE_ARRAY then
+            -- a procedure
+            self.Vm:push(token.value)
+        end
             self.Vm:push(token.value)
         end
         --print("--- stack ---")

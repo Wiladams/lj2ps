@@ -129,6 +129,7 @@ lexemeMap[B'}'] = function(self, bs)
     self.isBuildingProcedure = false;
 
     -- and hand an executable array to the scanner
+    arr.__isExecutable = true;
     return Token{kind = TokenType.EXECUTABLE_ARRAY, value = arr, line=bs:tell()}
 end
 

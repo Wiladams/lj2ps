@@ -99,50 +99,55 @@ dtransform
 itransform
 idtransform
 invertmatrix
+--]]
 
+--[[
 -- Path construction
-newpath
-currentpoint
-moveto
-rmoveto
-lineto
-rlineto
-arc
-arcn
-arct
-arcto
-curveto
-rcurveto
-closepath
-flattenpath
-reversepath
-strokepath
-ustrokepath
-charpath
-uappend
-clippath
-setbbox
-pathbbox
-pathforall
-upath
-initclip
-clip
-eoclip
-rectclip
-ucache
+--]]
+--newpath
+--currentpoint
+--moveto
+--rmoveto
+--lineto
+--rlineto
+--arc
+--arcn
+--arct
+--arcto
+--curveto
+--rcurveto
+--closepath
+--flattenpath
+--reversepath
+--strokepath
+--ustrokepath
+--charpath
+--uappend
+--clippath
+--setbbox
+--pathbbox
+--pathforall
+--upath
+--initclip
+--clip
+--eoclip
+--rectclip
+--ucache
+
 
 -- Painting Operators
-erasepage
-stroke
-fill
-eofill
-rectstroke
-rectfill
-ustroke
-ufill
-ueofill
-shfill
+--erasepage
+--stroke
+--fill
+--eofill
+--rectstroke
+--rectfill
+--ustroke
+--ufill
+--ueofill
+--shfill
 
+--[[
 -- Form and Pattern Operators
 makepattern
 setpattern
@@ -188,9 +193,7 @@ findencoding
 setcachedevice
 setcachedevice2
 setcharwidth
-
-
-]]
+--]]
 
 
 return exports

@@ -1,11 +1,19 @@
 # lj2ps
+Impetuous Postscript (IMPP)
+
 Postscript Virtual Machine using Lua
 
-The general idea here is to use Postscript as an example of pulling together lots of things.
+This project is an exploration of trying to pull together several different kind of things.
 
   Virtual Machine
   Drawing using a Driver model
   Scanning/Parsing Language
+
+```Postscript
+ 0   0  moveto
+72  72  lineto
+stroke
+```
 
 Things are done modularly so that they can be separable.  It is possible, for example, to use the postscript vm (ps_vm.lua) as a standalone virtual machine, without using the text scanner.  In this way, you're essentially making the same calls that the interpreter would itself be making.
 
