@@ -19,9 +19,8 @@ local Stack = collections.Stack
 local ps_common = require("lj2ps.ps_common")
 local ops = require("lj2ps.ps_operators")
 local DictionaryStack = require("lj2ps.ps_dictstack")
+local GraphicsState = require("lj2ps.ps_graphicsstate")
 
--- has-a operand stack
--- has-a dictionary stack
 
 local PSVM = {}
 setmetatable(PSVM, {
@@ -60,6 +59,8 @@ function PSVM.new(self, ...)
 
         GraphicsStack = Stack();
         ClippingPathStack = Stack();
+
+        GraphicsState = GraphicsState();
     }
     setmetatable(obj, PSVM_mt)
 

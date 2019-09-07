@@ -12,6 +12,10 @@ local ps_common = require("lj2ps.ps_common")
 local Array = ps_common.Array
 local Dictionary = ps_common.Dictionary
 
+
+
+
+
 local exports = {}
 
 --[[
@@ -59,12 +63,7 @@ exports.top = top
 ]]
 
 
-local function pstack(vm)
-    for _, item in vm.OperandStack:items() do 
-        print(item)
-    end
-end
-exports.pstack = pstack
+
 
 --[[
 -- BUGBUG
@@ -766,12 +765,90 @@ end
 local function cvrs(vm)
 end
 
--- miscellaneous
+--[[
+    File Operators
+]]
+
+-- print
+-- string print -
+local function ps_print(vm)
+    local str = vm.OperandStack:pop()
+    print(str)
+end
+exports.print = ps_print
+
+local function stack(vm)
+    for _, item in vm.OperandStack:items() do 
+        print(item)
+    end
+end
+exports.stack = stack
+
+local function pstack(vm)
+    for _, item in vm.OperandStack:items() do 
+        print(item)
+    end
+end
+exports.pstack = pstack
+
+--[[
+    Resource Operators
+]]
+
+--[[
+    Virtual Memory Operators
+]]
+
+--[[
+    Miscellaneous Operators
+--]]
+
+--bind
+--null
+local function null(vm)
+    vm.OperandStack:push(ps_common.NULL)
+    return true
+end
+exports.null = null
+
+--version
+local function version(vm)
+    vm.OperandStack:push("3.0")
+    return true
+end
+exports.version = version
+
+--realtime
+--usertime
+--languagelevel
+--product
+--revision
 local function revision(vm)
     vm.OperandStack:push(1)
     
     return true
 end
 exports.revision = revision
+
+--serialnumber
+local function serialnumber(vm)
+    vm.OperandStack:push(1)
+    return true;
+end
+exports.serialnumber = serialnumber
+
+--executive
+local function executive(vm)
+    print("NYI: executive")
+    return false
+end
+exports.executive = executive
+
+
+--echo
+--prompt
+
+
+
 
 return exports

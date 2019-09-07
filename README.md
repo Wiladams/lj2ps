@@ -28,9 +28,12 @@ local Interpreter = require("lj2ps.ps_interpreter")
 local vm = PSVM();              -- Create postscript virtual machine
 local interp = Interpreter(vm)  -- create an interpreter
 
-local function test_simple()
-  interp:run([[1 2 add pstack]])
-end
+
+interp:run([[
+  1 2 add 
+  pstack
+]])
+
 ```
 
 It will output

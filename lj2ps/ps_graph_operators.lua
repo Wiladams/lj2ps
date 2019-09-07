@@ -1,39 +1,48 @@
---[[
+
+local GraphicState = require("lj2ps.graphicstate")
 
 
 -- Graphics State - Device Independent
-gsave
-grestore
-grestoreall
-initgraphics
-gstate
-setgstate
-currentgstate
-setlinewidth
-currentlinewidth
-setlinecap
-currentlinecap
-setlinejoin
-currentlinejoin
-setmiterlimit
-currentmiterlimit
-setstrokeadjust
-currentstrokeadjust
-setdash
-currentdash
-setcolorspace
-currentcolorspace
-setcolor
-currentcolor
-setgray
-currentgray
-sethsbcolor
-currenthsbcolor
-setrgbcolor
-currentrgbcolor
-setcmykcolor
-currentcmykcolor
+-- gsave
+-- grestore
+-- grestoreall
+-- initgraphics
+-- gstate
+local function gstate(vm)
+    local gs = GraphicState();
+    vm.OperandStack:push(gs)
+    return true
+end
+exports.gstate = gstate
 
+-- setgstate
+-- currentgstate
+-- setlinewidth
+-- currentlinewidth
+-- setlinecap
+-- currentlinecap
+-- setlinejoin
+-- currentlinejoin
+-- setmiterlimit
+-- currentmiterlimit
+-- setstrokeadjust
+-- currentstrokeadjust
+-- setdash
+-- currentdash
+-- setcolorspace
+-- currentcolorspace
+-- setcolor
+-- currentcolor
+-- setgray
+-- currentgray
+-- sethsbcolor
+-- currenthsbcolor
+-- setrgbcolor
+-- currentrgbcolor
+-- setcmykcolor
+-- currentcmykcolor
+
+--[[
 -- Graphics State - Device Dependent
 sethalftone
 currenthalftone

@@ -188,6 +188,27 @@ function Dictionary.new(self, cap)
     return obj
 end
 
+--[[
+    pure functional iterators are supposed to be
+    copyable.  Some iterators, such as cycle, 
+    use this feature.
+]]
+local function deepCopy(orig)
+    local otype = type(orig)
+    local copy
+
+    if otype == "table" then
+        copy = {}
+        for okey, ovalue in next, orig, nil do
+            copy[deepCopy(okey)] = deepCopy(ovalue)
+        end
+    else
+        -- kind of cheap bailout.  The orig
+        -- might have a clone() function
+        copy = orig
+    end
+    return copy
+end
 
 
 return {
@@ -198,4 +219,6 @@ return {
 
     Array = Array;
     Dictionary = Dictionary;
+
+    deepCopy = deepCopy;
 }
