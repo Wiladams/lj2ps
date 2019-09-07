@@ -14,3 +14,27 @@ The scanner can be used on its own if you want to do something like transpile th
 The virtual machine is faithful to the standard Postscript model, utilizing stacks and operators for execution.  After an initial level of completeness, an attempt will be made to optimize by using the lua language stack more directly.  This may or may not turn out to be a fruitful endeavor.
 
 At any rate, the Postcript language environment is very large.  It will take some time to become complete enough to do anything remotely useful.
+
+
+Here is a "Hello World" that current works:
+
+```lua
+package.path = "../?.lua;"..package.path
+
+local PSVM = require("lj2ps.ps_vm")
+local Interpreter = require("lj2ps.ps_interpreter")
+
+
+local vm = PSVM();              -- Create postscript virtual machine
+local interp = Interpreter(vm)  -- create an interpreter
+
+local function test_simple()
+  interp:run([[1 2 add pstack]])
+end
+```
+
+It will output
+
+> 3
+
+The vm itself should have facility to execute a string directly without having to create an instance of the interpreter explicitly.  That will come in next revision.

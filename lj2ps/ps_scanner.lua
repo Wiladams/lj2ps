@@ -273,7 +273,7 @@ function Scanner.tokens(self)
                         if self.isBuildingProcedure then
                             self.Vm.OperandStack:push(value)
                         else
-                            return Token({kind = TokenType.NUMBER, value=value, line=bs:tell()})
+                            return bs:tell(), Token({kind = TokenType.NUMBER, value=value, line=bs:tell()})
                         end
                     end
                     
