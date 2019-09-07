@@ -152,7 +152,7 @@ function GraphicsState.setLineJoin(self, join)
     self.LineJoin = join;
 end
 
-function GrahpicsState.setMiterLimit(self, limit)
+function GraphicsState.setMiterLimit(self, limit)
     self.MiterLimit = limit
     return true
 end

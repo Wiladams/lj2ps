@@ -18,6 +18,7 @@ local Stack = collections.Stack
 
 local ps_common = require("lj2ps.ps_common")
 local ops = require("lj2ps.ps_operators")
+local gops = require("lj2ps.ps_graph_operators")
 local DictionaryStack = require("lj2ps.ps_dictstack")
 local GraphicsState = require("lj2ps.ps_graphicsstate")
 

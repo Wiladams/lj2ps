@@ -1,6 +1,7 @@
 
-local GraphicState = require("lj2ps.graphicstate")
+local GraphicState = require("lj2ps.ps_graphicsstate")
 
+local exports = {}
 
 -- Graphics State - Device Independent
 -- gsave
@@ -19,8 +20,24 @@ exports.gstate = gstate
 -- currentgstate
 -- setlinewidth
 -- currentlinewidth
+
 -- setlinecap
+local function setlinecap(vm)
+    local value = vm.OperandStack:pop()
+    vm.GraphicsState:setLineCap(value)
+    
+    return true
+end
+exports.setlinecap = setlinecap
+
 -- currentlinecap
+local function currentlinecap(vm)
+    local value = vm.GraphicsState:getLineCap()
+    vm.OperandStack:push(value)
+    return true
+end
+exports.currentlinecap = currentlinecap
+
 -- setlinejoin
 -- currentlinejoin
 -- setmiterlimit
@@ -174,3 +191,6 @@ setcharwidth
 
 
 ]]
+
+
+return exports
