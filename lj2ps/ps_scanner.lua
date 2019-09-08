@@ -80,6 +80,7 @@ lexemeMap[B']'] = function(self, bs)
     end
 end
 
+-- string literal
 lexemeMap[B'('] = function(self, bs)
     -- start reading a literal text string
     -- until we see a terminating ')'
@@ -102,12 +103,9 @@ lexemeMap[B'('] = function(self, bs)
 
     local value = ffi.string(startPtr, len)
 
-    return Token{kind = TokenType.STRING, lexeme='', literal=value, line=bs:tell()}
+    return Token{kind = TokenType.STRING, value=value, line=bs:tell()}
 end
 
-lexemeMap[B')'] = function(self, bs) 
-    return (Token{kind = TokenType.RIGHT_PAREN, lexeme=')', literal='', line=bs:tell()}); 
-end
 
 -- build up a procedure
 lexemeMap[B'{'] = function(self, bs) 
