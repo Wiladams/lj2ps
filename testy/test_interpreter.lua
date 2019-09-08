@@ -32,6 +32,7 @@ local function test_procedure()
 end
 
 local function test_def()
+  print("==== test_def ====")
   interp:run([[
 /ppi 72 def
 10 ppi mul
@@ -40,6 +41,7 @@ pstack
 end
 
 local function test_index()
+  print("===== test_index ====")
 interp:run([[
 1 2 3 1 index
 pstack
@@ -47,6 +49,7 @@ pstack
 end
 
 local function test_astore()
+  print("==== test_astore ====")
   interp:run([[
 (a) (bcd) (ef) 3 array astore
 ]])
@@ -62,8 +65,49 @@ print("-- items --")
 end
 
 local function test_string()
+print("==== test_string ====")
   interp:run([[
 (a) (bcd) (ef)
+pstack
+]])
+end
+
+function test_atan()
+print("==== test_atan ====")
+  interp:run([[
+0 1 atan
+1 0 atan
+-100 0 atan
+4 4 atan
+pstack
+]])
+end
+
+function test_cos()
+  print("==== test_cos ====")
+  interp:run([[
+0 cos
+90 cos
+pstack
+]])
+end
+
+function test_count()
+  print("==== test_count ====")
+  interp:run([[
+clear count
+pstack
+clear 1 2 3 count
+pstack
+]])
+end
+
+function test_counttomark()
+  print("==== test_counttomark ====")
+  interp:run([[
+1 2 3 mark
+4 5 6
+counttomark
 pstack
 ]])
 end
@@ -74,4 +118,7 @@ end
 --test_index()
 --test_string()
 test_astore()
-
+--test_atan()
+--test_cos()
+--test_count()
+--test_counttomark()

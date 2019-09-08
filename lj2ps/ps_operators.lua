@@ -28,16 +28,16 @@ end
 exports.clear = clear
 
 local function dup(vm)
-    vm:push(vm.OperandStack:top())
+    vm.OperandStack:push(vm.OperandStack:top())
     return true
 end
 exports.dup = dup
 
 local function exch(vm)
-    local a = vm:pop()
-    local b = vm:pop()
-    vm:push(a)
-    vm:push(b)
+    local a = vm.OperandStack:pop()
+    local b = vm.OperandStack:pop()
+    vm.OperandStack:push(a)
+    vm.OperandStack:push(b)
 
     return true
 end
@@ -77,14 +77,14 @@ local function copy(vm)
     local tmp = stack()
 
     -- get the n items into temp stack
-    local n = vm:pop()
+    local n = vm.OperandStack:pop()
     for i=0,n-1 do 
         tmp:push(vm.OperandStack:nth(i))
     end
 
     -- push from temp stack back onto stk
     for i=0,n-1 do 
-        vm:push(tmp:pop())
+        vm.OperandStack:push(tmp:pop())
     end
 
     return true
@@ -96,7 +96,7 @@ exports.copy = copy
 
 -- any(n)..any(0) n index any(n)..any(0) any(n)
 local function index(vm)
-    local n = vm:pop();
+    local n = vm.OperandStack:pop();
     local value = vm.OperandStack:nth(n)
     vm.OperandStack:push(value)
     
@@ -105,7 +105,8 @@ end
 exports.index = index
 
 local function mark(vm)
-    vm:push(ps_common.MARK)
+    vm.OperandStack:push(ps_common.MARK)
+
     return true;
 end
 exports.mark = mark
@@ -113,7 +114,8 @@ exports.mark = mark
 
 
 local function count(vm)
-    vm:push(vm.OperandStack:len())
+    vm.OperandStack:push(vm.OperandStack:length())
+
     return true
 end
 exports.count = count
@@ -123,7 +125,7 @@ local function counttomark(vm)
     local ct = 0
 
     for _, item in vm.OperandStack:items() do
-        if item == exports.MARK then
+        if item == ps_common.MARK then
             break
         end
 
@@ -139,7 +141,7 @@ exports.counttomark = counttomark
 -- cleartomark
 local function cleartomark(vm)
     while vm.OperandStack:length() > 0 do 
-        local item = vm:pop()
+        local item = vm.OperandStack:pop()
         if item == ps_common.MARK then
             break
         end
@@ -154,43 +156,48 @@ exports.cleartomark = cleartomark
 -- two arguments, result on stack
 --]]
 local function add(vm)
-    vm:push(vm:pop()+vm:pop())
+    local num2 = vm.OperandStack:pop()
+    local num1 = vm.OperandStack:pop()
+    vm.OperandStack:push(num1+num2)
+
     return true
 end
 exports.add = add
 
 local function sub(vm)
-    local num2 = vm:pop()
-    local num1 = vm:pop()
-    vm:push(num1-num2)
+    local num2 = vm.OperandStack:pop()
+    local num1 = vm.OperandStack:pop()
+    vm.OperandStack:push(num1-num2)
     
     return true
 end
 exports.sub = sub
 
 local function mul(vm)
-    vm:push(vm:pop()*vm:pop())
+    local num2 = vm.OperandStack:pop()
+    local num1 = vm.OperandStack:pop()
+    vm.OperandStack:push(num1*num2)
 end
 exports.mul = mul
 
 local function div(vm)
-    local num2 = vm:pop()
-    local num1 = vm:pop()
-    vm:push(num1/num2)
+    local num2 = vm.OperandStack:pop()
+    local num1 = vm.OperandStack:pop()
+    vm.OperandStack:push(num1/num2)
     
     return true
 end
 exports.div = div
 
 local function idiv(vm)
-    local b = vm:pop()
-    local a = vm:pop()
+    local b = vm.OperandStack:pop()
+    local a = vm.OperandStack:pop()
 
     local q = a/b
     if q >=0 then
-        vm:push(math.floor(q))
+        vm.OperandStack:push(math.floor(q))
     else
-        vm:push(math.ceil(q))
+        vm.OperandStack:push(math.ceil(q))
     end
     
     return true
@@ -198,9 +205,9 @@ end
 exports.idiv = idiv
 
 local function mod(vm)
-    local b = vm:pop()
-    local a = vm:pop()
-    vm:push(a%b)
+    local b = vm.OperandStack:pop()
+    local a = vm.OperandStack:pop()
+    vm.OperandStack:push(a%b)
 
     return true
 end
@@ -210,35 +217,35 @@ exports.mod = mod
 -- one argument
 --]]
 local function abs(vm)
-    vm:push(math.abs(vm:pop()))
+    vm.OperandStack:push(math.abs(vm.OperandStack:pop()))
     return true
 end
 exports.abs = abs
 
 local function ceiling(vm)
-    vm:push(math.ceil(vm:pop()))
+    vm.OperandStack:push(math.ceil(vm.OperandStack:pop()))
     return true
 end
 exports.ceiling = ceiling
 
 local function floor(vm)
-    vm:push(math.floor(vm:pop()))
+    vm.OperandStack:push(math.floor(vm.OperandStack:pop()))
     return true
 end
 exports.floor = floor
 
 local function neg(vm)
-    vm:push(-(vm:pop()))
+    vm.OperandStack:push(-(vm.OperandStack:pop()))
     return true
 end
 exports.neg = neg
 
 local function round(vm)
-    local n = vm:pop()
+    local n = vm.OperandStack:pop()
     if n >= 0 then
-        vm:push(math.floor(n+0.5))
+        vm.OperandStack:push(math.floor(n+0.5))
     else
-        vm:push(math.ceil(n-0.5))
+        vm.OperandStack:push(math.ceil(n-0.5))
     end
 end
 exports.round = round
@@ -257,15 +264,15 @@ end
 exports.truncate = truncate
 
 local function sqrt(vm)
-    vm:push(math.floor(vm.OperandStack:pop()))
+    vm.OperandStack:push(math.floor(vm.OperandStack:pop()))
     return true
 end
 exports.sqrt = sqrt
 
 -- BUGBUG
 local function exp(vm)
-    local base = vm:pop()
-    local exponent = vm:pop()
+    local base = vm.OperandStack:pop()
+    local exponent = vm.OperandStack:pop()
     vm.OperandStack:push(math.pow(base,exponent))
 
     return true
@@ -285,35 +292,41 @@ end
 exports.log = log
 
 local function sin(vm)
-    vm.OperandStack:push(math.sin(RADIANS(vm:pop())))
+    vm.OperandStack:push(math.sin(RADIANS(vm.OperandStack:pop())))
     return true
 end
 exports.sin = sin
 
 local function cos(vm)
-    vm:push(math.cos(RADIANS(vm:pop())))
+    local value = math.cos(RADIANS(vm.OperandStack:pop()))
+    vm.OperandStack:push(value)
+
     return true
 end
 exports.cos = cos
 
 local function atan(vm)
-    local den = vm:pop()
-    local num = vm:pop()
-    vm:push(DEGREES(math.atan(num/den)))
+    local den = vm.OperandStack:pop()
+    local num = vm.OperandStack:pop()
+    local value = DEGREES(math.atan(num/den))
+    if value < 0 then
+        value = value + 360
+    end
 
+    vm.OperandStack:push(value)
     return true
 end
 exports.atan = atan
 
 -- put random integer on the stack
 local function rand(vm)
-    vm:push(math.random())
+    vm.OperandStack:push(math.random())
     return true
 end
 exports.rand = rand
 
 local function srand(vm)
-    local seed = vm:pop()
+    local seed = vm.OperandStack:pop()
     --math.randomseed(seed)
 
     return true
@@ -322,7 +335,7 @@ end
 -- put random number seed on stack
 local function rrand(vm)
     local seed = math.randomseed()
-    vm:push(seed)
+    vm.OperandStack:push(seed)
 
     return true
 end
@@ -358,9 +371,9 @@ exports.put = put
 --[[
 -- dict key value put -
 local function put(vm)
-    local value = vm:pop()
-    local key = vm:pop()
-    local dict = vm:pop()
+    local value = vm.OperandStack:pop()
+    local key = vm.OperandStack:pop()
+    local dict = vm.OperandStack:pop()
     rawset(dict, key, value)
     
     return true
@@ -482,7 +495,8 @@ exports.aload = aload
 ]]
 -- alias for '[', mark
 local function beginArray(vm)
-    vm:mark()
+    vm.OperandStack:push(ps_common.MARK)
+    return true
 end
 exports.beginArray = beginArray
 
@@ -494,7 +508,7 @@ local function endArray(vm)
     local tmpStack = Stack()
     while vm.OperandStack:length() > 0 do 
         local item = vm.OperandStack:pop()
-        if item == exports.MARK then
+        if item == ps_common.MARK then
             break;
         end
 
@@ -530,10 +544,10 @@ end
 exports.endExecutableArray = endExecutableArray
 
 local function array(vm)
-    local size = vm:pop()
+    local size = vm.OperandStack:pop()
     local arr = Array(size)
 
-    vm:push(arr)
+    vm.OperandStack:push(arr)
 
     return true
 end
@@ -553,8 +567,8 @@ end
 exports.packedarray = packedarray
 
 local function dict(vm)
-    local capacity = vm:pop()
-    vm:push({})
+    local capacity = vm.OperandStack:pop()
+    vm.OperandStack:push({})
     return true
 end
 exports.dict = dict
@@ -594,8 +608,8 @@ end
 --undef
 -- dict key undef -
 local function undef(vm)
-    local key = vm:pop()
-    local dict = vm:pop()
+    local key = vm.OperandStack:pop()
+    local dict = vm.OperandStack:pop()
     dict[key] = nil;
 
     return true;
@@ -604,14 +618,14 @@ end
 -- <<key1,value1, key2,value2...>>
 -- <<, alias for mark
 local function beginDictionary(vm)
-    vm.OperandStack:push(exports.MARK)
+    vm.OperandStack:push(ps_common.MARK)
 end
 
 local function endDictionary(vm)
     local tmpDict = Dictionary()
     while vm.OperandStack:length() > 0 do 
         local value = vm.OperandStack:pop()
-        if value == exports.MARK then
+        if value == ps_common.MARK then
             break;
         end
 
@@ -628,43 +642,43 @@ end
 -- String Operators
 --]]
 local function eq(vm)
-    vm:push(vm:pop() == vm:pop())
+    vm.OperandStack:push(vm.OperandStack:pop() == vm.OperandStack:pop())
     return true
 end
 
 local function ne(vm)
-    vm:push(vm:pop() ~= vm:pop())
+    vm.OperandStack:push(vm.OperandStack:pop() ~= vm.OperandStack:pop())
     return true
 end
 
 local function gt(vm)
-    local any2 = vm:pop()
-    local any1 = vm:pop()
-    vm:push(any1 > any2)
+    local any2 = vm.OperandStack:pop()
+    local any1 = vm.OperandStack:pop()
+    vm.OperandStack:push(any1 > any2)
 
     return true
 end
 
 local function ge(vm)
-    local any2 = vm:pop()
-    local any1 = vm:pop()
-    vm:push(any1 >= any2)
+    local any2 = vm.OperandStack:pop()
+    local any1 = vm.OperandStack:pop()
+    vm.OperandStack:push(any1 >= any2)
 
     return true
 end
 
 local function lt(vm)
-    local any2 = vm:pop()
-    local any1 = vm:pop()
-    vm:push(any1 < any2)
+    local any2 = vm.OperandStack:pop()
+    local any1 = vm.OperandStack:pop()
+    vm.OperandStack:push(any1 < any2)
 
     return true
 end
 
 local function le(vm)
-    local any2 = vm:pop()
-    local any1 = vm:pop()
-    vm:push(any1 <= any2)
+    local any2 = vm.OperandStack:pop()
+    local any1 = vm.OperandStack:pop()
+    vm.OperandStack:push(any1 <= any2)
 
     return true
 end
@@ -674,57 +688,57 @@ end
 --]]
 
 exports["and"] = function(vm)
-    local any2 = vm:pop()
-    local any1 = vm:pop()
+    local any2 = vm.OperandStack:pop()
+    local any1 = vm.OperandStack:pop()
 
     if type(any1 == "boolean") then
-        vm:push(any1 and any2)
+        vm.OperandStack:push(any1 and any2)
     else
-        vm:push(band(any1, any2))
+        vm.OperandStack:push(band(any1, any2))
     end
     return true
 end
 
 exports["or"] = function(vm)
-    local any2 = vm:pop()
-    local any1 = vm:pop()
+    local any2 = vm.OperandStack:pop()
+    local any1 = vm.OperandStack:pop()
 
     if type(any1 == "boolean") then
-        vm:push(any1 or any2)
+        vm.OperandStack:push(any1 or any2)
     else
-        vm:push(bor(any1, any2))
+        vm.OperandStack:push(bor(any1, any2))
     end
     return true
 end
 
 local function xor(vm)
-    local any2 = vm:pop()
-    local any1 = vm:pop()
+    local any2 = vm.OperandStack:pop()
+    local any1 = vm.OperandStack:pop()
 
     if type(any1 == "boolean") then
-        vm:push(any1 and any2)
+        vm.OperandStack:push(any1 and any2)
     else
-        vm:push(band(any1, any2))
+        vm.OperandStack:push(band(any1, any2))
     end
     return true
 end
 
 exports["true"] = function(vm)
-    vm:push(true)
+    vm.OperandStack:push(true)
     return true
 end
 
 exports["false"] = function(vm)
-    vm:push(false)
+    vm.OperandStack:push(false)
     return true
 end
 
 exports["not"] = function(vm)
-    local a = vm:pop()
+    local a = vm.OperandStack:pop()
     if type(a) == "boolean" then
-        vm:push(not a)
+        vm.OperandStack:push(not a)
     else
-        vm:push(bnot(a))
+        vm.OperandStack:push(bnot(a))
     end
 
     return true
@@ -732,13 +746,13 @@ end
 
 
 local function bitshift(vm)
-    local shift = vm:pop()
-    local int1 = vm:pop()
+    local shift = vm.OperandStack:pop()
+    local int1 = vm.OperandStack:pop()
 
     if shift < 0 then
-        vm:push(rshift(int1,math.abs(shift)))
+        vm.OperandStack:push(rshift(int1,math.abs(shift)))
     else
-        vm:push(lshift(int1,shift))
+        vm.OperandStack:push(lshift(int1,shift))
     end
 
     return true
@@ -774,12 +788,12 @@ noaccess
 --]]
 
 local function cvi(vm)
-    vm:push(tonumber(vm:pop()))
+    vm.OperandStack:push(tonumber(vm.OperandStack:pop()))
     return true
 end
 
 local function cvr(vm)
-    vm:push(tonumber(vm:pop()))
+    vm.OperandStack:push(tonumber(vm.OperandStack:pop()))
     return true
 end
 
@@ -787,7 +801,7 @@ local function cvn(vm)
 end
 
 local function cvs(vm)
-    vm:push(tostring(vm:pop()))
+    vm.OperandStack:push(tostring(vm.OperandStack:pop()))
     return true 
 end
 

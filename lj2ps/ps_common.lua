@@ -225,8 +225,8 @@ end
 
 
 return {
-    NULL = "null";
-    MARK = "mark";
+    NULL = "NULL";
+    MARK = "MARK";
     Token = Token;
     TokenType = TokenType;
 
