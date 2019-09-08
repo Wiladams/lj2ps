@@ -68,6 +68,10 @@ exports.top = top
 --[[
 -- BUGBUG
 -- depends on what's atop the stack
+-- copy any1... anyn  n copy  any1..anyn any1..anyn
+--]]
+
+
 local function copy(vm)
     -- create temporary stack
     local tmp = stack()
@@ -86,16 +90,19 @@ local function copy(vm)
     return true
 end
 exports.copy = copy
---]]
 
 
 
 
+-- any(n)..any(0) n index any(n)..any(0) any(n)
 local function index(vm)
     local n = vm:pop();
-    return vm.OperandStack:nth(n)
+    local value = vm.OperandStack:nth(n)
+    vm.OperandStack:push(value)
+    
+    return true
 end
-
+exports.index = index
 
 local function mark(vm)
     vm:push(ps_common.MARK)
@@ -226,8 +233,6 @@ local function neg(vm)
 end
 exports.neg = neg
 
-
-
 local function round(vm)
     local n = vm:pop()
     if n >= 0 then
@@ -239,35 +244,48 @@ end
 exports.round = round
 
 --truncate
+local function truncate(vm)
+    local a = vm.OperandStack:pop()
+    if a >= 0 then
+        vm.OperandStack:push(math.floor(a))
+    else
+        vm.OperandStack:push(math.ceil(a))
+    end
+
+    return true
+end
+exports.truncate = truncate
 
 local function sqrt(vm)
-    vm:push(math.floor(vm:pop()))
+    vm:push(math.floor(vm.OperandStack:pop()))
     return true
 end
 exports.sqrt = sqrt
 
 -- BUGBUG
 local function exp(vm)
-    local b = vm:pop()
-    local a = vm:pop()
-    vm:push(math.pow(a,b))
+    local base = vm:pop()
+    local exponent = vm:pop()
+    vm.OperandStack:push(math.pow(base,exponent))
 
     return true
 end
 exports.exp = exp
 
 local function ln(vm)
-    vm:push(math.floor(vm:pop()))
+    vm.OperandStack:push(math.log(vm.OperandStack:pop()))
     return true
 end
+exports.ln = ln
 
 local function log(vm)
-    vm:push(math.log(vm:pop()))
+    vm.OperandStack:push(math.log10(vm.OperandStack:pop()))
     return true
 end
+exports.log = log
 
 local function sin(vm)
-    vm:push(math.sin(RADIANS(vm:pop())))
+    vm.OperandStack:push(math.sin(RADIANS(vm:pop())))
     return true
 end
 exports.sin = sin
@@ -324,7 +342,6 @@ local function get(vm)
 end
 exports.get = get
 
---[[
 -- BUGBUG, resolve put overload based on type
 -- of array, or dictionary
 -- array index any -
@@ -336,9 +353,9 @@ local function put(vm)
 
     return true
 end
---]]
-
 exports.put = put
+
+--[[
 -- dict key value put -
 local function put(vm)
     local value = vm:pop()
@@ -349,15 +366,14 @@ local function put(vm)
     return true
 end
 exports.put = put
+--]]
 
 -- getinterval
 -- putinterval
 
--- copy
 -- forall
 
 -- Dictionary Operations
-
 
 -- def
 -- key value def    Associate key with value in current dictionary
@@ -382,6 +398,7 @@ local function load(vm)
 
     return true
 end
+exports.load = load
 
 -- key value store -
 -- Replace topmost definition of key
@@ -429,12 +446,14 @@ exports.length = length
 -- any0 ... any(n-1) array astore array
 local function astore(vm)
     local arr = vm.OperandStack:pop()
-    local n = #arr
+    local size = #arr
 
-    for i=1,n do
-        local item = vm.OperandStack:pop()
-        arr[i-1] = item
+    for i=1,size do 
+        local value = vm.OperandStack:pop()
+        --print("astore, value: ", size-i, value)
+        arr[size-i] = value
     end
+
     vm.OperandStack:push(arr)
 
     return truncate
@@ -521,7 +540,17 @@ end
 exports.array = array
 
 local function packedarray(vm)
+    local size = vm.OperandStack:pop()
+    local arr = Array(size)
+    for i=1,size do 
+        arr[size-i] = vm.OperandStack:pop()
+    end
+
+    vm.OperandStack:push(arr)
+
+    return true
 end
+exports.packedarray = packedarray
 
 local function dict(vm)
     local capacity = vm:pop()

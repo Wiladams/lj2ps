@@ -65,6 +65,7 @@ function Interpreter.run(self, bs)
             -- a procedure
             self.Vm:push(token.value)
         else
+            --print("INTERP, push: ", TokenType[token.kind], token.value)
             self.Vm:push(token.value)
         end
 

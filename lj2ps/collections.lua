@@ -212,7 +212,7 @@ function Stack.nth(self, n)
 	local idx = last - n
 	if idx < self.first then return nil, 'beyond end of stack' end
 	
-	return self[last]
+	return self[idx]
 end
 
 -- iterate the stack items non-destructively

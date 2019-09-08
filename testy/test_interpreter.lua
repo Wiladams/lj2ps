@@ -39,6 +39,39 @@ pstack
   ]])
 end
 
+local function test_index()
+interp:run([[
+1 2 3 1 index
+pstack
+]])
+end
+
+local function test_astore()
+  interp:run([[
+(a) (bcd) (ef) 3 array astore
+]])
+  
+print("-- items --")
+  local topper = vm:top()
+  local size = #topper
+  print("topper: ", topper, size)
+
+  for i = 0,size-1 do
+    print(topper[i])
+  end
+end
+
+local function test_string()
+  interp:run([[
+(a) (bcd) (ef)
+pstack
+]])
+end
+
 --test_procedure()
 --test_simple()
-test_def()
+--test_def()
+--test_index()
+--test_string()
+test_astore()
+
