@@ -61,12 +61,13 @@ function Interpreter.run(self, bs)
                     self.Vm.OperandStack:push(op)
                 end
             end
-        elseif token.kind = TokenType.EXECUTABLE_ARRAY then
+        elseif token.kind == TokenType.EXECUTABLE_ARRAY then
             -- a procedure
             self.Vm:push(token.value)
-        end
+        else
             self.Vm:push(token.value)
         end
+
         --print("--- stack ---")
         --self.Vm:pstack()
         --print("-----")

@@ -89,7 +89,9 @@ local Array_mt = {
 		if type(idx) == "string" then
 			if idx == "kind" then
 				return 'array'
-			end
+            elseif idx == "isExecutable" then
+                return rawget(self,"__isExecutable")
+            end
 		end
 
 		idx = tonumber(idx)
@@ -100,10 +102,17 @@ local Array_mt = {
 
 	-- user trying to set a value
 	__newindex = function(self, idx, value)
-		idx = tonumber(idx)
-
-		-- protect against non-numeric index
-		if not idx then return false end
+		local key = tonumber(idx)
+        if type(idx) == "string" then
+            if tonumber(idx) then
+                idx = tonumber(idx)
+            else
+                if idx == "isExecutable" then
+                    rawset(self, __isExecutable, value)
+                    return nil
+                end
+            end
+        end
 
 		-- protect against index beyond capacity
         if idx >= self.__capacity then return false end
@@ -117,9 +126,13 @@ local Array_mt = {
 }
 
 function Array.new(self, cnt)
+    cnt = cnt or 100
+    isExecutable = isExecutable or false
+
     local obj = {
         __capacity = cnt;
         __impl = {};
+        __isExecutable;
 	}
 	
     --for i=1,cnt do
