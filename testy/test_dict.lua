@@ -2,7 +2,6 @@ package.path = "../?.lua;"..package.path
 
 local namespace = require("lj2ps.namespace")
 local PostscriptVM = require("lj2ps.ps_vm")
-local OperatorStack = require("lj2ps.ps_OperatorStack")
 local ops = require("lj2ps.ps_operators")
 
 local ns = namespace(ops)

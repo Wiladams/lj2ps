@@ -1,14 +1,12 @@
 package.path = "../?.lua;"..package.path
 
 local PostscriptVM = require("lj2ps.ps_vm")
-local OperatorStack = require("lj2ps.ps_OperatorStack")
 local ops = require("lj2ps.ps_operators")
 
 local vm = PostscriptVM()
 
 local function test_stack()
     print("==== test_stack ====")
-    local stk = OperatorStack()
 
     vm:push(10)
     vm:push(20)

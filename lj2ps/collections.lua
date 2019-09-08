@@ -131,6 +131,7 @@ function  List:PeekRight()
 	return self[last]
 end
 
+--[=[
 --[[
 	Stack
 --]]
@@ -227,9 +228,9 @@ function Stack.items(self)
 
 	return gen, {first = self.first, data=self}, self.last
 end
+--]=]
 
 return {
-	Array = Array;
 	Bag = Bag;
 	List = List;
 	Stack = Stack;

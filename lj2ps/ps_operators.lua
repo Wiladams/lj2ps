@@ -4,10 +4,8 @@ local bnot, bxor = bit.bnot, bit.bxor
 
 local DEGREES, RADIANS = math.deg, math.rad
 
-local collections = require("lj2ps.collections")
-local Stack = collections.Stack
-
 local ps_common = require("lj2ps.ps_common")
+local Stack = ps_common.Stack
 
 local Array = ps_common.Array
 local Dictionary = ps_common.Dictionary
@@ -504,7 +502,8 @@ exports.beginArray = beginArray
 local function endArray(vm)
     -- pop all the objects until a mark
 
-
+    -- BUGBUG, do this more directly with 
+    -- array assignment
     local tmpStack = Stack()
     while vm.OperandStack:length() > 0 do 
         local item = vm.OperandStack:pop()

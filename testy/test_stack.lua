@@ -1,11 +1,9 @@
 package.path = "../?.lua;"..package.path
 
-local collections = require("lj2ps.collections")
-local Stack = collections.Stack 
+local ps_common = require("lj2ps.ps_common")
+local Stack = ps_common.Stack 
 
 local s = Stack()
-
-
 
 local function test_enumerate()
     local s = Stack()

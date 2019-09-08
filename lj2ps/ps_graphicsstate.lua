@@ -1,8 +1,7 @@
-local collections = require("lj2ps.collections")
-local Stack = collections.Stack
+
 
 local ps_common = require("lj2ps.ps_common")
-
+local Stack = ps_common.Stack
 
 --[[
 -- device independent state

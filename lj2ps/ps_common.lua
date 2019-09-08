@@ -65,6 +65,108 @@ local function Token(obj)
     return obj;
 end
 
+
+
+
+--[[
+	Stack
+--]]
+local Stack = {}
+setmetatable(Stack,{
+	__call = function(self, ...)
+		return self:new(...);
+	end,
+});
+
+local Stack_mt = {
+	__len = function(self)
+		return self:length()
+	end,
+
+	__index = Stack;
+}
+
+function Stack.new(self, obj)
+	obj = obj or {first=1, last=0}
+
+	setmetatable(obj, Stack_mt);
+
+	return obj;
+end
+
+function Stack.length(self)
+	return self.last - self.first+1
+end
+
+
+-- pop all the items off the stack
+function Stack.clear(self)
+	local n = self:length()
+	for i=1,n do 
+		self:pop()
+	end
+
+	return self
+end
+
+function Stack.push(self, value)
+	local last = self.last + 1
+	self.last = last
+	self[last] = value
+
+	return self
+end
+
+function Stack.pop(self)
+	local last = self.last
+	if self.first > last then
+		return nil, "list is empty"
+	end
+	local value = self[last]
+	self[last] = nil         -- to allow garbage collection
+	self.last = last - 1
+
+	return value
+end
+
+function Stack.top(self)
+	-- return what's at the top of the stack without
+	-- popping it off
+	local last = self.last
+	if self.first > last then
+		return nil, "list is empty"
+	end
+
+	return self[last]
+end
+
+-- BUGBUG
+-- need to do error checking
+function Stack.nth(self, n)
+	if n < 0 then return nil end
+
+	local last = self.last
+	local idx = last - n
+	if idx < self.first then return nil, 'beyond end of stack' end
+	
+	return self[idx]
+end
+
+-- iterate the stack items non-destructively
+function Stack.items(self)
+	local function gen(param, state)
+		if param.first > state then
+			return nil;
+		end
+
+		return state-1, param.data[state]
+	end
+
+	return gen, {first = self.first, data=self}, self.last
+end
+
+
+
 --[[
 	Array
 
@@ -232,6 +334,7 @@ return {
 
     Array = Array;
     Dictionary = Dictionary;
-
+    Stack = Stack;
+    
     deepCopy = deepCopy;
 }

@@ -8,8 +8,10 @@
     removing dictionaries from the stack
     Setting a value somewhere in the stack
 ]]
-local collections = require("lj2ps.collections")
-local stack = collections.Stack
+
+local ps_common = require("lj2ps.ps_common")
+local Stack = ps_common.Stack
+
 
 local DictionaryStack = {}
 setmetatable(DictionaryStack, {
@@ -23,7 +25,7 @@ local DictionaryStack_mt = {
 
 function DictionaryStack.new(self, ...)
     local obj = {
-        dicts = stack()
+        dicts = Stack()
     }
     setmetatable(obj, DictionaryStack_mt)
 

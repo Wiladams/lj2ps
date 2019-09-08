@@ -1,7 +1,6 @@
 package.path = "../?.lua;"..package.path
 
 local PostscriptVM = require("lj2ps.ps_vm")
-local OperatorStack = require("lj2ps.ps_OperatorStack")
 local ops = require("lj2ps.ps_operators")
 
 --[[
