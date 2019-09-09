@@ -48,7 +48,6 @@ function Interpreter.run(self, bs)
         elseif token.kind == TokenType.EXECUTABLE_NAME then
             -- lookup the name
             local op = self.Vm.DictionaryStack:load(token.value)
-            --print("EXECUTABLE_NAME, exec: ", token.value, op)
 
             -- if found, execute procedure
             if op then
@@ -60,6 +59,8 @@ function Interpreter.run(self, bs)
                     -- array or not
                     self.Vm.OperandStack:push(op)
                 end
+            else
+                print("UNKNOWN EXECUTABLE_NAME: ", token.value)
             end
         elseif token.kind == TokenType.EXECUTABLE_ARRAY then
             -- a procedure
