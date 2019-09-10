@@ -18,11 +18,9 @@ local ps_common = require("lj2ps.ps_common")
 local Stack = ps_common.Stack
 
 local ops = require("lj2ps.ps_operators")
-
 local gops = require("lj2ps.ps_graph_operators")
 local DictionaryStack = require("lj2ps.ps_dictstack")
-local GraphicsState = require("lj2ps.ps_graphicsstate")
-
+local Blend2DDriver = require("lj2ps.b2ddriver")
 
 local PSVM = {}
 setmetatable(PSVM, {
@@ -62,7 +60,7 @@ function PSVM.new(self, obj)
         GraphicsStack = Stack();
         ClippingPathStack = Stack();
 
-        GraphicsState = GraphicsState();
+        Driver = Blend2DDriver();
     }
 
     obj.OperandStack = obj.OperandStack or Stack()
@@ -70,12 +68,12 @@ function PSVM.new(self, obj)
     obj.DictionaryStack = obj.DictionaryStack or DictionaryStack()
     obj.GraphicsStack = obj.GraphicsStack or Stack()
     obj.ClippingPathStack = obj.ClippingPathStack or Stack()
-    obj.GraphicsState = obj.GraphicsState or GraphicsState()
-
-
+    obj.Driver = obj.Driver or Blend2DDriver()
+    
     setmetatable(obj, PSVM_mt)
 
     obj.DictionaryStack:pushDictionary(ops)     -- systemdict, should contain system operators
+    obj.DictionaryStack:pushDictionary(gops)     -- graphics operators
     obj.DictionaryStack:pushDictionary({})      -- globaldict
     obj.DictionaryStack:pushDictionary({})      -- userdict
 

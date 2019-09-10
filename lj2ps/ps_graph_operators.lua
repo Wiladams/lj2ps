@@ -20,11 +20,18 @@ exports.gstate = gstate
 -- currentgstate
 -- setlinewidth
 -- currentlinewidth
+local function setlinewidth(vm)
+    local value = vm.OperandStack:pop()
+    print("setlinewidth: ", value)
+    vm.Driver:setLineWidth(value)
+    return true
+end
+exports.setlinewidth = setlinewidth
 
 -- setlinecap
 local function setlinecap(vm)
     local value = vm.OperandStack:pop()
-    vm.GraphicsState:setLineCap(value)
+    vm.Driver:setLineCap(value)
     
     return true
 end
@@ -32,7 +39,7 @@ exports.setlinecap = setlinecap
 
 -- currentlinecap
 local function currentlinecap(vm)
-    local value = vm.GraphicsState:getLineCap()
+    local value = vm.Driver:getLineCap()
     vm.OperandStack:push(value)
     return true
 end
@@ -105,10 +112,36 @@ invertmatrix
 -- Path construction
 --]]
 --newpath
+local function newpath(vm)
+    vm.Driver:newPath()
+    return true
+end
+exports.newpath = newpath
+
 --currentpoint
+
+
 --moveto
+local function moveto(vm)
+    local y = vm.OperandStack:pop()
+    local x = vm.OperandStack:pop()
+    vm.Driver:moveTo(x, y)
+    
+    return true
+end
+exports.moveto = moveto
+
 --rmoveto
 --lineto
+local function lineto(vm)
+    local y = vm.OperandStack:pop()
+    local x = vm.OperandStack:pop()
+    vm.Driver:lineTo(x, y)
+    
+    return true
+end
+exports.lineto = lineto
+
 --rlineto
 --arc
 --arcn
@@ -138,7 +171,19 @@ invertmatrix
 -- Painting Operators
 --erasepage
 --stroke
+local function stroke(vm)
+    vm.Driver:stroke()
+    return true
+end
+exports.stroke = stroke
+
 --fill
+local function fill(vm)
+    vm.Driver:fill()
+    return true
+end
+exports.fill = fill
+
 --eofill
 --rectstroke
 --rectfill
@@ -149,18 +194,28 @@ invertmatrix
 
 --[[
 -- Form and Pattern Operators
-makepattern
-setpattern
-setpattern
-execform
+--]]
+--makepattern
+--setpattern
+--setpattern
+--execform
 
+--[[
 -- Device Setup
-showpage
-copypage
-setpagedevice
-currentpagedevice
-nulldevice
+-]]
 
+--showpage
+local function showpage(vm)
+    vm.Driver:showPage()
+end
+exports.showpage = showpage
+
+--copypage
+--setpagedevice
+--currentpagedevice
+--nulldevice
+
+--[[
 -- font operators
 definefont
 composefont
