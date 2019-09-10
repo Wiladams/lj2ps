@@ -119,7 +119,16 @@ end
 exports.newpath = newpath
 
 --currentpoint
+local function currentpoint(vm)
+    -- get Position from current GraphState
+    -- push x, y onto operand stack
+    local pos = vm.Driver:getCurrentPosition()
+    vm.OperandStack:push(pos[1])
+    vm.OperandStack:push(pos[2])
 
+    return true
+end
+exports.currentpoint = currentpoint
 
 --moveto
 local function moveto(vm)
@@ -149,7 +158,11 @@ exports.lineto = lineto
 --arcto
 --curveto
 --rcurveto
---closepath
+local function closepath(vm)
+    vm.Driver:closePath()
+end
+exports.closepath = closepath
+
 --flattenpath
 --reversepath
 --strokepath

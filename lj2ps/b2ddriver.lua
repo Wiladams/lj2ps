@@ -29,7 +29,7 @@ function Blend2DDriver.new(self, ...)
         GraphicsStack = Stack();
         ClippingPathStack = Stack();
 
-        GraphicsState = GraphicsState();
+        CurrentState = GraphicsState();
 
         -- path
         -- path stack
@@ -55,6 +55,7 @@ end
 -- setlinewidth
 -- currentlinewidth
 function Blend2DDriver.setLineWidth(self, value)
+    self.CurrentState.LineWidth = value
     self.DC:setStrokeWidth(value)
     return true
 end
@@ -63,6 +64,7 @@ end
 -- setlinecap
 -- currentlinecap
 function Blend2DDriver.setLineCap(self, value)
+    self.CurrentState.LineCap = value;
     self.DC:setLineCap(value)
     return true
 end
@@ -70,6 +72,7 @@ end
 -- setlinejoin
 -- currentlinejoin
 function Blend2DDriver.setLineJoin(self, value)
+    self.CurrentState.LineJoin = value
     self.DC:setLineJoin(value)
     return true
 end
@@ -95,24 +98,75 @@ end
 
 
 
-
-function Blend2DDriver.moveTo(self, x, y)
-    print("Blend2DDriver.moveTo: ", x, y)
-    self.Path:moveTo(x,y)
-    return true
-end
-
-function Blend2DDriver.lineTo(self, x, y)
-    print("Blend2DDriver.lineTo: ", x, y)
-    self.Path:lineTo(x,y)
-    return true
-end
-
+--[[
+-- Path construction
+--]]
+--newpath
 function Blend2DDriver.newPath(self)
-    print("Blend2DDriver.newPath")
-    self.Path = BLPath()
+    self.CurrentState.Path = BLPath()
+    
     return true
 end
+
+--currentpoint
+function Blend2DDriver.getCurrentPosition(self)
+    return self.CurrentState.Position
+end
+
+--moveto
+function Blend2DDriver.moveTo(self, x, y)
+    self.CurrentState.Path:moveTo(x,y)
+    self.CurrentState.Position = {x,y}
+
+    return true
+end
+
+--rmoveto
+--lineto
+function Blend2DDriver.lineTo(self, x, y)
+    self.CurrentState.Path:lineTo(x,y)
+    self.CurrentState.Position = {x,y}
+
+    return true
+end
+
+--rlineto
+--arc
+--arcn
+--arct
+--arcto
+
+--curveto
+--rcurveto
+
+--closepath
+function Blend2DDriver.closePath(self)
+    self.CurrentState.Path:close()
+    return true
+end
+
+--flattenpath
+--reversepath
+--strokepath
+--ustrokepath
+--charpath
+--uappend
+--clippath
+--setbbox
+--pathbbox
+--pathforall
+--upath
+--initclip
+--clip
+--eoclip
+--rectclip
+--ucache
+
+
+
+
+
+
 
 
 
@@ -120,8 +174,7 @@ end
     Painting Operators
 ]]
 function Blend2DDriver.stroke(self)
-    print("Blend2DDriver.stroke")
-    print("  : ", self.DC:strokePathD(self.Path));
+    self.DC:strokePathD(self.CurrentState.Path);
 
     return true
 end

@@ -2,6 +2,7 @@
 
 local ps_common = require("lj2ps.ps_common")
 local Stack = ps_common.Stack
+local b2d = require("blend2d.blend2d")
 
 --[[
 -- device independent state
@@ -75,7 +76,7 @@ function GraphicsState.new(self)
         -- device independent
         CTM = {};
         Position = {0,0};
-        Path = {};
+        Path = BLPath();
         ClippingPath = {};
         ClippingPathStack = Stack();
         ColorSpace = {};
@@ -107,64 +108,110 @@ function GraphicsState.new(self)
 end
 
 
-
+-- setposition
+-- currentposition
 function GraphicsState.setPosition(self, x, y)
     self.Position = {x,y};
     return true
 end
+function GraphicsState.getPosition(self)
+    return self.Position
+end
 
+-- setpath
+-- currentpath
 function GraphicsState.setPath(self, path)
     self.Path = path
     return true
 end
 
+-- setclippingpath
+-- currentclippingpath
 function GraphicsState.setClippingPath(self, clippingPath)
     self.ClippingPath = clipingPath;
     return true
 end
 
+-- setcolorspace
+-- currentcolorspace
 function GraphicsState.setColorSpace(self, colorSpace)
     self.ColorSpace = colorSpace
     return true
 end
 
+-- setcolor
+-- currentcolor
 function GraphicsState.setColor(self, color)
     self.Color = color;
     return true
 end
 
+-- setfont
+-- currentfont
 function GraphicsState.setFont(self, font)
     self.Font = font;
     return true
 end
 
+-- setlinewidth
+-- currentlinewidth
 function GraphicsState.setLineWidth(self, width)
     self.LineWidth = width;
     return true;
 end
+function GraphicsState.getLineWidth(self)
+    return self.LineWidth;
+end
 
+-- linecap
+-- currentlinecap
 function GraphicsState.setLineCap(self, cap)
     self.LineCap = cap;
 end
+function GraphicsState.getLineCap(self)
+    return self.LineCap;
+end
 
+-- linejoin
+-- currentlinejoin
 function GraphicsState.setLineJoin(self, join)
     self.LineJoin = join;
 end
+function GraphicsState.getLineJoin(self)
+    return self.LineJoin
+end
 
+-- miterlimit
+-- currentmiterlimit
 function GraphicsState.setMiterLimit(self, limit)
     self.MiterLimit = limit
     return true
 end
+function GraphicsState.getMiterLimit(self)
+    return self.MiterLimit;
+end
 
+
+-- setdashpattern
+-- currentdashpattern
 function GraphicsState.setDashPatthern(self, pattern)
     self.DashPattern = pattern
     return true
 end
+function GraphicsState.getDashPattern(self)
+    return self.DashPattern
+end
 
+-- strokeadjustment
+-- currentstrokeadjustment
 function GraphicsState.setStrokeAdjustment(self, adjustment)
     self.StrokeAdjustment = adjustment
     return true
 end
+function GraphicsState.getStrokeAdjustment(self)
+    return self.StrokeAdjustment
+end
+
 
 
 return GraphicsState
