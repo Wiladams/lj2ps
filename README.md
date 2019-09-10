@@ -63,3 +63,10 @@ newpath
 stroke
 showpage
 ```
+
+
+References
+----------
+
+http://logand.com/sw/wps/#sec-2.4
+

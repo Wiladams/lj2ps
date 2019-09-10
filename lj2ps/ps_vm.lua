@@ -115,16 +115,7 @@ end
 
 
 -- Dictionary management
-function PSVM.currentdict(self)
-    local d = self.DictionaryStack:currentdict()
-    if not d then
-        self.OperandStack:push(ps_common.NULL)
-    else
-        self.OperandStack:push(d)
-    end
 
-    return true;
-end
 
 PSVM["BEGIN"] = function(self)
     -- pop the dictionary off the top of the 

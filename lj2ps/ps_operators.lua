@@ -636,6 +636,17 @@ local function endDictionary(vm)
     vm.OperandStack:push(tmpDict)
 end
 
+local function currentdict(vm)
+    local d = vm.DictionaryStack:currentdict()
+    if not d then
+        vm.OperandStack:push(ps_common.NULL)
+    else
+        vm.OperandStack:push(d)
+    end
+
+    return true;
+end
+exports.currentdict = currentdict
 
 --[[
 -- String Operators
@@ -644,11 +655,13 @@ local function eq(vm)
     vm.OperandStack:push(vm.OperandStack:pop() == vm.OperandStack:pop())
     return true
 end
+exports.eq = eq
 
 local function ne(vm)
     vm.OperandStack:push(vm.OperandStack:pop() ~= vm.OperandStack:pop())
     return true
 end
+exports.ne = ne
 
 local function gt(vm)
     local any2 = vm.OperandStack:pop()
@@ -657,6 +670,7 @@ local function gt(vm)
 
     return true
 end
+exports.gt = gt
 
 local function ge(vm)
     local any2 = vm.OperandStack:pop()
@@ -665,6 +679,7 @@ local function ge(vm)
 
     return true
 end
+exports.ge = ge
 
 local function lt(vm)
     local any2 = vm.OperandStack:pop()
@@ -673,6 +688,7 @@ local function lt(vm)
 
     return true
 end
+exports.lt = lt
 
 local function le(vm)
     local any2 = vm.OperandStack:pop()
@@ -681,6 +697,7 @@ local function le(vm)
 
     return true
 end
+exports.le = le
 
 --[[
 -- for both boolean and bitwise
@@ -721,6 +738,7 @@ local function xor(vm)
     end
     return true
 end
+exports.xor = xor
 
 exports["true"] = function(vm)
     vm.OperandStack:push(true)
@@ -790,11 +808,13 @@ local function cvi(vm)
     vm.OperandStack:push(tonumber(vm.OperandStack:pop()))
     return true
 end
+exports.cvi = cvi
 
 local function cvr(vm)
     vm.OperandStack:push(tonumber(vm.OperandStack:pop()))
     return true
 end
+exports.cvr = cvr
 
 local function cvn(vm)
 end
@@ -803,6 +823,7 @@ local function cvs(vm)
     vm.OperandStack:push(tostring(vm.OperandStack:pop()))
     return true 
 end
+exports.cvs = cvs
 
 local function cvrs(vm)
 end

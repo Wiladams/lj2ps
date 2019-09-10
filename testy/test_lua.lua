@@ -32,6 +32,17 @@ local function test_truncate()
     print(math.ceil(v2))
 end
 
---test_array()
-test_truncate()
+local function test_unpack()
+    local function foo(a,b,c,d)
+        print(type(a),a)
+        print(b)
+        print(c)
+        print(d)
+    end
 
+    foo(unpack{"a","b","c","d"})
+end
+
+--test_array()
+--test_truncate()
+test_unpack()

@@ -34,6 +34,20 @@ print(s:pop())
 print(s:pop())
 end
 
+local function pop(src, n)
+    local tmp = {}
+    for i=1,n do
+        tmp[i] = src[#src-n+i]
+    end
+
+    return unpack(tmp)
+end
+
+local function test_popn()
+    local src = {1,2,3,4,5,6,7,8,9}
+    print(pop(src, 3))
+end
+
 local function test_nth()
     print("==== test_nth ====")
     local s = Stack()
@@ -48,4 +62,5 @@ local function test_nth()
     print("nth(3): ", s:nth(3))
 end
 
-test_nth()
+--test_nth()
+test_popn()
