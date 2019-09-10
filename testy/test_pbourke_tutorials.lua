@@ -45,10 +45,9 @@ grestore
 0.75 setgray
 stroke
 showpage
-pstack
 ]])
 end
 
 
-test_example1()
---test_example2()
+--test_example1()
+test_example2()

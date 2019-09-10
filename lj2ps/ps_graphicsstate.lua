@@ -1,6 +1,7 @@
 
 
 local ps_common = require("lj2ps.ps_common")
+local deepCopy = ps_common.deepCopy
 local Stack = ps_common.Stack
 local b2d = require("blend2d.blend2d")
 
@@ -107,6 +108,11 @@ function GraphicsState.new(self)
     return obj 
 end
 
+function GraphicsState.clone(self)
+    local newstate = GraphicsState()
+    newstate:assign(self)
+    return newstate
+end
 
 -- setposition
 -- currentposition
@@ -143,6 +149,11 @@ end
 -- currentcolor
 function GraphicsState.setColor(self, color)
     self.Color = color;
+    return true
+end
+
+function GraphicsState.setGray(self, value)
+    self.Color = {value, value, value, 255}
     return true
 end
 

@@ -6,6 +6,18 @@ local exports = {}
 -- Graphics State - Device Independent
 -- gsave
 -- grestore
+local function gsave(vm)
+    vm.Driver:gSave()
+    return true
+end
+exports.gsave = gsave
+
+local function grestore(vm)
+    vm.Driver:gRestore()
+    return true
+end
+exports.grestore = grestore
+
 -- grestoreall
 -- initgraphics
 -- gstate
@@ -57,8 +69,18 @@ exports.currentlinecap = currentlinecap
 -- currentcolorspace
 -- setcolor
 -- currentcolor
+
 -- setgray
 -- currentgray
+local function setgray(vm)
+    local value = vm.OperandStack:pop()
+    vm.Driver:setGray(value)
+
+    return true
+end
+exports.setgray = setgray
+
+
 -- sethsbcolor
 -- currenthsbcolor
 -- setrgbcolor
@@ -141,7 +163,18 @@ end
 exports.moveto = moveto
 
 --rmoveto
+local function rlineto(vm)
+    local dy = vm.OperandStack:pop()
+    local dx = vm.OperandStack:pop()
+    local curr = vm.Driver:getCurrentPosition()
+    vm.Driver:moveTo(curr[1]+dx, curr[2]+dy)
+
+    return true
+end
+exports.rlineto = rlineto
+
 --lineto
+--rlineto
 local function lineto(vm)
     local y = vm.OperandStack:pop()
     local x = vm.OperandStack:pop()
@@ -151,7 +184,17 @@ local function lineto(vm)
 end
 exports.lineto = lineto
 
---rlineto
+
+local function rlineto(vm)
+    local dy = vm.OperandStack:pop()
+    local dx = vm.OperandStack:pop()
+    local curr = vm.Driver:getCurrentPosition()
+    vm.Driver:lineTo(curr[1]+dx, curr[2]+dy)
+    
+    return true
+end
+exports.rlineto = rlineto
+
 --arc
 --arcn
 --arct

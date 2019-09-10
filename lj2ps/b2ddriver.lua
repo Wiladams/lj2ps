@@ -30,9 +30,7 @@ function Blend2DDriver.new(self, ...)
         ClippingPathStack = Stack();
 
         CurrentState = GraphicsState();
-
-        -- path
-        -- path stack
+        StateStack = Stack()
 
     }
     
@@ -47,6 +45,22 @@ function Blend2DDriver.new(self, ...)
     setmetatable(obj, Blend2DDriver_mt)
 
     return obj
+end
+
+function Blend2DDriver.gSave(self)
+    -- clone current graphics state
+    -- store it on the statestack
+    self.StateStack:push(self.CurrentState:clone())
+
+    return true
+end
+
+function Blend2DDriver.gRestore(self)
+    -- pop the graphics stack
+    -- make it current
+    self.CurrentState = self.StateStack:pop()
+
+    return true
 end
 
 --[[
@@ -87,8 +101,25 @@ end
 -- currentcolorspace
 -- setcolor
 -- currentcolor
+
+
 -- setgray
 -- currentgray
+function Blend2DDriver.setGray(self, value)
+    -- need to set stroke color
+    -- and fill color
+    local c = BLRgba32()
+    local gray = math.floor(value*255)
+    c.r = gray 
+    c.g = gray 
+    c.b = gray
+    c.a = 255
+    self.DC:setFillStyle(c);
+    self.DC:setStrokeStyle(c);
+
+    return self.CurrentState:setGray(value)
+end
+
 -- sethsbcolor
 -- currenthsbcolor
 -- setrgbcolor
@@ -124,6 +155,7 @@ end
 --rmoveto
 --lineto
 function Blend2DDriver.lineTo(self, x, y)
+    print("lineTo: ", x, y)
     self.CurrentState.Path:lineTo(x,y)
     self.CurrentState.Position = {x,y}
 
@@ -173,6 +205,11 @@ end
 --[[
     Painting Operators
 ]]
+function Blend2DDriver.fill(self)
+    self.DC:fillPathD(self.CurrentState.Path)
+    return true
+end
+
 function Blend2DDriver.stroke(self)
     self.DC:strokePathD(self.CurrentState.Path);
 

@@ -68,5 +68,9 @@ showpage
 References
 ----------
 
+http://paulbourke.net/dataformats/postscript/
+
 http://logand.com/sw/wps/#sec-2.4
+
+cholla.mmto.org/computers/postscript/tutorial.html
 
