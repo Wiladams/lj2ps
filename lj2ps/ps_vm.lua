@@ -1,8 +1,9 @@
 --[[
     Virtual machine for Postscript
 
-    This object represents that Postscript "machine"
-    It is the organization point for things like the 
+    This object represents the Postscript "machine",
+    which is the execution model for the Postscript interpreter.
+    The machine is the organization point for things like the 
     various stacks, dictionaries, graphics connection
     and whatnot.
 
@@ -52,8 +53,8 @@ local PSVM_mt = {
     end;
 }
 
-function PSVM.new(self, ...)
-    local obj = {
+function PSVM.new(self, obj)
+    obj = obj or {
         OperandStack = Stack();
         ExecutionStack = Stack();
         DictionaryStack = DictionaryStack();
@@ -63,6 +64,15 @@ function PSVM.new(self, ...)
 
         GraphicsState = GraphicsState();
     }
+
+    obj.OperandStack = obj.OperandStack or Stack()
+    obj.ExecutionStack = obj.ExecutionStack or Stack()
+    obj.DictionaryStack = obj.DictionaryStack or DictionaryStack()
+    obj.GraphicsStack = obj.GraphicsStack or Stack()
+    obj.ClippingPathStack = obj.ClippingPathStack or Stack()
+    obj.GraphicsState = obj.GraphicsState or GraphicsState()
+
+
     setmetatable(obj, PSVM_mt)
 
     obj.DictionaryStack:pushDictionary(ops)     -- systemdict, should contain system operators
