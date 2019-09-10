@@ -49,3 +49,17 @@ It will output
 > 3
 
 The vm itself should have facility to execute a string directly without having to create an instance of the interpreter explicitly.  That will come in next revision.
+
+Examples:
+```Postscript
+%!
+%% Example 1
+
+newpath
+100 200 moveto
+200 250 lineto
+100 300 lineto
+2 setlinewidth
+stroke
+showpage
+```
