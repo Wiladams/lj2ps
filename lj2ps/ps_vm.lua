@@ -114,22 +114,6 @@ function PSVM.pushLiteralName(self, value)
 end
 
 
--- Dictionary management
 
-
-PSVM["BEGIN"] = function(self)
-    -- pop the dictionary off the top of the 
-    -- operand stack and make it the current dictionary
-    -- by placing on top of dictionary stack
-    local d = self.OperandStack:pop()
-    self.DictionaryStack:pushDictionary(d)
-
-    return true;
-end
-
-PSVM["END"] = function(self)
-    -- simply pop the dictionary stack
-    self.DictionaryStack:popDictionary()
-end
 
 return PSVM

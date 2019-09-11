@@ -391,7 +391,7 @@ exports.put = put
 local function def(vm)
     local value = vm.OperandStack:pop()
     local key = vm.OperandStack:pop()
-
+print("def: ", key, value)
     return vm.DictionaryStack:def(key, value)
 end
 exports.def = def
@@ -486,6 +486,23 @@ local function aload(vm)
 end
 exports.aload = aload
 
+local function begin(vm)
+    -- pop the dictionary off the top of the 
+    -- operand stack and make it the current dictionary
+    -- by placing on top of dictionary stack
+    local d = vm.OperandStack:pop()
+    vm.DictionaryStack:pushDictionary(d)
+
+    return true;
+end
+exports.begin = begin
+
+-- Dictionary management
+
+exports["end"] = function(vm)
+    -- simply pop the dictionary stack
+    vm.DictionaryStack:popDictionary()
+end
 
 --[[
     [5 4 3]  or

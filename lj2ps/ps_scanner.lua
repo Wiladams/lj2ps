@@ -205,7 +205,7 @@ local function lex_name(self, bs)
 end
 
 lexemeMap[B'/'] = function(self, bs) 
-    print("LITERAL")
+    --print("LITERAL")
     local tok = lex_name(self, bs)
     tok.kind = TokenType.LITERAL_NAME
 
