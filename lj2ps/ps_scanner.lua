@@ -4,6 +4,7 @@ local isdigit = cctype.isdigit
 local isalpha = cctype.isalpha
 local isalnum = cctype.isalnum
 local isgraph = cctype.isgraph
+local isxdigit = cctype.isxdigit
 
 local ps_common = require("lj2ps.ps_common")
 
@@ -106,6 +107,49 @@ lexemeMap[B'('] = function(self, bs)
     return Token{kind = TokenType.STRING, value=value, line=bs:tell()}
 end
 
+-- hexadecimal string
+lexemeMap[B'<'] = function(self, bs) 
+    --print("LEFT_ANGLE")
+    local starting = bs:tell()
+    local startPtr = bs:getPositionPointer();
+
+
+
+    while not bs:isEOF() do
+        local c = bs:peekOctet()
+        if c == B'>' then
+            break;
+        end
+        
+        if isxdigit(c) then
+        elseif not whitespaceChars[c] then
+            error("hexstring, found non-space, non-hex")
+        end
+
+        bs:skip(1);
+    end
+
+    -- get the end of the string
+    local ending = bs:tell()
+    local len = ending - starting
+
+    -- skip over closing delimeter
+    bs:skip(1)
+
+    local str = ffi.string(startPtr, len)
+    --print("hexstring: ", str)
+    -- convert to numbers
+    local tbl = {}
+    for byte in str:gmatch('%x%x') do
+        local bytenum = tonumber(byte,16)
+        local byteval = string.char(bytenum)
+        table.insert(tbl,byteval)
+    end
+    local value = table.concat(tbl)
+    --print("value: ",#tbl, string.byte(tbl[1]), string.byte(tbl[2]), string.byte(tbl[3]))
+    
+    return Token{kind = TokenType.HEXSTRING, value=value, line=bs:tell()}
+end
 
 -- build up a procedure
 -- use the Vm's operandstack itself to build 
@@ -195,6 +239,8 @@ local function lex_number(self, bs)
     return value;
 
 end
+
+
 
 -- scan identifiers
 local function lex_name(self, bs)

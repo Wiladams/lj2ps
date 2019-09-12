@@ -47,7 +47,8 @@ local TokenType = enum {
     "LITERAL_NAME",     -- /name
     "EXECUTABLE_NAME",  -- name
 
-    "STRING",           -- (string), <string>
+    "STRING",           -- (string)
+    "HEXSTRING",        -- <hexstring>
     "NUMBER",           -- int, float, hex
     "BOOLEAN",          -- true, false
     "COMMENT",          -- % to end of line
