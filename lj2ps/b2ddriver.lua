@@ -89,17 +89,41 @@ end
 
 -- setlinecap
 -- currentlinecap
+--[[
+0 - butt
+1 - round
+2 - square
+--]]
+local capMap = {
+    [0] = 0;
+    [1] = 2;
+    [2] = 1;
+}
 function Blend2DDriver.setLineCap(self, value)
+    --print("setLineCap: ", value, capMap[value])
     self.CurrentState.LineCap = value;
-    self.DC:setLineCap(value)
+    self.DC:setStrokeStartCap(capMap[value])
+    self.DC:setStrokeEndCap(capMap[value])
+
     return true
 end
 
 -- setlinejoin
 -- currentlinejoin
+--[[
+    0 miter
+    1 round
+    2 bevel
+]]
+local joinMap = {
+    [0] = 0;
+    [1] = 4;
+    [2] = 3;
+}
 function Blend2DDriver.setLineJoin(self, value)
     self.CurrentState.LineJoin = value
-    self.DC:setLineJoin(value)
+    self.DC:setStrokeJoin(joinMap[value])
+
     return true
 end
 
@@ -158,6 +182,45 @@ end
 -- currentcmykcolor
 
 
+-- Coordinate System and Matrix Operators
+--matrix
+--initmatrix
+--identmatix
+--defaultmatrix
+--currentmatrix
+--setmatrix
+
+--translate
+function Blend2DDriver.translate(self, tx, ty)
+    self.DC:translate(tx, ty)
+    
+    return true
+end
+
+
+--scale
+function Blend2DDriver.scale(self, sx, sy)
+    self.DC:scale(sx, sy)
+
+    return true
+end
+
+
+--rotate
+function Blend2DDriver.rotate(self, angle)
+    self.DC:rotate(math.rad(angle))
+
+    return true
+end
+
+
+--concat
+--concatmatrix
+--tranform
+--dtransform
+--itransform
+--idtransform
+--invertmatrix
 
 --[[
 -- Path construction

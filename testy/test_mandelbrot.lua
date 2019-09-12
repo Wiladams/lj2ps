@@ -22,21 +22,21 @@ local script = [[
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 /fun {
-    4 3 roll 		% y c1 c2 x
-    dup dup		% y c1 c2 x x x
-    mul 		% y c1 c2 x x^2
-    5 4 roll		% c1 c2 x x^2 y
-    dup dup mul		% c1 c2 x x^2 y y^2
+    4 3 roll			% y c1 c2 x
+    dup dup				% y c1 c2 x x x
+    mul 				% y c1 c2 x x^2
+    5 4 roll			% c1 c2 x x^2 y
+    dup dup mul			% c1 c2 x x^2 y y^2
     2 index exch sub	% c1 c2 x x^2 y (x^2-y^2)
     6 1 roll 2 index  	% (x^2-y^2) c1 c2 x x^2 y x
-    2 mul mul		% (x^2-y^2) c1 c2 x x^2 2xy
-    6 1 roll		% 2xy (x^2-y^2) c1 c2 x x^2
+    2 mul mul			% (x^2-y^2) c1 c2 x x^2 2xy
+    6 1 roll			% 2xy (x^2-y^2) c1 c2 x x^2
     pop pop 4 1 roll	% c2 2xy (x^2-y^2) c1
     dup 5 1 roll add	% c1 c2 2xy (x^2-y^2+c1)
-    4 1 roll		% (x^2-y^2+c1) c1 c2 2xy
-    1 index		% (x^2-y^2+c1) c1 c2 2xy c2
-    add	4 3 roll	% c1 c2 (2xy+c2) (x^2-y^2+c1)
-    exch 4 2 roll	% (x^2-y^2+c1) (2xy+c2) c1 c2
+    4 1 roll			% (x^2-y^2+c1) c1 c2 2xy
+    1 index				% (x^2-y^2+c1) c1 c2 2xy c2
+    add	4 3 roll		% c1 c2 (2xy+c2) (x^2-y^2+c1)
+    exch 4 2 roll		% (x^2-y^2+c1) (2xy+c2) c1 c2
 } def
 
 /res 500 def 

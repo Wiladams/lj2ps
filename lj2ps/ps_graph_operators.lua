@@ -34,7 +34,7 @@ exports.gstate = gstate
 -- currentlinewidth
 local function setlinewidth(vm)
     local value = vm.OperandStack:pop()
-    print("setlinewidth: ", value)
+    --print("setlinewidth: ", value)
     vm.Driver:setLineWidth(value)
     return true
 end
@@ -59,6 +59,14 @@ exports.currentlinecap = currentlinecap
 
 -- setlinejoin
 -- currentlinejoin
+local function setlinejoin(vm)
+    local value = vm.OperandStack:pop()
+    vm.Driver:setLineJoin(value)
+
+    return true
+end
+exports.setlinejoin = setlinejoin
+
 -- setmiterlimit
 -- currentmiterlimit
 -- setstrokeadjust
@@ -121,25 +129,52 @@ setflat
 currentflat
 setoverprint
 currentoverprint
+--]]
 
 -- Coordinate System and Matrix Operators
-matrix
-initmatrix
-identmatix
-defaultmatrix
-currentmatrix
-setmatrix
-translate
-scale
-rotate
-concat
-concatmatrix
-tranform
-dtransform
-itransform
-idtransform
-invertmatrix
---]]
+--matrix
+--initmatrix
+--identmatix
+--defaultmatrix
+--currentmatrix
+--setmatrix
+--translate
+local function translate(vm)
+    local ty = vm.OperandStack:pop()
+    local tx = vm.OperandStack:pop()
+    vm.Driver:translate(tx, ty)
+
+    return true
+end
+exports.translate = translate
+
+--scale
+local function scale(vm)
+    local sy = vm.OperandStack:pop()
+    local sx = vm.OperandStack:pop()
+    vm.Driver:scale(sx, sy)
+
+    return true
+end
+exports.scale = scale
+
+--rotate
+local function rotate(vm)
+    local angle = vm.OperandStack:pop()
+    vm.Driver:rotate(angle)
+
+    return true
+end
+exports.rotate = rotate
+
+--concat
+--concatmatrix
+--tranform
+--dtransform
+--itransform
+--idtransform
+--invertmatrix
+
 
 --[[
 -- Path construction

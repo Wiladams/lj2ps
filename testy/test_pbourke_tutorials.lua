@@ -71,6 +71,96 @@ showpage
 ]])
 end
 
+local function test_example6()
+interp:run([[
+/csquare {
+    newpath
+    0 0 moveto
+    0 1 rlineto
+    1 0 rlineto
+    0 -1 rlineto
+    closepath
+    setrgbcolor
+    fill
+} def
+
+20 20 scale
+
+5 5 translate
+1 0 0 csquare
+
+1 0 translate
+0 1 0 csquare
+
+1 0 translate
+0 0 1 csquare
+showpage
+]])
+end
+
+--[[
+    For this example, the paulbourke website has the vertical 
+    order reversed.  The y-coordinates start at the top
+    That, or the enum values for the caps are wrong
+]]
+local function test_example7()
+interp:run([[
+/LINE {
+  newpath
+  0 0 moveto
+  100 0 lineto
+  stroke
+} def
+
+100 200 translate
+10 setlinewidth 0 setlinecap 0 setgray LINE
+1 setlinewidth 1 setgray LINE
+
+0 20 translate
+10 setlinewidth 1 setlinecap 0 setgray LINE
+1 setlinewidth 1 setgray LINE
+
+0 20 translate
+10 setlinewidth 2 setlinecap 0 setgray LINE
+1 setlinewidth 1 setgray LINE
+
+showpage
+]])
+end
+
+-- setlinejoin
+local function test_example8()
+interp:run([[
+/ANGLE {
+    newpath
+    100 0 moveto
+    0 0 lineto
+    100 50 lineto
+    stroke
+} def
+
+10 setlinewidth
+0 setlinejoin
+100 200 translate
+ANGLE
+
+1 setlinejoin
+0 70 translate
+ANGLE
+
+2 setlinejoin
+0 70 translate
+ANGLE
+
+showpage
+]])
+end
+
+
 --test_example1()
 --test_example2()
-test_example5()
+--test_example5()
+--test_example6()
+--test_example7()
+test_example8()
+
