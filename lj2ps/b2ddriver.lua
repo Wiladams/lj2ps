@@ -35,9 +35,21 @@ function Blend2DDriver.new(self, ...)
     }
     
     -- Drawing Context
-    obj.img = BLImage(612, 792)   -- 8.5" x 11" @ 72 pt
+    local w = 612
+    local h = 792
+    obj.img = BLImage(w, h)   -- 8.5" x 11" @ 72 pt
     obj.DC, err = BLContext(obj.img)
     
+    -- set coordinate system for y at the bottom
+    -- we push from userToMeta so that this becomes
+    -- the baseline transform
+    -- Now when we push and pop other matrices, 
+    -- they can apply to user space, and not affect the
+    -- base transform
+    obj.DC:translate(0,h)
+    obj.DC:scale(1,-1)
+    obj.DC:userToMeta()
+
     -- start with full white background
     obj.DC:setFillStyle(BLRgba32(0xFFFFFFFF));
     obj.DC:fillAll()
@@ -173,7 +185,7 @@ end
 --rmoveto
 --lineto
 function Blend2DDriver.lineTo(self, x, y)
-    print("lineTo: ", x, y)
+    --print("lineTo: ", x, y)
     self.CurrentState.Path:lineTo(x,y)
     self.CurrentState.Position = {x,y}
 
