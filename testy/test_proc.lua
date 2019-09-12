@@ -25,5 +25,42 @@ pstack
 ]])
 end
 
+-- Draw three overlapping boxes
+local function test_boxes()
+interp:run([[
+/box {
+    72 0 rlineto
+    0 72 rlineto
+    -72 0 rlineto
+    closepath
+} def
+
+% ---- Begin Program
+% First Box
+newpath
+252 324 moveto
+box
+0 setgray
+fill
+
+% Second Box
+newpath
+270 360 moveto
+box
+0.4 setgray
+fill
+
+% Third Program
+newpath
+288 396 moveto
+box
+0.8 setgray
+fill
+
+showpage
+]])
+end
+
 --test_var()
-test_proc()
+--test_proc()
+test_boxes()
