@@ -26,17 +26,13 @@ end
 exports.clear = clear
 
 local function dup(vm)
-    vm.OperandStack:push(vm.OperandStack:top())
+    vm.OperandStack:dup()
     return true
 end
 exports.dup = dup
 
 local function exch(vm)
-    local a = vm.OperandStack:pop()
-    local b = vm.OperandStack:pop()
-    vm.OperandStack:push(a)
-    vm.OperandStack:push(b)
-
+    vm.OperandStack:exch()
     return true
 end
 exports.exch = exch
@@ -49,6 +45,12 @@ end
 exports.pop = pop
 
 local function roll(vm)
+    local j = vm.OperandStack:pop()
+    local n = vm.OperandStack:pop()
+
+    vm.OperandStack:roll(n,j)
+
+    return true
 end
 
 local function top(self)

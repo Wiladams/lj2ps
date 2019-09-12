@@ -99,6 +99,9 @@ function Stack.length(self)
 end
 
 
+--[[
+    Operand stack operators
+]]
 -- pop all the items off the stack
 function Stack.clear(self)
 	local n = self:length()
@@ -107,6 +110,23 @@ function Stack.clear(self)
 	end
 
 	return self
+end
+
+function Stack.dup(self)
+    if self:length() > 0 then
+        self:push(self:top())
+    end
+
+    return self
+end
+
+-- exch
+-- Same as: 2 1 roll
+function Stack.exch(self)
+    local a = self:pop()
+    local b = self:pop()
+    self:push(a)
+    self:push(b)
 end
 
 function Stack.push(self, value)
@@ -127,6 +147,44 @@ function Stack.pop(self)
 	self.last = last - 1
 
 	return value
+end
+
+-- n is the number of items to consider
+-- j is the number of positions to exchange
+-- this is a brute force implementation which simply
+-- does a single rotation as many times as is needed
+-- a more direct approach would be to calculate the 
+-- new position of each element and use swaps to put
+-- them in place
+function Stack.roll(self,n,j)
+    
+    if j > 0 then   -- roll the stack up (counter clockwise)
+        for i=1,j do
+            local tmp = self:top()
+
+            for i=1,n-1 do
+                local dst = self.last-(i-1)
+                local src = self.last-i
+                self[dst] = self[src]
+            end
+
+            self[self.last-n+1] = tmp
+        end  --  outer loop
+    elseif j < 0 then   -- roll the stack 'down' (clockwise)
+        for i=1,math.abs(j) do
+            local tmp = self[self.last-(n-1)]
+
+            for i=1,n-1 do
+                local dst = self.last-(n-1)+i-1
+                local src = self.last-(n-1)+i
+                self[dst] = self[src]
+            end
+
+            self[self.last] = tmp
+        end  --  outer loop
+    end
+
+    return self
 end
 
 function Stack.top(self)
@@ -151,8 +209,9 @@ function Stack.nth(self, n)
 	
 	return self[idx]
 end
-
--- iterate the stack items non-destructively
+--[[
+    return non-destructive iterator of elements
+]]
 function Stack.items(self)
 	local function gen(param, state)
 		if param.first > state then
