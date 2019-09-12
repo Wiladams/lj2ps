@@ -85,6 +85,17 @@ exports.setgray = setgray
 -- currenthsbcolor
 -- setrgbcolor
 -- currentrgbcolor
+local function setrgbcolor(vm)
+    local b = vm.OperandStack:pop()
+    local g = vm.OperandStack:pop()
+    local r = vm.OperandStack:pop()
+
+    vm.Driver:setRgbColor(r,g,b)
+
+    return true
+end
+exports.setrgbcolor = setrgbcolor
+
 -- setcmykcolor
 -- currentcmykcolor
 

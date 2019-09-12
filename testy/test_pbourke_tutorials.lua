@@ -48,6 +48,29 @@ showpage
 ]])
 end
 
+local function test_example5()
+    interp:run([[
+%!
+%% Example 5
+
+newpath
+100 100 moveto
+0 100 rlineto
+100 0 rlineto
+0 -100 rlineto
+-100 0 rlineto
+closepath
+gsave
+0.5 1 0.5 setrgbcolor
+fill
+grestore
+1 0 0 setrgbcolor
+4 setlinewidth
+stroke
+showpage
+]])
+end
 
 --test_example1()
-test_example2()
+--test_example2()
+test_example5()

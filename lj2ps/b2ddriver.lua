@@ -120,6 +120,24 @@ function Blend2DDriver.setGray(self, value)
     return self.CurrentState:setGray(value)
 end
 
+-- r, g, b in range [0..1]
+function Blend2DDriver.setRgbColor(self, r, g, b)
+    r = math.floor(r*255)
+    g = math.floor(g*255)
+    b = math.floor(b*255)
+
+    local c = BLRgba32()
+    c.r = r
+    c.g = g 
+    c.b = b 
+    c.a = 255
+    self.DC:setFillStyle(c);
+    self.DC:setStrokeStyle(c);
+
+    return self.CurrentState:setColor(c)
+
+end
+
 -- sethsbcolor
 -- currenthsbcolor
 -- setrgbcolor

@@ -152,8 +152,8 @@ function GraphicsState.setColor(self, color)
     return true
 end
 
-function GraphicsState.setGray(self, value)
-    self.Color = {value, value, value, 255}
+function GraphicsState.setGray(self, color)
+    self.Color = color
     return true
 end
 
