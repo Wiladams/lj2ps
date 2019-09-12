@@ -550,12 +550,14 @@ end
 exports.endArray = endArray
 
 local function beginExecutableArray(vm)
-    beginArray(vm)
+    print("--- beginExecutableArray ---")
+    vm.OperandStack:push(ps_common.MARK)
+    return true
 end
 exports.beginExecutableArray = beginExecutableArray
 
 local function endExecutableArray(vm)
-    --endArray(vm)
+    print("--- endExecutableArray ---")
     counttomark(vm)
     array(vm)
     astore(vm)

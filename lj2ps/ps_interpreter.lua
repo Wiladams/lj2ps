@@ -32,6 +32,53 @@ end
 --[[
     Instance Methods
 ]]
+--[[
+    execArray
+
+    Given an executable array, go through and start executing
+    the elements of that array.  
+
+    Currently, putting elementary types on the stack, calling ops
+    and calling procedures will work.
+]]
+function Interpreter.execArray(self, arr)
+    --print("EXEC EXECUTABLE ARRAY: ", #arr)
+    --print("--- stack ---")
+    --self.Vm:pstack()
+    --print("----")
+
+    for i=1,#arr do
+        local value = arr[i]
+        --print(value)
+
+        -- lookup the name
+        -- BUGBUG, need to distinguish between literal things
+        -- and executable things.  We can do it for tables
+        -- but not for strings.  Relying on the dictionary won't
+        -- allow for things like redefining a stored variable
+        local op = self.Vm.DictionaryStack:load(value)
+
+        if op then
+            if type(op) == "function" then
+                -- it's an operator, so call the function
+                op(self.Vm)
+            elseif type(op) == "table" then
+                -- handle a bit of 'recursion'
+                -- if the thing is an executable array
+                -- then call it
+                if op.isExecutable then
+                    self:execArray(value)
+                end
+            else
+                self.Vm.OperandStack:push(value)
+            end
+        else
+            self.Vm.OperandStack:push(value)
+        end
+
+    end
+
+end
 
 -- bs - type can be either 'string' or 'ectetstream' (table)
 function Interpreter.run(self, bs)
@@ -52,12 +99,17 @@ function Interpreter.run(self, bs)
             -- if found, execute procedure
             if op then
                 if type(op) == "function" then
+                    -- it's an operator, so call the function
                     op(self.Vm)
-                else
-                    -- BUGBUG, need to be more subtle and
-                    -- look at whether it is an executable 
-                    -- array or not
-                    self.Vm.OperandStack:push(op)
+                elseif type(op) == "table" then
+                    if op.isExecutable then
+                        -- it's a procedure, so run the procedure
+                        self:execArray(op)
+                    else
+                        -- it's just a normal array, so put it on the stack
+                        print("REGULAR ARRAY")
+                        self.Vm.OperandStack:push(op)
+                    end
                 end
             else
                 print("UNKNOWN EXECUTABLE_NAME: ", token.value)

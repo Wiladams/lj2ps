@@ -393,7 +393,7 @@ exports.put = put
 local function def(vm)
     local value = vm.OperandStack:pop()
     local key = vm.OperandStack:pop()
-print("def: ", key, value)
+--print("def: ", key, value)
     return vm.DictionaryStack:def(key, value)
 end
 exports.def = def
@@ -544,22 +544,6 @@ local function endArray(vm)
 end
 exports.endArray = endArray
 
-local function beginExecutableArray(vm)
-    beginArray(vm)
-end
-exports.beginExecutableArray = beginExecutableArray
-
-local function endExecutableArray(vm)
-    --endArray(vm)
-    counttomark(vm)
-    array(vm)
-    astore(vm)
-    exch(vm)
-    pop(vm)
-    print("endExecutableArray, stack: ")
-    pstack(vm)
-end
-exports.endExecutableArray = endExecutableArray
 
 local function array(vm)
     local size = vm.OperandStack:pop()

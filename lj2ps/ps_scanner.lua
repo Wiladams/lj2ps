@@ -108,26 +108,42 @@ end
 
 
 -- build up a procedure
+-- use the Vm's operandstack itself to build 
+-- the array
+-- BUGBUG - an optimization would be to simply capture tokens
+-- right here until the closing brace.
+-- Doing it this way would avoid going through the 
+-- Postscript VM and operand stack.
 lexemeMap[B'{'] = function(self, bs) 
+    --print("LEFT_CURLY BRACE")
     self.isBuildingProcedure = true
-    -- in this case, an executable Array
-    self.Vm:beginExecutableArray()
+    self.Vm.OperandStack:push(ps_common.MARK)
 end
 
-lexemeMap[B'}'] = function(self, bs) 
-    -- finish building procedure
-    -- gather up array elements until mark
-    -- array astore array
-    self.Vm:push(1000)
-    self.Vm:array()
-    self.Vm:astore()
+--[[
+    local function endExecutableArray(vm)
+    --endArray(vm)
+    counttomark(vm)
+    array(vm)
+    astore(vm)
+    exch(vm)
+    pop(vm)
+    print("endExecutableArray, stack: ")
+    pstack(vm)
+end
+
+]]
+lexemeMap[B'}'] = function(self, bs)
+    --print("RIGHT_CURLY_BRACE")
+
+    self.Vm:endArray()
 
     local arr = self.Vm:pop()
 
     self.isBuildingProcedure = false;
 
     -- and hand an executable array to the scanner
-    arr.__isExecutable = true;
+    arr.isExecutable = true;
     return Token{kind = TokenType.EXECUTABLE_ARRAY, value = arr, line=bs:tell()}
 end
 
@@ -270,6 +286,7 @@ function Scanner.tokens(self)
 
                     if value then
                         if self.isBuildingProcedure then
+                            --print("push number: ", value)
                             self.Vm.OperandStack:push(value)
                         else
                             return bs:tell(), Token({kind = TokenType.NUMBER, value=value, line=bs:tell()})

@@ -74,3 +74,5 @@ http://logand.com/sw/wps/#sec-2.4
 
 cholla.mmto.org/computers/postscript/tutorial.html
 
+https://mostlymaths.net/2008/12/quick-postscript-programming-tutorial.html/
+

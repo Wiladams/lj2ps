@@ -269,7 +269,7 @@ local Array_mt = {
                 idx = tonumber(idx)
             else
                 if idx == "isExecutable" then
-                    rawset(self, __isExecutable, value)
+                    rawset(self, "__isExecutable", value)
                     return nil
                 end
             end
