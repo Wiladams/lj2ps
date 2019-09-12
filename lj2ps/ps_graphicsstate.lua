@@ -76,13 +76,13 @@ function GraphicsState.new(self)
     local obj = {
         -- device independent
         CTM = {};
-        Position = {0,0};
-        Path = BLPath();
-        ClippingPath = {};
+        Position = {0,0};               -- start origin (0,0)
+        Path = BLPath();                -- start with default path
+        ClippingPath = nil;
         ClippingPathStack = Stack();
-        ColorSpace = {};
-        Color = {};
-        Font = {};
+        ColorSpace = nil;
+        Color = BLRgba32(0xFF000000);   -- Start with black fill/stroke
+        Font = nil;
         LineWidth = 1.0;    -- user units
         LineCap = 0;        -- square butt
         LineJoin = 0;       -- miter

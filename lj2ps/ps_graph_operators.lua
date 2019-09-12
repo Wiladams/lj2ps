@@ -1,4 +1,6 @@
 
+local ps_common = require("lj2ps.ps_common")
+
 local GraphicState = require("lj2ps.ps_graphicsstate")
 
 local exports = {}
@@ -319,38 +321,97 @@ exports.showpage = showpage
 
 --[[
 -- font operators
-definefont
-composefont
-undefinefont
-findfont
-scalefont
-makefont
-setfont
-rootfont
-currentfont
-selectfont
-show
-ashow
-widthshow
-awidthshow
-xshow
-xyshow
-yshow
-glyphshow
-stringwidth
-cshow
-kshow
-
-FontDirectory
-GlobalFontDirectory
-StandardEncoding
-ISOLatin1Encoding
-
-findencoding
-setcachedevice
-setcachedevice2
-setcharwidth
 --]]
+
+--definefont
+--composefont
+--undefinefont
+
+--findfont
+local function findfont(vm)
+    local key = vm.OperandStack:pop()
+    -- find font based on family name
+    local face = vm.Driver:findFontFace(key)
+    
+    print("findfont, face: ", key, face)
+
+    -- put that object on the stack
+    if face then
+        -- put the actual BLFaceCore object on the stack
+        vm.OperandStack:push(face)
+    else
+        -- push an error on the stack
+        vm.OperandStack:push(ps_common.NULL)
+    end
+
+    return true
+end
+exports.findfont = findfont
+
+
+--scalefont
+local function scalefont(vm)
+    -- pop size off the stack
+    local size = vm.OperandStack:pop()
+    local face = vm.OperandStack:pop()
+
+    local font = face:createFont(size)
+
+    vm.OperandStack:push(font)
+    vm.Driver:setFont(font)
+
+    return true
+end
+exports.scalefont = scalefont
+
+--makefont
+--setfont
+local function setfont(vm)
+    local font = vm.OperandStack:pop()
+    vm.Driver:setFont(font)
+
+    return true
+end
+exports.setfont = setfont
+
+--rootfont
+--currentfont
+--selectfont
+
+--show
+local function show(vm)
+    local str = vm.OperandStack:pop()
+
+    -- use the current point as location
+    local pos = vm.Driver:getCurrentPosition()
+    print("show: ", pos[1], pos[2], str)
+    vm.Driver:show(pos, str)
+
+    return true
+end
+exports.show = show
+
+--ashow
+--widthshow
+--awidthshow
+--xshow
+--xyshow
+--yshow
+--glyphshow
+--stringwidth
+--cshow
+--kshow
+
+--FontDirectory
+--GlobalFontDirectory
+--StandardEncoding
+--ISOLatin1Encoding
+
+--findencoding
+--setcachedevice
+--setcachedevice2
+--setcharwidth
+
 
 
 return exports

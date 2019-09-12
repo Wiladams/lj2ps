@@ -1,11 +1,15 @@
 
+local b2d = require("blend2d.blend2d")
+
+local FontMonger = require("lj2ps.fontmonger")
 local ps_common = require("lj2ps.ps_common")
 local Stack = ps_common.Stack
+
 
 local ops = require("lj2ps.ps_operators")
 local DictionaryStack = require("lj2ps.ps_dictstack")
 local GraphicsState = require("lj2ps.ps_graphicsstate")
-local b2d = require("blend2d.blend2d")
+
 
 --[[
     This rendering context assumes it is being run within 
@@ -30,8 +34,9 @@ function Blend2DDriver.new(self, ...)
         ClippingPathStack = Stack();
 
         CurrentState = GraphicsState();
-        StateStack = Stack()
+        StateStack = Stack();
 
+        FontMonger = FontMonger:new();
     }
     
     -- Drawing Context
@@ -50,13 +55,43 @@ function Blend2DDriver.new(self, ...)
     obj.DC:scale(1,-1)
     obj.DC:userToMeta()
 
+
     -- start with full white background
     obj.DC:setFillStyle(BLRgba32(0xFFFFFFFF));
     obj.DC:fillAll()
 
+
     setmetatable(obj, Blend2DDriver_mt)
 
+    -- setup various state things
+    obj:applyState(obj.CurrentState)
+
     return obj
+end
+
+function Blend2DDriver.applyState(self, state)
+    self.CurrentState.Color = state.Color;
+    self.DC:setFillStyle(state.Color);
+    self.DC:setStrokeStyle(state.Color);
+
+    self.CurrentState.Font = state.Font;
+end
+
+function Blend2DDriver.findFontFace(self, name)
+    --print("Blend2DDriver.findFontFace, name: ", name)
+    local fontinfo = self.FontMonger:getFace(name, subfamily, true)
+    --print("Blend2DDriver.findFontFace, fontinfo: ", fontinfo)
+
+    if fontinfo then
+        --print("fontinfo.face: ", fontinfo.face)
+        return fontinfo.face 
+    end
+
+    return nil
+end
+
+function Blend2DDriver.setFont(self, font)
+    self.CurrentState.Font = font;
 end
 
 function Blend2DDriver.gSave(self)
@@ -317,5 +352,25 @@ function Blend2DDriver.showPage(self)
     return true
 end
 
+--[[
+    Font Operators
+]]
+function Blend2DDriver.show(self, pos, txt)
+    local dst = BLPoint(pos[1],pos[2])
+    local font = self.CurrentState.Font
+
+    print("Blend2DDriver.show: ", dst, font, txt, #txt)
+
+    -- need to unflip temporarirly
+    self.DC:save()
+    self.DC:translate(pos[1], pos[2])
+    self.DC:scale(1,-1)
+    local success, err = self.DC:fillTextUtf8(BLPoint(), font, txt, #txt)
+    
+    self.DC:restore()
+
+
+    return true
+end
 
 return Blend2DDriver

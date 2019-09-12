@@ -48,6 +48,51 @@ showpage
 ]])
 end
 
+local function test_example3()
+interp:run([[
+%!
+%% Example 3
+
+/Tahoma findfont
+72 scalefont
+setfont
+
+newpath
+100 200 moveto
+(Example 3) show
+
+showpage
+]])
+
+    return true
+end
+
+local function test_example3()
+    interp:run([[
+    %!
+    %% Example 4
+    
+    /Tahoma findfont
+    72 scalefont
+    setfont
+    
+    100 200 translate
+    45 rotate
+    2 1 scale
+    
+    newpath
+    0 0 moveto
+    (Example 4) true charpath
+    0.5 setlinewidth
+    0.4 setgray
+    stroke
+
+    showpage
+]])
+    
+    return true
+end
+
 local function test_example5()
     interp:run([[
 %!
@@ -209,9 +254,10 @@ end
 
 --test_example1()
 --test_example2()
+test_example3()
 --test_example5()
 --test_example6()
 --test_example7()
-test_example8()
+--test_example8()
 --test_example9()
 

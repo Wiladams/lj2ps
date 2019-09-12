@@ -72,8 +72,12 @@ function PSVM.new(self, obj)
     
     setmetatable(obj, PSVM_mt)
 
+    -- setup system dictionary
+    ops["true"] = true
+    ops["false"] = false
     obj.DictionaryStack:pushDictionary(ops)     -- systemdict, should contain system operators
     obj.DictionaryStack:pushDictionary(gops)     -- graphics operators
+    
     obj.DictionaryStack:pushDictionary({})      -- globaldict
     obj.DictionaryStack:pushDictionary({})      -- userdict
 

@@ -261,7 +261,12 @@ local function lex_name(self, bs)
     local len = ending - starting;
     local value = ffi.string(startPtr, len)
 --print("value: ", value)
+
     local tok =  Token{kind = TokenType.EXECUTABLE_NAME, value = value, position=bs:tell()}
+
+    if value == "true" or value == "false" then
+        tok.kind = TokenType.BOOLEAN    
+    end
 
     return tok
 end
