@@ -170,8 +170,7 @@ end
 -- currentdash
 -- setcolorspace
 -- currentcolorspace
--- setcolor
--- currentcolor
+
 
 
 -- setgray
@@ -191,6 +190,8 @@ function Blend2DDriver.setGray(self, value)
     return self.CurrentState:setGray(value)
 end
 
+-- setcolor
+-- currentcolor
 -- r, g, b in range [0..1]
 function Blend2DDriver.setRgbColor(self, r, g, b)
     r = math.floor(r*255)
