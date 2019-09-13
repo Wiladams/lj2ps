@@ -33,6 +33,7 @@ end
     Instance Methods
 ]]
 --[[
+    BUGBUG - This routine should move to VM
     execArray
 
     Given an executable array, go through and start executing

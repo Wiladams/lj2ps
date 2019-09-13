@@ -743,17 +743,6 @@ local function xor(vm)
 end
 exports.xor = xor
 
---[[
-exports["true"] = function(vm)
-    vm.OperandStack:push(true)
-    return true
-end
-
-exports["false"] = function(vm)
-    vm.OperandStack:push(false)
-    return true
-end
---]]
 
 exports["not"] = function(vm)
     local a = vm.OperandStack:pop()
@@ -783,18 +772,31 @@ exports.bitshift = bitshift
 
 --[[
 -- Control Operators
-if
-ifelse
-exec
-for
-repeat
-loop
-forall
-exit
-countexecstack
-execstack
-stop
-]]
+--]]
+-- if
+-- bool proc if
+exports["if"] = function(vm)
+    local proc = vm.OperandStack:pop()
+    local abool = vm.OperandStack:pop()
+
+    if abool then
+        vm:execArray(proc)
+    end
+
+    return true
+end
+
+--ifelse
+--exec
+--for
+--repeat
+--loop
+--forall
+--exit
+--countexecstack
+--execstack
+--stop
+
 
 --[[
 -- Type, Attribute and Conversion Operators
