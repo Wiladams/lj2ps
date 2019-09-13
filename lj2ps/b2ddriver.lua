@@ -333,6 +333,17 @@ end
 --[[
     Painting Operators
 ]]
+-- erasepage
+-- Clear page to all white
+function Blend2DDriver.erasepage(self)
+    self.DC:save()
+    self.DC:setFillStyle(BLRgba32(0xFFFFFFFF));
+    self.DC:fillAll()
+    self.DC:restore()
+
+    return true
+end
+
 function Blend2DDriver.fill(self)
     self.DC:fillPathD(self.CurrentState.Path)
     return true

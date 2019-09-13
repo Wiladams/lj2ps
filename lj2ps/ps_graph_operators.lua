@@ -274,6 +274,12 @@ exports.closepath = closepath
 
 -- Painting Operators
 --erasepage
+local function erasepage(vm)
+    vm.Driver:erasepage()
+    return true
+end
+exports.erasepage = erasepage
+
 --stroke
 local function stroke(vm)
     vm.Driver:stroke()
