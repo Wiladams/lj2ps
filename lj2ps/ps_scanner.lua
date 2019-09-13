@@ -1,10 +1,4 @@
 local ffi = require("ffi")
-local cctype = require("lj2ps.cctype")
-local isdigit = cctype.isdigit
-local isalpha = cctype.isalpha
-local isalnum = cctype.isalnum
-local isgraph = cctype.isgraph
-local isxdigit = cctype.isxdigit
 
 local ps_common = require("lj2ps.ps_common")
 
@@ -28,13 +22,20 @@ end
 
 local escapeChars = createSet('/\\"bfnrtu')
 local delimeterChars = createSet('()<>[]{}/%')
-local whitespaceChars = createSet('\t\n\f\r ')  -- whitespace characters
+local whitespaceChars = createSet('\t\n\f\r ')          -- whitespace characters
+local hexChars = createSet('0123456789abcdefABCDEF')    -- hex digits
+local digitChars = createSet('0123456789')
 
+local function isgraph(c)
+	return c > 0x20 and c < 0x7f
+end
+
+--[[
 local function iswhitespace(c)
     return c == B' ' or c == B'\t' or
         c == B'\n' or c == '\r'
 end
-
+--]]
 local function skipspaces(bs)
     while true do
         if bs:isEOF() then
@@ -121,7 +122,7 @@ lexemeMap[B'<'] = function(self, bs)
             break;
         end
         
-        if isxdigit(c) then
+        if hexChars[c] then
         elseif not whitespaceChars[c] then
             error("hexstring, found non-space, non-hex")
         end
@@ -213,17 +214,17 @@ local function lex_number(self, bs)
     end
 
     -- next, MUST be 0 or [1..9]
-    while(isdigit(bs:peekOctet())) do
+    while digitChars[bs:peekOctet()] do
         bs:skip(1);
     end
 
     -- look for fraction part
     --print("lex_number: ", string.char(bs:peekOctet()), string.char(bs:peekOctet(1)))
     if (bs:peekOctet() == B'.') then
-        if isdigit(bs:peekOctet(1)) then
+        if digitChars[bs:peekOctet(1)] then
             bs:skip(1);
 
-            while isdigit(bs:peekOctet()) do
+            while digitChars[bs:peekOctet()] do
                 bs:skip(1);
             end
         elseif whitespaceChars[bs:peekOctet(1)] then
@@ -331,7 +332,7 @@ function Scanner.tokens(self)
                     -- deal with error if there was one
                 end
             else
-                if isdigit(c) or c == B'-' then
+                if digitChars[c] or c == B'-' then
                     bs:skip(-1)
                     local value = lex_number(self, bs)
 
