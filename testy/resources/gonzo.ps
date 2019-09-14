@@ -1,0 +1,2292 @@
+
+%!
+
+% GONZO20A Guru Gonzo PostScript power tools (Interim release)
+% Includes gonzo justification and layout utilities.
+
+% Copyright c 1990,1996 by Don Lancaster and Synergetics, Box 809,
+% Thatcher Arizona, 5552 (520) 428-4073  don@tinaja.com  support
+% via http://www.tinaja.com  All commercial rights and all electronic
+% media rights **FULLY** reserved. Reposting is expressly forbidden.
+
+% this is a combined pagemaking and illustration package that is 
+% extremely device independent, powerful, and flexible. But not wysiwyg
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%  
+
+
+% name of textfile: powertool.util
+% ....
+
+
+
+% last revision: September 1996  added cr/lf substitution
+
+/ps.util.1 {gutil} def   % substitute old name
+/gutility {gutil} def    % substitute old name
+
+/guru { gonzo begin
+ps.util.1 begin printerror nuisance begin} def  % jumpstart
+
+
+200 dict /gutil exch def gutil begin
+
+% A series of Don Lancaster Gonzo PostScript utilities that include:
+
+%   (1) stepnrepeat   - addressible step and repeat routines
+%   (2) curvetrace    - a powerful curve tracing routine
+%   (3) rubbergrid    - dropout-free gray layout/graphing grids
+%   (4) line drawing  - line drawing utilities
+%   (5) electronics   - electronic schematic icons for rubbergrid
+%   (6) arcjustify    - improved circletext routine with kerning 
+%   (7) fone elim     - eliminates any need for end user fonts
+%   (8) nuisances     - single command replacements for complex stuff
+%   (9) errortrap     - printing error trapping routine
+%  (10) gonzojust     - gonzo justify package
+
+% /////
+
+%   (1) step and repeat
+%
+%   Horizontal and vertical are defined AFTER selecting portrait or 
+%   landscape. Parameters (in points or true/false) are as follows...
+%
+%      #horizrpts - times proc repeats in horizontal direction
+%      #vertrpts  - times proc repeats in vertical direction
+%      hspacing   - horizontal proc repeat spacing
+%      vspacing   - vertical proc repeat spacing
+%      hstart     - horizontal offset of first proc
+%      vstart     - vertical offset of first proc
+%      ticklen    - length of cropping ticks when and if used
+%      useticks?  - show the ticks true/false boolean
+%      landscape  - landscape orientation true/false boolean
+ 
+/stepnrptparams 40 dict def
+stepnrptparams begin
+
+/admitonetick  [5 9 150 60 25 25 10 true true] def      % 45 tickets
+/babybumper    [2 10 270 72 40 30 20 true false] def    % 20 stickers
+/badgeaminit   [2 3 220 220 90 60 250 false false] def  %  6 badges 
+/bigbumpstick  [1 3 792 205 0 0 40 true true] def       %  3 bumperstickers
+/buscard       [3 4 256 143 12 20 20 true true] def     % 12 buscards
+/busenvelope   [1 1 685 305 0 150 20 true true] def  %  1 envelope
+/eightlabel    [2 4 306 198 0 0 50 true false] def      %  1/8 page
+/fulllandpage  [1 1 0 0 20 20 50 false true] def    % entire landscape page
+/fullportpage  [1 1 0 0 20 20 50 false false] def   % entire portrait page
+/lilbumpstick  [1 5 610 150 0 20 60 true false] def     %  5 blumperstickers
+/quadsplit     [2 2 396 306 0 0 50 true true] def       %  1/4 page
+/readerserv    [12 25 25 -15 120 450 0 false false] def %  300 RS numabers
+/shiplabel     [1 4 290 180 160 65 40 true false] def   %  4 custom labels
+/sixlabel      [2 3 306 264 0 0 50 true false] def      %  1/6 page
+/stdplabel     [1 11 254 74 185 5 20 true false] def    %  11 stock dp labels
+/tenlabel      [2 5 305 144 0 45 50 true false] def     %  1/10 page
+/videospline   [1 13 424 60.3 80 34 0 false false] def  % 13 VHS splines
+/3.5disklabel  [2 3 216 226 100 60 20 false false] def  %  6 disk labels 3.5
+/5.25disklabel [1 7 316 110 275 35 0 false false] def   %  7 disk labels 5.25
+
+end
+
+%  /setrepeatparams is a working tool that extracts the selected repeat
+%  values from an entry in stepnrptparams.
+
+/setrepeatparams {cvn stepnrptparams exch get aload pop /landscape1 exch
+def /ticktrue exch def /ticklen exch def /vertstart exch
+def /horstart exch def /incvert exch def /inchoriz exch
+def /numvert exch def /numhoriz exch def} def
+
+%  /onetick optionally draws a single tick or crop mark, while /drawticks
+%  puts one at each corner of each form
+
+/onetick { 0 ticklen 2 div rmoveto 0 ticklen neg rlineto ticklen 2 div
+neg dup neg rmoveto ticklen 0 rlineto 0 setlinewidth stroke} def
+
+/drawticks {gsave ticktrue {0 0 moveto onetick inchoriz 0 moveto
+onetick 0 incvert moveto onetick inchoriz incvert moveto onetick}
+if grestore}def
+
+% default variables used by stepnrpt
+
+/srexitproc {} def     % default short exit - don't do it.
+/numpages 1 def        % default number of sheets to print
+/startnum 0 def        % initial ticket number  
+/runnum startnum def   % running pointer advances one per repeat
+/repeatproc {} def     % artwork to get repeated default
+/customdata false def  % autopaginate custom data?
+
+%  /srfile gets used for custom entries. Each entry can be a string or a
+%  proc, but ONLY ONE ENTRY is allowed per final repeat.
+
+/srfile [(You) (forgot) (to) (define) (srfile!)] def  % default srfile
+
+% /calcpages is an optional routine that decides how many pages are
+% needed ONLY when you are using a custom srfile. This allows early
+% exits when or if you run out of data.
+
+/calcpages {dup cvn stepnrptparams exch get dup 0 get exch 1 get mul
+cvi srfile length exch div ceiling cvi /numpages exch def} def
+
+%  This is the main stepandrepeat tool...
+
+/stepandrepeat { save /srsnap exch def mark exch /quickexit false def
+customdata {calcpages} if setrepeatparams numpages {gsave landscape1
+{-90 rotate -792 0 translate} if horstart vertstart translate gsave
+numhoriz {gsave numvert {drawticks save /rptsave1 exch def repeatproc
+rptsave1 restore /runnum runnum 1 add def 0 incvert translate srexitproc}
+repeat quickexit {exit} if grestore inchoriz 0 translate} repeat quickexit
+{exit} if grestore showpage grestore} repeat quickexit {showpage} if
+cleartomark srsnap restore} def
+
+% To force an early exit when you run out of names or reach a given
+% ticket number, test suitably. Then conditionally make /quickexit
+% true and exit repeatproc.
+
+% Note that an ending showpage is NOT required and should NOT be used.
+
+% //////
+
+% (2) curvetrace
+% . . . . .
+
+% curvetrace - creates a smooth curved path from a data point list.
+%              enter with currentpoint set and absolute array.
+%              0 0 as initial data appends path; any other values
+%              creates new path
+
+/curvetrace {/curvelist exch def tension 0 eq {/tension .000001 def} if
+             curvelist length 3 div 1 sub cvi /#triads exch def
+             /ptr 0 def firstpoint morepoint} def
+
+/tension 2.83 def   % default value for best fit
+/showtick false def % don't show points
+/ticklen 15 def     % length of ticks
+/tickhead ticklen 4 div def
+
+/prvx { curvelist ptr 3 sub get } def
+/curx { curvelist ptr get } def
+/prvy { curvelist ptr 2 sub get } def
+/cury { curvelist ptr 1 add get } def
+/prva { curvelist ptr 1 sub get } def
+/cura { curvelist ptr 2 add get 180 sub} def
+
+/showtic1 { showtick true eq {gsave currentpoint newpath translate cura
+180 add rotate ticklen neg 2 div 0 moveto ticklen 0 rlineto tickhead neg
+dup rlineto  tickhead dup rlineto tickhead dup neg exch rlineto 0
+setlinewidth stroke 0 ticklen neg 2 div moveto 0 ticklen rlineto stroke 
+grestore} if }def
+
+/firstpoint { curx cury 2 copy abs exch abs add 0 eq {pop pop currentpoint
+curvelist exch 1 exch put curvelist exch 0 exch put}{moveto} ifelse
+showtic1 /ptr ptr 3 add def}def
+
+/morepoint {#triads { curx prvx sub dup mul cury prvy sub dup mul add sqrt
+tension div /zdist exch def prva cos zdist mul prvx add prva sin zdist mul
+prvy add cura cos zdist mul curx add cura sin zdist mul cury add curx cury
+curveto showtic1 /ptr ptr 3 add def} repeat} def
+
+/showtick false def
+
+% //////////////////////////////////
+
+%  (3) Finegray Rubbergrid
+% . . . . . .
+
+% Creates fine gray grids without dropouts or rattiness.
+% The code shown is device specific for 300 dpi printers.
+
+% To create a grid, use  -hpos- -vpos- -gridsize- setgrid
+% Until restored, all further images will be "locked" to
+% the grid and will expand and contract with it. Note that
+% optimum linewidths and font sizes will usually be much
+% less than 1.0 after locking.
+
+% To show a grid, use -#hlines- -#vlines- showgrid.
+
+% The seegrid command displays the grid when true.
+% The fat5 command emphasizes every fifth line when true.
+% the fatter10 command emphasizes every tenth line when true.
+
+% Here are the graphing grays. For most users most of the time,
+% select ggray4 or ggray5 as your default ggray.
+
+/ggray1   {/ggray{0 setgray} def}def
+
+/ggray2   {/ggray {150 0 {eq {1}{0} ifelse} setscreen
+           0.500 setgray} def} def
+
+/ggray3   {/ggray {100 0 {eq {1}{0} ifelse} setscreen
+           0.667 setgray} def} def
+
+/ggray4   {/ggray { 75 0 {eq {1}{0} ifelse} setscreen
+           0.750 setgray} def} def
+
+/ggray5   {/ggray { 60 0 {eq {1}{0} ifelse} setscreen
+            0.800 setgray} def} def
+
+/ggray6   {/ggray { 50 0 {eq {1}{0} ifelse} setscreen
+            0.833 setgray} def} def
+
+/ggray10  {/ggray { 30 0 {eq {1}{0} ifelse} setscreen
+            0.900 setgray} def} def
+
+/ggray15  {/ggray { 20 0 {eq {1}{0} ifelse} setscreen
+            0.933 setgray} def} def
+
+/ggray20  {/ggray { 15 0 {eq {1}{0} ifelse} setscreen
+            0.950 setgray} def} def
+
+/ggray30  {/ggray { 10 0 {eq {1}{0} ifelse} setscreen
+            0.966 setgray} def} def
+
+% pick a default working ggray
+
+/ggray {60 0 {eq {1}{0} ifelse} setscreen 0.800 setgray} def
+
+% keep grids unlocked except for Golly Gee Mr. Science!! uses requiring not
+% less than two exclamation points... 
+
+/lockggrid false def  % Don't unless really needed
+
+% gridlockcheck checks to see if an exact pixel lock is wanted for single
+% dot crossings. See note above. 51.7 = QMS PS820. Your machine may also
+% need "exception tuning" if it does not give you perfect one dot crossings.
+ 
+/gridlockcheck {lockggrid
+
+{gsave ggray currentscreen grestore pop pop /ggraynum exch def
+
+
+ggraynum 150 eq {3 1 roll transform 2 div round 2 mul exch
+                2 div round 2 mul version (51.7) eq {0.5 add } if 
+                exch itransform 3 -1 roll 0 exch dtransform 2 div cvi
+                2 mul idtransform exch pop} if
+
+ggraynum 100 eq {3 1 roll transform 3 div round 3 mul exch
+                3 div round 3 mul version (51.7) eq {0.5 add } if 
+                exch itransform 3 -1 roll 0 exch dtransform 3 div cvi
+                3 mul idtransform exch pop} if
+
+ggraynum 75 eq {3 1 roll transform 4 div round 4 mul exch
+                4 div round 4 mul version (51.7) eq {0.5 add } if 
+                exch itransform 3 -1 roll 0 exch dtransform 4 div cvi
+                4 mul idtransform exch pop} if
+
+ggraynum 60 eq {3 1 roll transform 5 div round 5 mul exch
+                5 div round 5 mul version (51.7) eq {0.5 add } if 
+                exch itransform 3 -1 roll 0 exch dtransform 5 div cvi
+                5 mul idtransform exch pop} if
+
+ggraynum 50 eq {3 1 roll transform 6 div round 6 mul exch
+                6 div round 6 mul version (51.7) eq {0.5 add } if 
+                exch itransform 3 -1 roll 0 exch dtransform 6 div cvi
+                6 mul idtransform exch pop} if
+
+ggraynum 30 eq {3 1 roll transform 10 div round 10 mul exch
+                10 div round 10 mul version (51.7) eq {0.5 add } if 
+                exch itransform 3 -1 roll 0 exch dtransform 10 div cvi
+                10 mul idtransform exch pop} if
+
+ggraynum 20 eq {3 1 roll transform 15 div round 15 mul exch
+                15 div round 15 mul version (51.7) eq {0.5 add } if 
+                exch itransform 3 -1 roll 0 exch dtransform 15 div cvi
+                15 mul idtransform exch pop} if
+
+ggraynum 15 eq {3 1 roll transform 20 div round 20 mul exch
+                20 div round 20 mul version (51.7) eq {0.5 add } if 
+                exch itransform 3 -1 roll 0 exch dtransform 20 div cvi
+                20 mul idtransform exch pop} if
+
+}if} def
+
+
+/setgrid { gsave gridlockcheck /blocksize exch def translate
+           blocksize dup scale setfontssmaller} def
+
+
+
+/thingridlines {0} def  % can alter if you must magnify; but best 0
+
+/showgrid {gsave ggray /vblocks exch def /hblocks exch def
+
+thingridlines setlinewidth
+
+
+[{0 0 moveto 0 vblocks rlineto stroke} 1
+hblocks 1 add] xrpt
+
+[{0 0 moveto hblocks 0 rlineto stroke} 1
+vblocks 1 add] yrpt
+
+fatterborder { gsave newpath 0 0.96 blocksize div 
+dtransform round idtransform 
+setlinewidth pop 2 setlinecap
+0 0 moveto hblocks 0 rlineto 0 vblocks rlineto 
+hblocks neg 0 rlineto closepath stroke grestore} if
+
+fat5 { gsave newpath 0 0.48 blocksize div dtransform round
+idtransform setlinewidth pop mark {5 0 moveto 0 vblocks rlineto
+stroke} 5 hblocks 5 div cvi] xrpt mark {0 5 moveto hblocks 0 rlineto
+stroke} 5 vblocks 5 div cvi] yrpt grestore} if
+
+fatter10 { gsave newpath 0 0.96 blocksize div 
+dtransform round idtransform setlinewidth pop 
+mark {10 0 moveto 0 vblocks rlineto stroke} 10
+hblocks 10 div cvi] xrpt mark {0 10 moveto hblocks 0 rlineto stroke} 10
+vblocks 10 div cvi] yrpt grestore} if
+
+grestore} def
+
+
+% Here are our rubbergrid controls...
+
+   /lockrubbergrid false def  % Don't unless really needed
+
+   /fat5 true def             % 3 pixels wide every fifth line?
+   /fatter10 true def         % 5 pixels wide every tenth line?
+   /fatterborder true def     % 5 pixel gray outline border?
+
+% rubbergrid utilities - drawing aides for the rubbergrid
+
+% line drawing stuff
+
+/line1  {.06 dup setlinewidth 5 mul /erase exch def} def
+/line2  {.12 dup setlinewidth 5 mul /erase exch def} def
+/line3  {.18 dup setlinewidth 5 mul /erase exch def} def
+
+% deferred font setting  TEMPORARY - will be moved to gonzo
+
+/setfontssmaller {
+
+/yinc 1 def /pmrun 0 def /charstretch 0.033 def /spacestretch 0.05 def
+/ybot -9999 def  /lastlinestretch lastlinestretch 0.1 mul def
+
+/font1 /Helvetica [0.7 0 0 0.8 0 0] gonzofont
+/font2 /Helvetica-Bold [0.7 0 0 0.8 0 0] gonzofont
+/font3 /Symbol [0.7 0 0 0.8 0 0] gonzofont
+/font4 /Helvetica [0.5 0 0 0.4 0 0] gonzofont
+/font5 /Helvetica-Bold [1.6 0 0  1 0 0] gonzofont
+
+} def
+
+%  An improved graygrid routine that works BOTH at 300 and 600 DPI... 
+
+/ggray {60 0 {sub abs 0.21 lt {1}{0} ifelse} setscreen 
+gsave 0 60 0 {pop pop 1 add 1} setscreen grestore dup 25 eq
+{pop 0.8}{100 eq {0.72}{0.765} ifelse} ifelse setgray} def
+
+
+% //////////////////////////////////
+
+%  (4) Line drawing utilities
+% . . . . . .
+
+/mt {moveto} def
+/rm {rmoveto} def
+/rl {rlineto} def
+
+% these draw individual lines 
+
+/x {rlineto currentpoint stroke moveto} def
+/r {0 x} def
+/r+ {dup x} def
+/r- {dup neg x} def
+
+/l {neg 0 x} def
+/l+ {neg dup neg x} def
+/l- {neg dup x} def
+
+/u {0 exch x} def
+/d {0 exch neg x} def
+
+% these create a path
+
+/pl {neg 0 rl} def
+/pl+ {neg dup neg rl} def
+/pl- {neg dup rl} def
+
+/pr { 0 rl} def
+/pr+ {dup rl} def
+/pr- {dup neg rl} def
+
+/pu {0 exch rl} def
+/pd {0 exch neg rl} def
+
+% these draw a line and "erase" across the background
+
+/ux {0 exch 2 copy gsave 1 setgray erase setlinewidth
+currentpoint .18 add moveto 0 setlinecap x grestore x } def
+
+/dx {neg 0 exch 2 copy gsave 1 setgray erase setlinewidth
+currentpoint .18 sub moveto 0 setlinecap x grestore x } def
+    
+/rx {0 2 copy gsave 1 setgray erase setlinewidth
+currentpoint exch .18 add exch moveto 0 setlinecap x grestore x } def
+
+/lx {neg 0 2 copy gsave 1 setgray erase setlinewidth
+currentpoint exch .18 sub exch moveto 0 setlinecap x grestore x } def
+
+/dot { currentpoint newpath 0.150 0 360 arc fill } def
+/mdot { m dot} def
+
+
+% some small default circles
+
+/circ1 {gsave currentpoint newpath 0.20 0 360 arc whitefill
+line1 stroke grestore} def %for circle
+
+/circ2 {gsave currentpoint newpath 0.200 0 360 arc whitefill
+line2 stroke grestore} def %for complement
+
+/circ3 {gsave currentpoint newpath  0.8 0 360 arc line2 stroke
+ grestore} def %for led
+
+/circ4 {gsave currentpoint newpath  0.33 0 360 arc whitefill
+line2 stroke grestore} def  %for test point and switches
+
+% repeats [ proc distance trips] xrpt
+
+/xrpt{gsave aload pop /trips exch def /dist exch def /rproc exch def
+trips { gsave rproc grestore dist 0 translate } repeat grestore} def
+
+/yrpt{gsave aload pop /trips exch def /dist exch def /rproc exch def
+trips { gsave rproc grestore 0 dist translate } repeat grestore} def
+
+% some arrows . . .
+
+/uarrow {-.15 -.8 rlineto .3 0 rlineto closepath fill} def
+/darrow {gsave 180 rotate 0 0.8 rmoveto uarrow grestore} def
+/rarrow {gsave -90 rotate uarrow grestore} def
+/larrow { gsave 90 rotate uarrow grestore} def
+
+/whitefill { gsave 1 setgray fill grestore} def
+
+% //////////////////////////////////
+
+
+
+
+
+%  (5) electronics
+% . . . . . .
+
+% This section is being revised and improved
+
+% Opaque icons for use with the rubbergrid system.
+% This is older code that still needs rework.
+% In general, use -xpos- -ypos- iconname
+
+/electronics 200 dict def electronics begin
+          
+/micro {font3 (m) show font1} def
+/ohms {font3 (W) show font1} def
+
+/tstpt {mt circ4 currentpoint 0.15 0 360 arc fill} def
+
+/xinv {0 1.25 rlineto 2.5 -1.25 rlineto -2.5 -1.25 rlineto
+      closepath whitefill line2 stroke} def
+
+ 
+/rinverter{ mt gsave xinv grestore 2.7 0 rm circ2} def
+/linverter {mt gsave 180 rotate xinv grestore -2.7 0 rm circ2 } def
+
+
+/res {-0.8 0 rmoveto gsave 1.6 0 rlineto line1 1 setgray stroke 
+grestore  0.10 0.3 rlineto 3 { .20 -.6 rlineto .20 .6 rlineto}
+repeat .20 -.6 rlineto 0.10 0.3 rlineto stroke} def
+/hresistor {mt res} def
+/vresistor { mt gsave 90 rotate res grestore} def
+
+/lpot { gsave translate gsave 0 -0.10 translate 0 0 vresistor grestore
+        -.2 0 moveto rarrow grestore} def
+
+/cap {currentpoint 2 copy gsave 1 setgray 0 -.20 rlineto stroke grestore
+moveto -.6 0 rmoveto 1.2 0 rlineto stroke 
+moveto 0 -1.2 rmoveto currentpoint newpath 1 55 125 arc stroke } def
+/vcap { mt cap } def
+/hcap { mt gsave 90 rotate cap grestore} def
+/uvcap { mt gsave 180 rotate cap grestore} def
+
+/schmitt {mt 0.3 0.3 rmoveto line1 -0.4 0 rlineto 0 -0.6
+rlineto -.2 0 rlineto 0.4 0 rlineto 0 .6 rlineto stroke} def
+
+/dpdt {gsave translate 0 0 mt gsave newpath 0 0 mt 1 setgray
+0.3 setlinewidth 0 2 rlineto 1.5 0 rlineto 0 -2 rlineto stroke
+grestore circ2 0 1 rm circ2 0 1 rm circ2 1.5 0 rm circ2 0 -1 rm
+circ2 0 -1 rm circ2  .2 setlinewidth 1 setlinecap -.35 .05 rm 1 u
+-.55 0 rm 1 d grestore} def
+
+/spdt { gsave translate 0 0 mt gsave newpath 0 0 mt 1 setgray 0.3
+setlinewidth 0 2 rlineto 1.5 0 rlineto 0 -2 rlineto stroke grestore
+circ2 0 1 rm circ2 0 1 rm circ2 0.2 setlinewidth 1 setlinecap .45
+0.05 mt 1 u grestore} def
+
+/diode{ currentpoint newpath moveto -.3 0 rmoveto gsave .7 -.4 rlineto 0 .8
+rlineto closepath fill grestore -0.05 -.4 rmoveto 0 .8 rlineto
+0.1 setlinewidth stroke } def 
+
+/udiode { gsave moveto -90 rotate  diode grestore } def
+/ddiode { gsave moveto 90 rotate diode grestore} def
+
+/led {  mt currentpoint circ3 ddiode } def
+
+/negpulse { moveto -.35 .5 rmoveto .2 0 rlineto 0 -.5 rlineto
+          0.3 0 rlineto 0 .5 rlineto .2 0 rlineto stroke} def 
+
+/pospulse { gsave 180 rotate negpulse grestore} def
+
+/5vdc {gsave 0 .8 rlineto currentpoint stroke .2 add
+ 0.2 0 360 arc gsave 0.1 setlinewidth stroke grestore } def
+
+/xend { gsave -.1 0 rmoveto 0 .3 rlineto .2 0 rlineto 0 -.6 rlineto -.2 0
+rlineto closepath gsave white fill grestore line1 stroke grestore} def
+
+/hxtal { mt gsave -.33 0 rmoveto 0.66 0 rlineto 0.3 setlinewidth 1 setgray stroke  
+  grestore gsave currentpoint exch -.35 add exch moveto
+xend  0.7 0 rmoveto xend grestore
+gsave 0 0.5  rmoveto 0 -1 rlineto 
+0.2 setlinewidth stroke grestore} def
+
+/sensor { gsave 2 copy vresistor .1 setlinewidth .5 sub
+          newpath .6 0 -180 arcn
+          0 1.1 rlineto currentpoint stroke exch 0.6 add exch .6
+          180 0 arcn 0 -1.1 rlineto stroke grestore} def
+
+/ground { -.4 0 rmoveto 0.8 0 rlineto -.65 -0.2 rmoveto .5 0 rlineto
+ -0.35 -0.2 rmoveto .2 0 rlineto
+stroke} def
+
+/uground {gsave 180 rotate ground grestore} def
+/lground {gsave -90 rotate ground grestore} def
+/rground {gsave 90 rotate ground grestore} def
+
+/dground {rground} def  % old bug saved for old files
+
+/edgecon { gsave line2 mt 0 1.7 rm currentpoint newpath 0.3 180 0
+arcn 1.7 d 0.6 l 1.7 u closepath gsave 1 setgray fill grestore stroke
+ grestore} def
+
+/whitefill { gsave 1 setgray fill grestore} def
+
+/cell { gsave translate newpath 1 setgray  0 setlinecap
+0 .3 mt 2 setlinewidth 0 -.6 rlineto  stroke 0 setgray -.6
+0.2 mt 0.3 setlinewidth 1.2 r stroke 
+-1 -.3 mt line2 2 r
+grestore} def 
+
+
+% //// DIPDRAW PROC /////
+       
+% dipdraw - draws a dip integrated circuit.  (old code to be improved)
+
+% Enter with currentpoint set to pin 1 and scale
+% set so that 1.0 = distance between pins.  Then
+% do a numpins-(name)-(hipins)-(lopins) dipdraw
+% Pin callouts preceeded by / will be complemented.
+    
+% main dipdraw entry:
+
+/dipdraw { save /dipsnap exch def /hipins exch def /lopins
+exch def /chipname exch def /numpins exch def
+
+mark 0 0 0 0 0 0 0 0 0 0 0 0 % temp patch
+
+/howlong
+{numpins 2 div cvi 1 add} def /howhigh {4 numpins 36 ge
+{1 add} if} def /stub {howhigh 1.4 sub 2 div} def
+
+% internal service subs start here:
+
+/pinproc {numpins 2 div cvi{newpath 0 cpos 0.37 0 360 arc
+gsave 1 setgray fill grestore 0.067 setlinewidth stroke 
+pin# 5 string cvs dup stringwidth pop 2 div neg cpos
+0.2 sub moveto show 1 0 translate /pin# pin# dir add
+def} repeat } def
+
+/stretchprint { dup stringwidth pop 2 div neg exch length
+1 sub stretch mul 2 div sub  0 moveto callout (/)
+anchorsearch true eq {currentpoint exch stretch add exch
+moveto pop dup /callout exch def stringwidth
+pop callout length 1 sub stretch mul add /barwide exch def
+0.033 setlinewidth gsave currentpoint 0.55 add moveto
+barwide 0 rlineto stroke grestore} if stretch 0 callout
+ashow pop} def
+
+/pincallouts{0 vpos translate {workstring ( ) search true
+eq {/callout exch def pop /workstring exch def callout
+stretchprint 1 0 translate}{dup /callout exch def
+stretchprint exit } ifelse}loop} def
+
+% actual dipdraw process starts here:
+
+% ........ the outline:
+
+gsave 1 setlinecap 1 setlinejoin
+currentpoint translate newpath -.55 .45 0.15 0 360
+arc fill newpath -1 howhigh 2 div 0.7 -90 90  arc 0 stub
+rlineto howlong 0 rlineto 0 howhigh neg rlineto howlong
+neg 0 rlineto closepath 0.36 setlinewidth stroke
+
+% ........ pin circles and numbers:
+
+/Helvetica-Bold findfont [0.4 0 0 0.55 0 0] makefont
+setfont gsave /pin# 1 def  /dir 1 def /cpos 0 def pinproc
+grestore gsave /pin# numpins def  /dir -1 def /cpos howhigh
+def pinproc grestore
+
+
+%  pin callouts:
+
+/Helvetica findfont [0.35 0 0 0.6 0 0] makefont setfont
+/stretch 0.033 def gsave /workstring hipins def /vpos
+0.6 def  pincallouts grestore gsave /workstring
+lopins def /vpos howhigh 1.05 sub def pincallouts
+grestore
+
+%  device number:
+
+/Helvetica-Bold findfont [1.4 0 0 1 0 0] makefont setfont
+/stretch 0.05 def gsave numpins 2 div 1 sub 2 div howhigh
+2 div 0.33 sub translate chipname dup /callout exch def
+stretchprint grestore
+
+%  end cleanup:
+
+grestore grestore
+cleartomark dipsnap restore} def
+
+% inductor stuff
+
+/lloop { .5 1  -.5 1 0 0 rcurveto} def
+/ltie {.2 -.30 .4 -.30 .6 0 rcurveto} def
+/lexit{.2 -.40 .4 0 .6 0 rcurveto .4 r } def
+/lentry {.4 r .2 0  .4 -.4  .6 0 rcurveto} def
+
+/hcoil { /numloops exch def lentry
+numloops 1 sub {lloop ltie} repeat lloop lexit} def
+
+/winding {gsave /numloops exch def translate 0 0 moveto 0 rotate
+numloops hcoil grestore} def
+
+/vwinding {gsave /numloops exch def translate 0 0 moveto 90 rotate
+numloops hcoil grestore} def
+
+/vrwinding {gsave /numloops exch def translate 90 rotate 1 -1 scale
+0 0 moveto numloops hcoil grestore} def
+
+/phonejack {gsave translate 1 setlinecap 0 0 mt 0.15 u 3.85 r 0.3 d
+3.85 l 3.95 0.15 mt 0.15 r 0.1 -0.15 rlineto  -0.1 -0.15 rlineto 0.15
+l 0.3 u 0.4 setlinewidth 2 setlinecap 0 0 mt 2 r 1 setlinecap 0 0.2 mt
+2 r 0 -0.2 mt 2 r grestore } def
+
+/lilphonejack{ gsave translate 0.8 dup scale 0 0 phonejack grestore} def
+
+/varistor {gsave translate gsave -.5 0 mt 0.6 setlinewidth 1 setgray
+1 r grestore line2 0.6 0.3 mt 1.2 l 0.6 -0.3 mt 1.2 l -0.45 -0.25 mt
+0.3 0.50 rlineto 0.3 -0.50 rlineto 0.3 0.50 rlineto
+stroke grestore} def
+
+/piezo { gsave translate 0 0 mt gsave 5 dup scale circ1 grestore 
+gsave 2.5 dup scale circ1 grestore grestore } def
+
+/pctab {gsave 1 setlinecap 1 setlinejoin line2 1 u 2 r
+1 d 2 l grestore} def
+
+/npn {gsave newpath exch 0.2 sub exch translate -.1 0 1.2
+0 360 arc gsave 1 setgray fill grestore line2 stroke -0.2
+0 translate line3 -.3 -.7 moveto 1.4 u line1 -.3 0 mt 1.3
+l -.2 .4 mt 0.6 0.4 rlineto 1.2 u newpath -.2 -0.4 mt 0.6
+-0.4 rlineto 1.2 d newpath 0.4 -0.75 mt -.2 .3 rlineto
+-.2 -.3 rlineto closepath fill grestore} def
+
+/npnl {gsave translate -1 1 scale 0 0 npn grestore} def
+
+/pnp {gsave newpath exch 0.2 sub exch translate -.1 0 1.2
+0 360 arc gsave 1 setgray fill grestore line2 stroke -0.2
+0 translate line3 -.3 -.7 moveto 1.4 u line1 -.3 0 mt 1.3
+l -.2 .4 mt 0.6 0.4 rlineto 1.2 u newpath -.2 -0.4 mt 0.6
+-0.4 rlineto 1.2 d newpath -.2 .4 mt .3 .4 rlineto .1 -.3
+rlineto closepath fill grestore} def
+
+/pnpl {gsave translate -1 1 scale 0 0 pnp grestore} def
+
+end % -- the electronics dictionary
+
+% //////////////////////////
+
+% (6) arc justify - sets kerned circular text. 
+% . . . . .
+
+% To use, -xpos -ypos- -radius- (message) karcjustify
+% A positive radius creates upward curving arcs.
+% A negative radius creates downward curving arcs.
+% Use -arckern- to stretch or compress global message.
+% Use -customkern- to adjust individual characters
+
+/arckern 1 def           % global extra stretch + = stretch
+/customkern -1 def       % custom extra squash  - = squash
+/customkernchar (~) def  % marker character to request custom kern
+/str (X) def
+
+/karcjustify {gsave /msg exch def /radius exch def translate msg
+stringwidth pop 0 msg {customkernchar 0 get eq {1 add} if} forall
+dup 0 gt {customkernchar stringwidth pop neg customkern add mul} if
+add msg length 1 sub arckern mul add 2 div  dup 57.29578 mul radius
+div msg {str exch 0 exch put gsave rotate 0 radius moveto str dup dup 
+dup customkernchar eq not {stringwidth pop  2 div 57.29578 mul radius
+div neg rotate show stringwidth pop}{customkern 2 div 57.29578 mul
+radius div neg rotate pop pop pop customkern} ifelse arckern add
+sub dup 57.29578 mul radius div grestore} forall pop pop grestore} def
+
+% ////////////////
+
+% (7) font eliminator
+
+% Font elimination completely eliminates the need for any strange
+% end user, editor, or typesetter run time fonts by substituting paths.
+
+% When *elimininatefonts* is called, all unbound *awidthshow*
+% commands will return font paths to host for recording and later
+% substitution. Level II only for capture. Two way comm essential.
+
+
+/eliminatefonts{
+
+%  shorter routine names used by font path procs...
+
+/mt {moveto} def
+/li {lineto} def      % Note that lt and ln are spoken for!
+/ct {curveto} def
+/cp {closepath} def 
+
+%  optional time delay for host recording...
+
+/stall1 {50 {37 sin pop} repeat} def  % optional stall
+
+%  host reporting utility procs (currently 2 decimal place .XX accuracy)
+
+/prnum {index 100 mul round cvi 100 div (         ) cvs print ( ) print} def
+/prproc {0 index (     ) cvs print (\r) print flush stall1} def
+
+%  this awidthshow diversion does all the actual work, returning all
+%  widthshown font paths to the host for recording...
+
+/awidthshow {/str exch def /cys exch def /cxs
+exch def /sch exch def /sys exch def /sxs exch def
+str {currentpoint moveto (X) dup dup 4 -1 roll 0 exch put false
+charpath mark {/mt cvx  2 prnum 1 prnum prproc} {/li cvx  2 prnum
+1 prnum prproc} {/ct cvx  6 prnum 5 prnum 4 prnum 3 prnum 2 prnum
+1 prnum prproc} {/cp cvx dup prproc} pathforall ] cvx exec currentpoint
+fill moveto 0 get sch eq {currentpoint exch sxs add exch sys add moveto} if
+currentpoint exch cxs add exch cys add newpath moveto} forall
+} def} def
+
+
+% //////////////////////////////////
+
+%  (6) nuisance solvers
+% . . . . . .
+
+%  nuisance - a dictionary of commonly used PostScript sequences
+% . . . . . . . . . . 
+
+
+%  nuisancedict is usually persistently downloaded as a subdictionary.
+%  it is activated when needed by -- nuisance begin -- .
+
+
+200 dict /nuisance exch def nuisance begin
+
+/acos {2 copy dup mul exch dup mul sub sqrt exch pop
+exch atan} def % arccosine use  - xside hypotenuse acos -
+
+/asin {2 copy dup mul exch dup mul sub sqrt exch pop
+atan} def % arcsine use  - yside hypotenuse asin -
+
+/backwards { 612 0 translate  -1 1 scale} def  % print backwards
+
+/bestgray {106 45 {dup mul exch dup mul add 1.0 exch sub} setscreen} def
+
+/black {0 setgray} def % draw in black
+
+/blackflash {0 0 moveto 1000 0 rlineto 0 1000 rlineto -1000 0 rlineto
+closepath fill showpage } def % black pre-page for highest print quality
+
+/boxdraw {bl bb bw bh brad roundbox blw setlinewidth stroke grestore
+} def  % for old version compatibility
+
+
+
+% ///////////////////OLD ROUTINES NOT NOW IN USE/////
+
+%  (2) boxdraw
+% . . . . .
+
+% This section is obsolete and will be phased out. use roundbox for
+% all new work
+
+%  Draws various fancy boxes and sidebars, with or without
+%  rounded corners and double hairlines
+
+/boxpath {/strt br bl add 2 div def 
+
+    /br {bl bw add} def         % attempted repair
+    /bc {bl bw 2 div add} def
+    /bb {bt bh sub } def
+
+
+newpath strt bt moveto br
+bt br bb brad arcto br bb bl bb brad arcto bl bb bl bt brad arcto
+bl bt strt bt brad arcto closepath blw setlinewidth} def
+
+/br {bl bw add} def
+/bc {bl bw 2 div add} def
+/bb {bt bh sub} def
+
+
+%/boxdraw {boxpath stroke} def /boxfill {boxpath gsave fill grestore} def
+
+/hairdraw {gsave /hd exch def 0.5 setlinewidth bl bt hd sub moveto
+bw 0 rlineto 0 2.5 rmoveto bw neg 0 rlineto stroke} def
+
+/grabbox {/blw exch def /brad exch def /bh exch def /bt exch def /bw
+exch def /bl exch def} def
+
+/quickboxdraw {grabbox boxdraw} def
+/quickboxpath {grabbox boxpath} def
+/quickboxfill {grabbox boxfill} def
+
+% defaults
+
+/bl 200 def /bw 175 def /bt 500 def /bh 240 def /brad 7 def
+/blw 2 def /hd 25 def
+
+% use examples:  boxdraw hd hairdraw -- draws the box and a title 
+%                boxpath -- generates only the path without stroking 
+%                gsave bl 10 add bb 15 add translate -- locks stuff
+%                   to inside of box; grestore exits
+%                200 175 500 240 7 2 quickboxdraw -- draws without
+%                   predefinition, but can't track inside height.        
+
+
+
+
+/copies { /#copies exch def} def  % as in -- 6 copies --
+
+/feetfirst {180 rotate -612 -792 translate} def % eject print feet first
+
+/flushends {0 setlinecap} def        % flush path ends
+
+/flushjoins {0 setlinejoin} def      % flush path joins
+
+% GEniejul converts GEnie dates to Julian dates Enter with a six
+% digit integer; leave with date string on stack
+
+/GEniejul { (      ) cvs dup 2 2 getinterval cvi 1 sub [(January )
+(February )(March )(April )(May )(June )(July )(August )(September )
+(October )(November )(December )] exch get 1 index 4 2 getinterval
+(, ) mergestr mergestr exch 0 2 getinterval cvi dup 50 gt {1900}
+{2000}ifelse add (      )cvs mergestr} def
+
+% hrule does a fixed horizontal rule, given xstart ystart xend linewidth
+
+/hrule {gsave newpath setlinewidth 1 index 4 2 roll moveto lineto 
+stroke grestore} def
+
+% vrule does a fixed vertical rule, given xstart ystart yend linewidth
+
+/vrule {gsave newpath setlinewidth 2 index 4 2 roll moveto exch lineto 
+stroke grestore} def
+
+/inch {72 mul} def % inches    
+
+/indiagray {135 35 {dup mul exch dup mul add 1.0 exch sub} setscreen} def
+
+/landscape {-90 rotate -792 0 translate} def  % pick landscape printing
+
+/lightgray {0.99 setgray} def
+
+/listfonts {FontDirectory {pop == flush 200 {37 sin pop}
+repeat } forall} def % send installed font list to host
+
+/longjob {statusdict /waittimeout 180 put} def % lengthen job timeout
+
+/manual {statusdict /manualfeed true put} def % start manual feed
+
+% mergestr merges the two top stack strings into one top stack string
+
+/mergestr {2 copy length exch length add string dup dup 4 3 roll
+4 index length exch putinterval 3 1 roll exch 0 exch putinterval} def
+
+/negative {{1 sub abs} settransfer} def % negative printing
+
+/outline {false charpath} def % finds character outline path
+
+
+/pi 3.1415926 def % you wanted rhubarb instead?
+
+/pixel {72 mul 300 div} def % 300 dpi only
+
+/positive {{} settransfer} def % restore positive printing
+
+/printfonts {/Helvetica findfont [10 0 0 10 0 0] makefont
+setfont /xpos 150 def /ypos 600 def /yinc 12 def xpos 20
+sub ypos 20 add moveto (CURRENTLY INSTALLED FONTS:) show
+FontDirectory {pop 100 string cvs xpos ypos moveto (/) show
+show /ypos ypos 12 sub def} forall showpage} def % on paper
+
+/putridgray {53 45 {dup mul exch dup mul add 1.0 exch sub} setscreen} def
+
+/random {rand 65536 div 32768 div mul cvi} def  % as in -- 6 random --
+
+/report {== flush 100 {37 sin pop} repeat } def % top of stack to host
+
+/reprogray {85 35 {dup mul exch dup mul add 1.0 exch sub} setscreen} def
+
+% Romnum routine converts any number from 0-99 into its equivalent Roman
+% numerals. Enter with stack integer. Leave with stack Roman string.
+
+/Romnum { dup 10 div cvi [() (x) (xx) (xxx) (xl) (l) (lx) (lxx) 
+(lxxx) (xc)] exch get (    ) cvs exch 10 mod cvi [() (i)(ii)(iii)
+(iv)(v)(vi)(vii)(viii)(ix)] exch get mergestr} def
+
+/roundends {1 setlinecap} def        % rounded path ends
+/roundjoins {1 setlinejoin} def      % rounded path joins
+
+% This creates a rounded path from -radius- [x1 y1  x2 y2 ... xn yn]
+% roundpath. Does NOT round path ends. Use roundbox for boxes
+
+/roundpath {/rpdata exch def /rprad exch def rpdata length 1 sub
+cvi /rppoints exch def rpdata 0 get rpdata 1 get moveto 2 2  rppoints
+2 sub {/rpvalue exch def 0 1 3 {rpdata exch rpvalue add get } for
+rprad arcto pop pop pop pop} for rpdata rppoints 1 sub get rpdata
+rppoints get lineto} def
+
+% roundbox draws a box path with rounded corners and locks you to the
+%  lower lefthand box corner using this format ...
+%      -xpos- -ypos- -xwidth- -yheight- -cornerrad- roundbox
+
+/roundbox {gsave /rad exch def /bt exch def /br exch def /bb exch
+def /bl exch def bl bb translate rad mark br 2 div 0 0 0 0 bt br
+bt br 0 br 2 div 0] roundpath /bc br bl sub 2 div def} def
+
+/snoop {1183615869 internaldict begin} def  % activates superexec
+
+/stockends {2 setlinecap} def        % default path ends
+
+/stockjoins {2 setlinejoin} def      % default path joins
+
+/stall {{37 sin pop} repeat} def % delay as in  -- 1500 stall --  
+
+% timing utilities. use stopwatchon and stopwatchoff for simple
+% one shot timing. For multiple time totals, use resettimer
+% starttimer stoptimer ... starttimer stoptimer reporttimer
+
+
+/stopwatchoff {stoptimer reporttimer} def % for single shots
+
+/stopwatchon {resettimer starttimer} def % for single shots
+
+/reporttimer {mytime 1000 div (\rElapsed time: ) print 20
+string cvs print ( seconds.\r) print flush} def % to host
+
+/resettimer {/mytime 0 def} def % reset timer
+
+/starttimer {usertime /mytimenow exch def} def % add to time so far 
+
+/stoptimer {usertime mytimenow sub /mytime exch mytime
+add def} def % for multiple timing intervals
+
+% stringdown, et al repeats a string of one or more characters to form
+% a fancy border. use  -#repeats- -spacing- (char) stringdown, etc.
+
+/stringdown {/char exch def /vcharsp exch def {gsave char
+show currentpoint vcharsp sub moveto} repeat} def
+
+/stringleft {/char exch def /hcharsp exch def {gsave char
+show currentpoint exch hcharsp sub exch moveto} repeat} def
+
+/stringright {/char exch def /hcharsp exch def {gsave char
+show currentpoint exch hcharsp add exch moveto} repeat} def
+
+/stringup {/char exch def /vcharsp exch def {gsave char
+show currentpoint vcharsp add moveto} repeat} def
+
+% superstroke and superinsidestroke take a predefined path and a
+% top-of-stack array of [width1 gray1  width2 gray2 .... widthn grayn]
+% and do multiple strokes for wires, fancy borders, or braiding.
+% Note that the FIRST array value pair has to be the WIDEST, etc.
+% Use superstroke for wires; superinsidestroke for borders. 
+
+/superstroke { save /sssnap exch def /sscmd exch def mark 0 2 sscmd length
+2 div cvi 1 sub 2 mul {/aposn exch def gsave sscmd aposn get
+setlinewidth sscmd aposn 1 add get setgray stroke grestore} for cleartomark
+sssnap restore newpath} def
+
+/superinsidestroke {save clip /sssnap exch def /sscmd exch def mark 0 2
+sscmd length 2 div cvi 1 sub 2 mul {/aposn exch def gsave sscmd aposn
+get 2 mul setlinewidth sscmd aposn 1 add get setgray stroke grestore}
+for cleartomark sssnap restore newpath} def
+
+/tan {dup sin exch cos dup 0 eq {pop 0.000001} if div} def % tangent
+
+/tray  {statusdict /manualfeed false put} def % stop manual feed
+
+/white {1 setgray} def   % print in white
+
+/width {stringwidth pop} def % finds x width of string
+
+
+end  % the nuisance dictionary
+
+
+% //////////////////////////
+
+% (9) switchable error trapper
+% . . . . .
+
+% Creates a printing error trapper that dumps the stack and prints what you
+% have accomplished so far. While EXTREMELY useful, this is definitely NOT
+% to be a replacement for true two-way comm. Adapted from EHANDLER.PS.
+
+% Use gutil begin printerror at the start of your file for time-of-error
+% printout and stack dump
+
+/printerror {/$brkpage 64 dict def $brkpage begin /prnt {dup 
+type/stringtype ne{=string cvs}if dup length 6 mul /tx exch def/ty
+10 def currentpoint/toy exch def/tox exch def 1 setgray newpath
+tox toy 2 sub moveto 0 ty rlineto tx 0 rlineto 0 ty neg rlineto
+closepath fill tox toy moveto 0 setgray show}bind def /nl{currentpoint
+exch pop lmargin exch moveto 0 -10 rmoveto}def /=={/cp 0 def
+typeprint nl}def /typeprint{dup type dup currentdict exch known
+{exec}{unknowntype}ifelse}readonly def /lmargin 72 def /rmargin 72 def
+/tprint {dup length cp add rmargin gt{nl/cp 0 def}if dup length cp
+add/cp exch def prnt}readonly def /cvsprint{=string cvs tprint( )tprint
+}readonly def/unknowntype{exch pop cvlit(??)tprint cvsprint}readonly
+def/integertype{cvsprint}readonly def/realtype{cvsprint}readonly def
+/booleantype{cvsprint}readonly def/operatortype{(//)tprint cvsprint}
+readonly def/marktype{pop(-mark- )tprint}readonly def/dicttype{pop
+(-dictionary- )tprint}readonly def/nulltype{pop(-null- )tprint}readonly
+def/filetype{pop(-filestream- )tprint}readonly def/savetype{pop
+(-savelevel- )tprint}readonly def/fonttype{pop(-fontid- )tprint}readonly
+def/nametype{dup xcheck not{(/)tprint}if cvsprint}readonly def/stringtype
+{dup rcheck{(\()tprint tprint(\))tprint}{pop(-string- )tprint}ifelse
+}readonly def/arraytype{dup rcheck{dup xcheck{({)tprint{typeprint}
+forall(})tprint}{([)tprint{typeprint}forall(])tprint}ifelse}{pop
+(-array- )tprint}ifelse}readonly def/packedarraytype{dup rcheck{dup
+xcheck{({)tprint{typeprint}forall(})tprint}{([)tprint{typeprint}
+forall(])tprint}ifelse}{pop(-packedarray- )tprint}ifelse}readonly def
+/courier/Courier findfont 10 scalefont def/OLDhandleerror errordict
+/handleerror get def end errordict /handleerror {systemdict begin $error
+begin $brkpage begin newerror{/newerror false store $error /errorname
+get (ioerror) ne $error /command get (exec) ne or {vmstatus pop pop 0
+ne{grestoreall}if initgraphics courier setfont lmargin 720 moveto
+(ERROR: )prnt errorname prnt nl(OFFENDING COMMAND: )prnt/command
+load prnt $error/ostack known {nl nl(STACK:)prnt nl nl $error/ostack
+get aload length{==}repeat}if systemdict/showpage get exec /newerror
+true store/OLDhandleerror load end end end exec}{end end end} ifelse}
+{end end end}ifelse} dup 0 systemdict put dup 4 $brkpage put bind
+readonly put} def
+
+% //////////////////////////////////
+
+end % the entire utility dictionary, except for gonzo justification
+
+
+
+%%%%%%%/////////
+
+
+
+
+% 	X E
+% 	Z
+
+
+% (11) Gonzo justification tools ...
+
+        
+% ************************************************************************
+% ************************************************************************
+
+% GONZO 13 JUSTIFICATION POWER TOOL
+
+% ************************************************************************
+%
+% SUMMARY: Exceptionally high quality, fully device independent, and ultra
+%          fast (but non-WYSIWYG) Don Lancaster text justification routines.
+%
+%          Includes auto drop caps, hanging punctuation, global kerning,
+%          supertabs, callout modes, overstrikes, menu justify, scads more.
+%
+%          Gonzo can also dump plain old ASCII text and can custom
+%          emulate nearly anything.
+%
+%          Gonzo is fully open, unlocked, documented, and reprogrammable.
+%
+%          Reprinted from Don Lancaster's POSTSCRIPT BEGINNER STUFF.
+%
+%          Copyright c 1991 by Don Lancaster. All rights fully reserved.
+%          Free help line and additional info: (602) 428-4073.
+%
+% ************************************************************************
+      
+% Name of textfile: GONZO15A.PTL
+% Source:           SYNERGETICS
+% Author:           Don Lancaster
+% Desc:             Superb quality text justification
+% Date:             September 15, 1992
+% Release:          15a (GEnie alpha "B" release)
+% Approx length:    46K
+% Status:           Copyright 1990 by Don Lancaster and Synergetics.
+%                   3860 West First Street, Thatcher, AZ. (602) 428-4073.
+%                   All commercial rights reserved. Personal use permitted
+%                   so long as this status message stays present and intact.
+%                   Gonzo POSTSCRIPT BEGINNER STUFF package $39.50 VISA/MC.
+%
+% Keywords:         PostScript, gonzo, justification, compile, text
+
+% Approximate NTX run time:   2.50 seconds per 1000 chars (uncompiled)
+%                             0.33 seconds per 1000 chars (compiled)
+
+% 	X E     Activate XON/XOFF if necessary.
+% 	Z       Values are shown for Apple Super Serial Card
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% WARNING: This is the GEnie "alpha" release. The compile, supertab,
+%          and menu justify features are not yet all there.
+%
+%          KEEP A WRITTEN USER LOG AND EXPECT PROBLEMS.
+%
+%          Report problems, corrections, questions, etc, to PSRT.
+%
+%          For further documentation, see PSRT #220 GONZO13A.TXT.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% GONZOJST.PTL is a series of utilities that allow ultra high quality
+% text justification from within a word processor or editor environment.
+% The routines are fast, fully programmable, use minimum length files, and
+% use little VM. They are purposely not WYSIWYG for maximum flexibility,
+% speed, and total device independence. Advanced features include auto drop
+% caps, hanging punctuation, individual kerning, lastline stretch, simple
+% textdumper, callout modes, macros, overstrike, and much more. The routines 
+% be used WITHOUT control characters. They can emulate nearly anything.
+% An internal compiler is included for extremely fast rerun times.
+
+% Full use instructions appear in the companion file GONZO13A.TXT.
+% Also see the internal notes and comments below.
+
+% Status:           Copyright 1990 by Don Lancaster and Synergetics.
+%                   3860 West First Street, Thatcher, AZ. (602) 428-4073.
+%                   All commercial rights reserved. Personal use permitted
+%                   so long as this status message stays present and intact.
+%                   Gonzo POSTSCRIPT BEGINNER STUFF package $39.50 VISA/MC.
+
+
+% create a working dictionary that remains closed until needed ...
+
+1000 dict /gonzo exch def gonzo begin
+
+% USER ALTERABLE COMMANDS - all must remain here as defaults
+% =======================
+
+/altescapechar 124 def     % alternate "escape" key for commands (|)
+/cstretch  0.2 def         % minimum character kerning
+/colcheck { } def          % link to page or column maker
+/dropcount 3 def           % lines indented for drop cap
+/dropindent 40 def         % width reserved for drop cap
+/escapechar 27 def         % "escape" key for commands - can be printable
+/gonzocompile false def    % compile to host or disk flag
+/gonzojust true def        % allow gonzo commands? (false for text dumper)
+/hangflag true def         % hang center, right, or fill punctuation?  
+/hangfract 0.6 def         % amount that hung punctuation hangs
+/hostcompdelay 80 def      % optional compiling character report delay
+/justifylastline false def % fill justify last paragraph line?
+/justx (justL) def         % running justification mode
+/kern 1 def                % default individual kern amount
+/lastlinestretch 0.12 def  % stretch on last line of fill just paragraph
+/oktoadvance true def      % don't advance to next line if false
+/oktoprint true def        % print suppression flag 
+/overstrikechar (\320) def % overstrike character
+/overstrikeht 5.5 def      % vertical shift of overstrike character
+/pm 10 def                 % normal paragraph indent
+/rslashchar 92 def         % "reverse slash" key -alterable-
+/rslashok true def         % allow reverse slash processing?
+/stringmode false def      % string or currentfile source?
+/spacecharratio 6 def      % fill justify ratio of space to char stretch
+/sstretch -0.3 def         % minimum space kerning - may be negative
+/tabs [50 100 150 200] def % default tab list
+/txtwide 350 def           % width of column
+/txtwideadj {} def         % custom proc for keystoning, etc.
+/xpos 70 def               % horizontal start of text
+/yinc 11 def               % line spacing
+/ypara 0 def               % additional v space at paragraph end 
+/ypos 400 def              % vertical start of text
+/ytop 720 def              % default top reference for template
+/ybot -9999 def            % default bottom reference for template
+
+% GONZOFONT BUILDER
+% =================
+
+% gonzo fontnames MUST be of form /fontx, where x is any printable ASCII 
+% character that has also been "qualified" to be a font in the command list.
+% A later gonzofont command rapidly sets the font and defines the space width.
+
+% gonzofont accepts either 
+%   /font1 /Helvetica 12 gonzofont         -- or else -- 
+%   /font1 /Helvetica [wide climb slant high xshift yshift] gonzofont  
+
+/gonzofont {dup type cvlit /arraytype eq {exch findfont exch makefont}
+{exch findfont exch scalefont} ifelse setfont mark /spacewidth ( ) 
+stringwidth pop /cstretch cvx /add cvx /sstretch cvx /add cvx /def
+cvx currentfont dup backcdict exch (F?) dup  1 14 index (xxxxx) cvs
+4 get put put /setfont cvx ] cvx def} def
+
+50 dict /backcdict exch def  % used "backwards" during compiling to get
+                             % fontname given the "made" font dictionary
+
+% USER FONTS - all should remain here as defaults ...
+% ==========
+
+/font0 /Helvetica-Bold [36 0 0 40 0 0] gonzofont     % for drop caps
+
+/font1 /Helvetica 9 gonzofont                        % regular text
+/font2 /Helvetica-BoldOblique 9 gonzofont            % reg italic
+/font3 /Helvetica-Bold 9 gonzofont                   % reg bold
+
+/font4 /Helvetica 8 gonzofont                        % reg all caps or #s 
+/font5 /Helvetica-BoldOblique 8 gonzofont            % italic all caps or #s
+/font6 /Helvetica-Bold 8 gonzofont                   % bold all caps or #s
+
+/font7 /Helvetica-Bold [6 0 0 6 0 -2] gonzofont      % subscript
+/font8 /Helvetica-Bold [6 0 0 6 0 4] gonzofont       % superscript 
+
+/font9 /Helvetica-Bold [9 0 0 9 0 4] gonzofont       % lowered bold title 
+
+/font- /ZapfDingbats 9 gonzofont                     % Dingbats 
+/font= /Symbol 9 gonzofont                           % Greek & Math
+
+/font: /Courier 9 gonzofont                          % Spare
+/font; /Courier 10 gonzofont                         % Spare
+/font+ /Courier 11 gonzofont                         % Spare
+
+
+font1  % set default
+
+% SYSTEM CONSTANTS - not normally altered
+% ================
+
+/maxcharsbeforecr 6000 def  % maximum number of characters before a cr
+/linestring1 maxcharsbeforecr string def % main for normal use
+/linestring2 maxcharsbeforecr string def % aux to allow headers
+/linestring linestring1 def              % default
+/templatestartup {} def                  % default
+
+/maxprocsperline 200 def    % maximum number of procs per print line
+/printlist maxprocsperline array def
+
+/dropflag false def         % dropcap flag
+
+%    /exitcheck {} def           % default exit (overwritten by dump template)
+
+      
+
+/firstchar 0 def            % first character pointer
+/numspaces 0 def            % initial number of spaces in line  
+/pmrun 0 def                % running paragraph margin
+/templatestartup {} def     % link to template initializer
+
+% stack conventions during gonzojustify: all procs must restore
+% top stack value = next available position in linestring
+% next stack value = next available position in printlist
+
+% COMMAND LIST:
+% ============
+
+% This command list determines the action of each [esc] selection.
+% First, create the list . . .
+
+/commands 256 array def 0 1 255 {commands exch {} put} for
+
+% You can have as many fonts as you like, trading off room for other
+% commands. Note that font1 is ASCII 49 and so on.
+% Here are the current font character definitions. . .
+
+commands (0) 0 get {font0} put
+commands (1) 0 get {font1} put
+commands (2) 0 get {font2} put
+commands (3) 0 get {font3} put
+commands (4) 0 get {font4} put
+commands (5) 0 get {font5} put
+commands (6) 0 get {font6} put
+commands (7) 0 get {font7} put
+commands (8) 0 get {font8} put
+commands (9) 0 get {font9} put
+commands (:) 0 get {font:} put
+commands (;) 0 get {font;} put
+commands (=) 0 get {font=} put
+commands (-) 0 get {font-} put
+commands (+) 0 get {font+} put
+
+% justification modes for command list
+
+commands (C) 0 get {justx 4 (C) 0 get put} put  % center justify
+commands (F) 0 get {justx 4 (F) 0 get put} put  % fill justify
+commands (L) 0 get {justx 4 (L) 0 get put} put  % left justify
+commands (R) 0 get {justx 4 (R) 0 get put} put  % right justify 
+commands (P) 0 get {justx 4 (P) 0 get put} put  % programmable just #1
+commands (Q) 0 get {justx 4 (Q) 0 get put} put  % programmable just #2
+
+% macros for command list 
+
+commands (a) 0 get {amacro} put
+commands (b) 0 get {bmacro} put
+commands (c) 0 get {cmacro} put
+commands (d) 0 get {dmacro} put
+commands (e) 0 get {emacro} put
+commands (f) 0 get {fmacro} put
+commands (U) 0 get {Umacro} put
+commands (V) 0 get {Vmacro} put
+commands (W) 0 get {Wmacro} put
+commands (X) 0 get {Xmacro} put
+commands (Y) 0 get {Ymacro} put
+commands (Z) 0 get {Zmacro} put
+
+% service routines for command list
+
+commands (h) 0 get {halflinefeedup} put   % half linefeed up 
+commands (i) 0 get {initialcap} put       % initial dropcap   
+commands (j) 0 get {kern+} put            % positive kerning
+commands (k) 0 get {kern-} put            % negative kerning
+commands (l) 0 get {linefeeddown} put     % linefeed down
+commands (n) 0 get {nobreak} put          % conditional ff
+commands (o) 0 get {overstrike} put       % overstrike char 
+commands (p) 0 get {/pmrun pm def} put    % normal para indent
+commands (s) 0 get {/ypos -10000 def} put % showpage formfeed template link
+commands (t) 0 get {plainoldtab} put      % simple tabbing
+commands (x) 0 get {exitproc} put         % exit to PostScript 
+commands (y) 0 get {fulllinefeedup} put   % negative linefeed
+commands (z) 0 get {/pmrun 0 def} put     % zero para indent
+
+
+% EXPANDED SERVICE ROUTINE DEFINITIONS
+% ====================================
+
+/halflinefeedup {/ypos ypos yinc 2 div add def} def
+
+/fulllinefeedup {/ypos ypos yinc add def} def
+
+/linefeeddown {/ypos ypos yinc sub def} def
+
+/nobreak {ypos yinc 6 mul sub ybot lt {/ypos ybot def} if} def
+
+/initialcap {/ypos ypos yinc add ypara add def /pmrun 0
+def /indentcount dropcount def /dropflag true def} def
+
+% a simple tab routine for lj only. Tabs relative to xpos
+
+/plainoldtab 
+
+{tabs tabcount get 
+
+dup /roomleft exch txtwide exch sub def
+mark exch xpos add ypos /moveto cvx] cvx
+printlist exch 3 index exch put
+exch 1 add exch
+tabcount tabs length 1 sub lt  {/tabcount tabcount 1 add def} if
+} def
+
+/kern- {mark kern neg 0 /rmoveto cvx ] cvx printlist exch 3 index
+exch put /roomleft roomleft kern add def exch 1 add exch} bind def
+
+/kern+ {mark kern 0 /rmoveto cvx ] cvx printlist exch 3 index
+exch put /roomleft roomleft kern sub def exch 1 add exch} bind def
+
+/overstrike {printlist 2 index 1 sub get aload pop pop pop add 1 sub
+linestring exch 1 getinterval stringwidth pop dup overstrikechar 
+stringwidth pop sub 2 div sub mark exch /gsave cvx exch /cfix
+cvx /add cvx /neg cvx overstrikeht /rmoveto cvx overstrikechar /rshowchars
+cvx /grestore cvx] cvx printlist exch 3 index exch put exch 1 add exch} def
+
+% stringmacro lets you do a series of gonzolink commands with a single
+% macro keystroke. For instance, /amacro {(z3c) stringmacro} def picks
+% a centered font3 with no paragraph for an embedded [esc]-a.
+
+/stringmacro { {commands exch get exec} forall} def
+
+% This lets you use [esc]-g instead of startgonzo
+
+(\033g) cvn {startgonzo} def
+(|g) cvn {startgonzo} def
+
+% CHARACTER COMMAND ARRAY (fake CASE)
+% =======================
+
+% create an executable array based on character to decide who does what
+
+/chararray 256 array def   % decides action of each key
+
+0 1 255 { /posn exch def chararray posn
+[posn /chartolinestring cvx ] cvx put} for       % default 1:1 mapping
+
+chararray 
+dup  0 {} put
+dup 10 {newlineproc} put                         % lf newline
+dup 13 {newlineproc.wcrlf} put                         % cr as newline
+dup 32 {spaceproc} put                           % spaceproc
+
+dup escapechar {gonzojust {escproc}{exitcheck} ifelse} put    % escape key
+dup altescapechar {gonzojust {escproc}{exitcheck} ifelse} put % altesc key
+dup rslashchar {rslashok {rslashproc}
+{rslashchar chartolinestring} ifelse} put       % rslash key - can alter
+pop 
+
+%%%%% CR-LF ATTEMPTED PATCH %%%%%
+
+% This ignores a cr if the next character is a linefeed
+/newlineproc.wcrlf{
+
+stringmode {getstringchar}{currentfile read} ifelse  % read next w end check
+{        % true-false on valid read
+dup 10 eq {pop newlineproc } % if cr-lf
+           {/crlfhold exch store   newlineproc  
+            chararray crlfhold get exec } % if not
+ifelse
+}  % if a character followed cr
+{newlineproc exit} ifelse  % if cr was the last character
+} def
+
+%%%%%%%%%%%%%%
+
+% Charproc simply piles up characters into linestring.
+% Other commands decide how these characters are to be used.
+
+/chartolinestring {linestring exch 2 index exch put 1 add } bind def
+
+
+% exitproc responds to [esc]-x and gets you out of gonzo after printing.
+
+/exitproc {exit} def
+
+% rslashproc takes care of the reverse slashes which are not active when
+% not reading strings.  Modified to reject cr-lf pairs
+
+% create an action array 
+
+/slashlist 256 array def 0 1 255 {slashlist exch {} put} for
+
+slashlist 
+dup 48 {0 octalnum} put % process as octal number
+dup 49 {1 octalnum} put
+dup 50 {2 octalnum} put
+dup 51 {3 octalnum} put
+dup 40 {40 chartolinestring} put % left paren
+dup 41 {41 chartolinestring} put % right paren
+dup 92 {92 chartolinestring} put % reverse slash 
+
+dup 114 {chararray 13 get exec} put      % carriage return 
+dup 108 {chararray 10 get exec} put      % linefeed
+dup 116 {slashtab} put                   % tab someday
+dup 98 {slashbs} put                     % backspace someday
+dup 102 {slashformfeed} put              % formfeed someday
+pop
+
+/slashtab {nogot} def  
+/slashbs {nogot} def
+/slashformfeed {nogot} def
+/nogot {reverse_slash _feature_not_yet_defined} def
+
+/rslashproc { % modified to reject cr-lf pairs
+stringmode {getstringchar}{currentfile read} ifelse
+{dup 13 eq { pop      
+  stringmode {getstringchar}{currentfile read} ifelse  % char after cr
+   {dup 10 ne {   chararray exch get exec}{pop} ifelse 
+ }
+{pop exit} ifelse    % if out of chars
+  }   % if cr
+{slashlist exch get exec}  % if not cr
+ifelse  } 
+{exit} ifelse
+}  % if no more chars
+bind def
+
+% octalnum handles all reverse slashes followed by three octal nuambers.
+
+/octalproc {
+
+stringmode {getstringchar}{currentfile read} ifelse
+{ 48 sub dup dup 0 lt exch 7 gt or 
+{pop 0} if} {exit} ifelse} def
+
+/octalnum {8 mul octalproc add 8 mul octalproc add chararray exch get
+exec} bind def
+
+% TXTWIDE FITTING SERVICE UTILITIES
+% ================================= 
+
+% longstringadj currently lets an all print string longer than
+% txtwide invade the margin, rather than forcing a break or error
+
+/longstringadj {dup txtwide ge {pop txtwide 10 div} if} bind def
+
+% doeswordfit attempts to add the length of the current trial word to
+% the present line. It returns a positive value if room remains and
+% a negative one if not.
+
+/doeswordfit {linestring wordstart dup 3 index exch sub
+getinterval dup dup length 0 gt 
+ {stringwidth pop exch length cstretch mul add /wordroom exch def} 
+ {pop pop /wordroom 0 def} ifelse
+roomleft wordroom longstringadj sub dup 0 gt} bind def
+
+% tryspacefit attempts to add a space to the end of the existing word.
+% if it fits, word is accepted. If not, line ends.
+
+/tryspacefit {roomleft spacewidth sub dup 0 ge
+{/roomleft exch def dup 1 add dup /oktohere exch def /wordstart
+exch def 1 add /numspaces numspaces 1 add def} 
+      
+{pop /wordroom 0 def /oktohere oktohere 1 add def
+substart dup oktohere sub neg wordtoplist exch /plistlength exch def
+0 exch endtheline /wordstart oktohere def startnextline} ifelse } bind def
+
+% wordtoplist adds word to printlist if positive length. Start out with
+% -plistpoint- -charpoint- -startchar- -length- on stack. End with 
+% new word grouip in print array and -newplist- -charpoint-.
+
+/wordtoplist {dup 0 gt {mark 3 1 roll dup numchars add /numchars exch def
+currentfont /showchars cvx ] cvx printlist exch 3 index exch put exch 1
+add exch } {pop pop} ifelse } bind def
+
+% *** ESCPROC ***
+
+% On an escape (or substitute escape) command character ...
+
+%           yes ------ previous word fit? -------- no
+%      word to printlist                       closeline
+%      do escape command                word to next line always
+%                                         word to new printlist
+%                                           do escape command
+
+/escproc { doeswordfit
+{/roomleft exch def dup dup /oktohere exch def /wordstart exch def
+substart dup oktohere sub neg wordtoplist}
+{pop substart dup oktohere sub neg wordtoplist exch /plistlength exch
+def 0 exch endtheline startnextline dup dup /oktohere exch def /wordstart
+exch def substart dup oktohere sub neg wordtoplist /firstchar -1 def 
+} ifelse /substart
+oktohere def commands 
+
+stringmode {getstringchar}{currentfile read} ifelse {get exec}{exit} ifelse
+
+} bind def
+
+% *** NEWLINEPROC ***
+
+% On as carriage return or newline character ...
+
+%           yes ------ previous word fit? -------- no
+%      update word                              closeline
+%         closeline                       word to next line always
+%                                               closeline
+
+/newlineproc {doeswordfit 
+
+{/roomleft exch def dup dup /oktohere exch def /wordstart exch
+def substart dup oktohere sub neg wordtoplist /lastparline true
+def exch /plistlength exch def 0 exch endtheline /wordroom 0
+def /firstparline true def startnextline}  % word did fit on line
+
+{pop substart dup oktohere sub neg wordtoplist exch /plistlength
+exch def 0 exch endtheline startnextline dup dup /oktohere exch
+def /wordstart exch def substart dup oktohere sub neg
+wordtoplist /lastparline true def exch /plistlength exch def 0
+exch endtheline /firstparline true def /wordroom 0 def
+startnextline  % word did not fit on line
+} ifelse 
+
+pop 0 /substart 0 def /wordstart 0 def /oktohere 0 
+def /firstchar -1 def} bind def
+
+% *** SPACE PROC ***
+
+% Leading spaces are ignored in an ongoing paragraph with the firstchar test.
+% For speed, "words" may include internal spaces if there is enough room.
+%
+%              yes ------ previous word fit? -------- no
+%         update word                            closeline
+%   yes --- word+space fit? -- no          word to next line always
+%  update word             closeline     yes -- word+space fit? --- no
+%                                      update word               closeline    
+
+/spaceproc { dup firstchar ne {linestring 1 index 32 put doeswordfit
+{/roomleft exch def dup 1 sub /oktohere exch def tryspacefit} 
+{pop substart dup oktohere sub neg wordtoplist exch /plistlength
+exch def 0 exch endtheline startnextline tryspacefit} ifelse} if} bind def
+
+% *** SWALLOW AND HANG ***
+
+% swallowandhang is a dual purpose proc that swallows any trailing spaces
+% and optionally hangs punctuation for center, right, and fill justification.
+
+% The swallowlist decides which characters get acted on for hanging.
+% The "1" before the hung character lets you individually customize overhang.
+% hangfract lets you adjust the overhang of all characters together.
+
+/swallowlist 256 array def
+
+0 1 255 {swallowlist exch {exit} put} for
+
+swallowlist 
+dup ( ) 0 get {swallow} put
+dup (-) 0 get {1 (-) hangpunct} put
+dup (.) 0 get {1 (.) hangpunct} put
+dup (,) 0 get {1 (,) hangpunct} put
+dup (;) 0 get {1 (;) hangpunct} put
+dup (:) 0 get {1 (:) hangpunct} put
+dup (") 0 get {1 (") hangpunct} put
+dup (') 0 get {1 (') hangpunct} put
+dup (}) 0 get {1 (}) hangpunct} put
+
+dup 41 {1 (\051) hangpunct} put  % closing parenthesis  
+dup 177 {1 (\261) hangpunct} put  % em dash
+dup 208 {1 (\320) hangpunct} put  % en dash
+dup 186 {1 (\272) hangpunct} put  % closing double quote
+pop
+
+% hangpunct shortens roomleft if hanging is wanted.
+
+/hangpunct { hangflag { stringwidth pop mul hangfract mul roomleft exch
+add /roomleft exch def} {pop pop} ifelse exit } bind def
+
+% swallow removes one leading space
+
+/swallow {/lopspaces lopspaces 1 add def} bind def
+
+% swallowandhang first tests for a normal showchars ending. It then runs
+% sandh to do the actual swallowing or punctuation hanging.
+
+/swallowandhang {
+
+printlist plistlength 1 sub get 
+dup dup length 4 eq
+
+
+{3 get cvlit /showchars eq {sandh}{pop pop} ifelse}
+
+{pop pop}
+ ifelse
+
+} bind def
+
+% sandh grabs the last string of characters and works backwards through
+% them, providing a count of total trailing spaces, and hanging selected
+% punctuation. The roomleft is then adjusted accordingly.
+
+/sandh {/lopspaces 0 def dup 0 get exch 1 get  linestring 3 1 roll
+getinterval /laststring exch def laststring length 1 sub -1 0
+{laststring exch get swallowlist exch get exec} for /roomleft lopspaces
+spacewidth mul roomleft add def /numchars numchars lopspaces sub
+def /numspaces numspaces lopspaces sub def} bind def
+
+% *** LINE CONTROLS ******
+
+% startnextline resets pointers, handles indents, sets up first move.
+
+/startnextline {
+
+oktoadvance {/ypos ypos yinc
+
+   lastparline {ypara add} if sub def
+
+                            } if  % move to next line
+
+colcheck  % link to page template
+
+
+  /lastparline false def    % can't be the last line
+  /substart wordstart def   % point to start of current word
+  /numspaces 0 def          % character+space line count 
+  /numchars 0 def           % space line count
+  /tabcount 0 def           % tab count 
+
+0 firstparline {pmrun add /firstparline false def} if % pm indent?
+
+dropflag {dropcount 0 ge {dropindent add /dropcount dropcount 1 sub def 
+dropcount 0 eq {/dropflag false def} if} if} if % indent dropcap?
+
+dup wordroom add neg txtwide add txtwideadj /roomleft exch def
+printlist 0 [ 3 index /xymove cvx ] cvx put pop exch pop 1 exch
+dup /firstchar exch def} bind def
+
+% endtheline executes a justify proc to set xfix, yfix, cfix and sfix
+% and then conditionally prints the printlist ...
+
+/endtheline { justx cvx exec oktoprint {printline} if} bind def
+         
+% *** JUSTIFY PROCS ********
+
+% The justify procs take the character count, the space count, and roomleft
+% and convert these into xfix and yfix entire line offsets and 
+% cfix and sfix character and space kerning.
+
+/justC {swallowandhang /sfix sstretch def /cfix cstretch def /xfix roomleft
+2 div def /yfix 0 def} bind def
+
+/justF {lastparline {justifylastline {reallyjustF} {justL adjustlastline}
+ifelse }{reallyjustF} ifelse} bind def
+
+/justL {/sfix sstretch def /cfix cstretch def /xfix 0 def /yfix 0 def} bind def
+
+/justR {swallowandhang /sfix sstretch def /cfix cstretch def /xfix roomleft
+def /yfix 0 def} bind def
+
+/reallyjustF {swallowandhang roomleft numchars 1 sub numspaces
+spacecharratio mul add dup 0 eq {pop 0.001} if div dup  cstretch
+add /cfix exch def spacecharratio mul sstretch add /sfix exch
+def /xfix 0 def /yfix 0 def} bind def % unconditional justF
+
+% optional additional final line stretch is used only if it uses up less
+% than 80 percent of the remaining room. Otherwise might look cramped
+
+/adjustlastline { 
+numchars 1 sub numspaces spacecharratio mul add lastlinestretch
+mul roomleft 0.8 mul lt {/cfix cfix lastlinestretch add 
+def /sfix sfix lastlinestretch spacecharratio mul add def} if} def 
+
+
+
+% *** PRINT MODULE ********
+
+% printline accepts a series of procs from the printlist and executes them
+% It expects a printlist of form [{proc1}{proc2}{proc3}...{procn] and
+% these variables predefined ...
+
+%    plistlength    % length of printlist
+%    sfix           % total space kerning for line
+%    cfix           % total character kerning for line
+%    xfix           % total x-shift for line (for centering, rj, etc.)
+%    yfix           % total y-shift for line (normally zero) 
+%    indent         % first line or drop cap indent 
+
+/sfix 0 def /cfix 0 def /xfix 0 def /yfix 0 def % defaults
+
+/printline {gsave 0 1 plistlength 1 sub {printlist exch get exec} for
+grestore} bind def
+
+% some often-used print-time macros . . .
+
+% -stringstart- -stringlength- -madefontdict- showchars --> images string at
+% the currentpoint.
+
+/showchars { setfont linestring 3 1 roll getinterval sfix 0 32 cfix
+0 6 -1 roll awidthshow1} bind def
+
+/rshowchars {show1} def    % overstrike to compile link
+
+% -indent- xymove ---> does absolute move to xpos + indent, ypos
+
+/xymove {xpos add xfix add ypos yfix add moveto} bind def
+
+
+% these two links have to stay unbound for Distillery or self-compiling
+
+/show1 {show} def
+/awidthshow1 {awidthshow} def
+
+% %%% MAIN GONZO JUSTIFY ROUTINE %%%
+
+% startgonzo reads the currentfile, either piling up printable characters
+% into linestring, or acting out escape or space commands.
+
+% and here's gonzo ...
+
+/initgonzostuff {
+  /wordroom 0 def
+  /firstparline true def
+  /lastparline false def
+  /wordstart 0 def
+  /substart  0 def
+  /roomleft txtwide def
+  /oksofar 0 def 
+  /numchars 0 def
+  /lopcount 0 def
+  /firstchar -1 def
+  /tabcount 0 def
+  /gotcr false def
+   } bind def
+
+/startgonzo {initgonzostuff 0 0  printlist 2 index
+[0 /xymove cvx] cvx put exch 1 add exch
+{currentfile read {chararray exch get exec}{exit} ifelse} loop
+pop pop % remove pointers from stack
+} bind def
+
+% stringgonzo is similar to startgonzo, except that it accepts an
+% input string instead of the currentfile. This is handy for deferred
+% or predefined uses. stringgonzo is significantly (25%) slower than
+% startgonzo. An extra carriage return is always added to the string end.
+% to make sure the last line prints.
+
+% Current bugs: can't embed printable \ with \\ or \134 and an extra
+% carriage return or double space MUST follow stringgonzo to stay error free.
+
+/stringgonzo {initgonzostuff dup length 1 add dup /gslen exch def string 
+dup /gonzostring exch def exch 0 exch putinterval gonzostring gslen 1
+sub 13 put /gsptr 0 def /stringmode true def 0 0 printlist 2 index
+[0 /xymove cvx] cvx put exch 1 add exch {getstringchar {chararray exch
+get exec}{exit} ifelse} loop pop pop /stringmode false def } bind def
+
+/getstringchar {gsptr gslen ge{ false } {gonzostring gsptr get true}
+ifelse /gsptr gsptr 1 add def} bind def
+
+% CALLOUT JUSTIFY MODES
+
+% cl accepts an input of form xpos ypos (message) cl and shows it
+% at xpos left and within xpos + textwide right.
+
+/cl {save /snapcl exch def /linestring linestring2 def /justx (justL)
+def 3 1 roll /ypos exch def /xpos exch def stringgonzo snapcl restore} def 
+
+% cf accepts an input of form xpos ypos (message) cf and shows it
+% flush left at xpos and flush right at xpos + textwide.
+
+/cf {save /snapcf exch def /linestring linestring2 def /justx (justF)
+def 3 1 roll /ypos exch def /xpos exch def stringgonzo snapcf restore} def 
+
+% cc accepts an input of form xpos ypos (message) cc and centers it
+% on xpos. txtwide IS IGNORED, AND ANY WIDTH WILL GET CENTERED.
+
+/cc {save /snapcc exch def /linestring linestring2 def /txtwide 5000
+def /justx (justC) def /pmrun 0 def 3 1 roll /ypos exch def 2500
+sub /xpos exch def stringgonzo snapcc restore} def 
+
+% cr accepts an input of form xpos ypos (message) cr and sets it
+% flush right against xpos. txtwide IS IGNORED, AND ANY WIDTH
+% WILL SET FLUSH RIGHT.
+
+/cr {save /snapcm exch def /linestring linestring2 def /txtwide 5000
+def /justx (justR) def /pmrun 0 def 3 1 roll /ypos exch def 5000
+sub /xpos exch def stringgonzo snapcm restore} def 
+
+
+% COMPILING ROUTINES
+
+% Compiling can be done either to the host (using a two way comm 
+% channel or to hard disk. The compiled files are Adobe Distillery
+% compatible but slightly shorter and faster. They can be further
+% sped up and shortened with an add-on utility.
+
+% To compile, issue a compiletohost or a compiletodisk after beginning
+% gonzo.
+
+/compiletohost {/hostcompflag true def sendcompileheader} def
+
+/compiletohost {/diskcompflag true def sendcompileheader} def
+
+/send { dup hostcompflag { print flush hostcompdelay {37 sin pop}
+        repeat}{pop} ifelse
+       
+        dup diskcompflag { writehere }{pop} ifelse
+
+         pop } def
+ 
+
+% TEMPLATE LOADER
+
+% starttemplate opens a template whose name is on the top of the stack and
+% executes an internally defined template command templatestartup
+
+/starttemplate {begin templatestartup} def
+
+%%%%%%%%%
+
+% SIMPLE TEXT DUMPER
+
+% This default text dumper template is useful for "just dump the text"
+% applications. The | and \ characters are handled as ordinary text in
+% this example. The only gonzo commands used are for the carriage return
+% and the linefeed. A "double escape" | | exits you.
+
+% This template is also useful to list your gonzo programs while PRINTING
+% (rather than executing) all internal gonzo commands. (!!!)
+
+% Note that any template MUST have an internal proc named templatestartup
+% and that your template MUST NOT call gonzofont before run time.
+
+300 dict /dumpasciitext exch def 
+
+dumpasciitext begin
+
+/templatefonts{
+/font1 /Helvetica 8 gonzofont       % regular text (defer till run time)
+/font2 /Helvetica-Bold 7 gonzofont  % header font (defer till run time)  
+} def
+
+/txtwide 230 def                    % width of column
+/pm 0 def                           % no paragraph indents
+
+/lmpos 60 def                       % horizontal left margin
+/yinc 9.5 def                       % vertical line spacing
+/ytop 720 def                       % top column reference
+/ybot 50  def                       % bottom column reference
+
+/pagenum 1 def                      % initial pagenumber
+
+/numcolumns 2 def                   % number of columns
+/colspace 260 def                   % spacing between columns  
+
+% colcheck does all the work in a pagemaker. It is automatically called
+% at the start of each new printable line. It can make room for figures, etc.
+
+/colcheck {ypos ybot lt {column# numcolumns ge {showpage /ypos ytop
+def /xpos lmpos def /column# 1 def header footer}{/ypos ytop def /xpos
+xpos colspace add def /column# column# 1 add def} ifelse} if} def 
+
+% This particular header puts the pagenumber into a message string and
+% shows it at the right margin of the rightmost column. You can do
+% left-right and otherwise get as fancy as you care to here ...
+
+/header {gsave spacewidth font2 rpagenum (xxxxxx) cvs dup length 5 add
+string dup 0 (page ) putinterval dup 5 3 index putinterval exch pop
+lmpos numcolumns 1 sub colspace mul add txtwide add exch ytop yinc 2.5
+mul add exch cr grestore /rpagenum rpagenum 1 add def /spacewidth exch def
+} def
+
+/footer {} def       % none today
+
+/templatestartup { templatefonts font1 /column# 1 def /xpos lmpos
+def /ypos ytop def/gonzojust false def /rslashok false def 
+/rpagenum pagenum def header footer} def
+
+% exitcheck lets you decide how to exit your ASCII text dumper, and can get
+% VERY sticky. This example uses a double | | as a "double escape". This
+% trick lets you use this template to print a gonzo LISTING that has all 
+% of the gonzo commands in it (!), but acts improperly on none of them.
+
+/asciiexitchar (|) def  % exit character reserved if preceeded by altescchar
+
+/exitcheck {currentfile read {dup asciiexitchar 0 get eq {pop exitproc} 
+{/chold1 exch def altescapechar chartolinestring chold1 chartolinestring} ifelse}{exitproc} ifelse} def
+
+end  % dumpasciitext template
+
+% Here is a PostScript "textonly" convenience operator that speeds up
+% text dumping...
+
+/textonly {dumpasciitext starttemplate startgonzo} def 
+
+
+%%%%%%%%%
+
+% SIMPLE PAGE MAKING TEMPLATE
+
+% This default gonzo page making template is a useful starting point for
+% creating your own custom templates. It handles multiple columns and
+% left-right page numabered headers. All gonzo commands are supported.
+
+% Note that there is NO difference between a pagemaker and an emulator.
+% Everything is programmable, so just rearrange things to suit yourself.
+% Full document control (for figures etc) is done by extending colcheck.
+
+% Note that any template MUST have an internal proc named templatestartup
+% and that your template MUST NOT call gonzofont before run time.
+
+300 dict /simplepages exch def 
+
+simplepages begin
+
+/templatefonts {    % Remember: all fonts MUST defer till run time!
+
+/font0 /Times-Bold  [54 0 0 54.2 0 -32] gonzofont  % drop cap
+/font1 /Times-Roman  9.75 gonzofont                % main text
+/font2 /Times-Italic 9.75 gonzofont                % main italic
+/font3 /Times-Bold   9.75 gonzofont                % main bold
+/font4 /Times-Roman  9 gonzofont                   % capnum text
+/font5 /Times-Italic 9 gonzofont                   % capnum italic
+/font6 /Times-Bold   9 gonzofont                   % capnum bold 
+/font7 /Times-Bold  [9.75 0 0 9.5 0 -6] gonzofont  % lowered subheader
+/font= /Symbol 9.75 gonzofont                      % its greek to me
+/font- /ZapfDingbats  [9 0 0 9 0 4] gonzofont      % dingbats
+
+} def
+
+% values used by gonzo justify ...
+
+/colspace 175 def                 % spacing between columns
+/cstretch  0.2 def                % minimum character kerning
+/dropcount 4 def                  % number of lines drop cap drops
+/lastlinestretch 0.06 def         % open last paragraph line slightly
+/pm 10 def                        % use paragraph indents             
+/sstretch -0.3 def                % minimum space kerning
+/txtwide 155 def                  % width of column
+/ybot 50  def                     % bottom column reference
+/yinc 10.5 def                    % vertical line spacing
+/ytop 715 def                     % BASE of top column reference
+/yinc 10.5 def                    % vertical line spacing
+
+% additional values used by this template
+
+/firstpagespecial false def       % special treatment for first page?
+/lmpos 60 def                     % horizontal left margin
+/numcolumns 3 def                 % number of columns
+/oddpageright true def            % are odd numbered pages on the right?
+/rightpage false def              % start with righthand page?
+/pagenum 1 def                    % running pagenumber
+
+% These macros handle an initial drop cap and low center subheads ...
+
+/amacro {(zy0)  stringmacro /ypos
+ ypos ypara add def} def             % start drop cap
+/bmacro {(iFy1) stringmacro /ypos
+ ypos ypara add def} def             % finish drop cap
+/cmacro {(znyC7) stringmacro /ypos
+ ypos ypara 2 mul add def} def             % centered title
+/dmacro {(pF1)  stringmacro /ypos
+ ypos ypara 2 mul add def} def             % normal text after centered title
+
+% colcheck does all the work in a pagemaker. It is automatically called
+% at the start of each new printable line. It can make room for figures, etc.
+
+/colcheck {ypos ybot lt {column# numcolumns ge {showpage /ypos ytop
+def /xpos lmpos def /column# 1 def header footer}{/ypos ytop def /xpos
+xpos colspace add def /column# column# 1 add def} ifelse} if} def 
+
+% This particular header picks different formats for left and right pages
+
+/header {pagenum cvi 2 mod 0 eq rightpage {not} if {leftheader}
+{rightheader} ifelse /pagenum pagenum 1 add def} def
+
+/headerstripe {gsave xpos ytop 19 add moveto colspace numcolumns 1 sub mul
+txtwide add 0 rlineto 0.5 setlinewidth stroke} def
+
+/leftheader {gsave spacewidth font2 pagenum (xxxxxx) cvs dup length 5 add
+string dup 0 (page ) putinterval dup 5 3 index putinterval exch pop
+lmpos exch ytop yinc 2.5 mul add exch cl grestore headerstripe /spacewidth
+exch def} def
+
+/rightheader {gsave spacewidth font2 pagenum (xxxxxx) cvs dup length 5 add
+string dup 0 (page ) putinterval dup 5 3 index putinterval exch pop
+lmpos numcolumns 1 sub colspace mul add txtwide add exch ytop 25 add
+exch cr grestore headerstripe /spacewidth exch def} def
+
+/firstpageheader {} def          % nothing special today
+
+/footer {gsave xpos ybot 6 sub moveto colspace numcolumns 1 sub mul
+txtwide add 0 rlineto 1.5 setlinewidth stroke} def
+
+/templatestartup { templatefonts font1 /column# 1 def /xpos lmpos
+def /ypos ytop def /gonzojust true def /rslashok true def header
+footer} def
+
+end  % simplepages template
+
+%%%%%%%%%%%%%%%%
+
+end  % entire gonzo dictionary
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% END OF GURU'S GONZO JUSTIFY UTILITIES AND TEMPLATES 
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+statusdict begin
+statusdict /setduplexmode known {true setduplexmode} if  end
+
+systemdict /setstrokeadjust known {true setstrokeadjust} if
+
+
+
+
+
+/mastergray {0.96} def  % sets overall light grade shade
+
+%%%%%%%%%%%%%%%%%
+
+% Here's some needed routines not yet in GUTILITY.PTL or GONZO13A.PTL
+
+%...............
+
+% roundbox draws a box path with rounded corners and locks you to the
+%  lower lefthand box corner using this format ...
+%           -xpos- -ypos- -yheight- -cornerrad- roundbox
+
+/roundbox {gsave /rad exch def /bt exch def /br exch def /bb exch
+def /bl exch def bl bb translate rad mark br 2 div 0 0 0 0 bt br
+bt br 0 br 2 div 0] roundpath} def
+
+% vrule gives a fixed vertical rule, inputting xpos ystart yend linewidth
+
+/vrule {gsave newpath setlinewidth 2 index 4 2 roll moveto exch lineto 
+0 setgray stroke grestore} def
+
+% hrule gives a fixed horizontal rule, inputting ypos xstart xend linewidth
+
+/hrule {gsave newpath setlinewidth 1 index 4 2 roll moveto lineto 
+0 setgray stroke grestore} def
+
+% mergestr is a tool useful for page numbers; evenutally it will go 
+% into the nuisance dictionary
+
+/mergestr {2 copy length exch length add string dup dup 4 3 roll
+4 index length exch putinterval 3 1 roll exch 0 exch putinterval} def
+
+
+% this is a repeat of the GONZO13B callout width proc ...
+
+gonzo begin
+
+/endtheline {/curwide txtwide roomleft sub def justx cvx exec
+oktoprint {printline} if} bind def
+
+/cw {save /snapc1 exch def /oktoadvance false def /oktoprint false def
+/linestring linestring2 def /justx (justL) def 3 1 roll /ypos exch
+def /xpos exch def stringgonzo curwide snapc1 restore} def 
+
+end
+
+
+gonzo begin
+
+% This is the core keystone code routine. It works by taking an average
+% of the first two and last two string lengths to determine the keystone
+% slope, increment, and starting width. It then checks the length of 
+% each line and extends the starting width as needed so everything fits.
+
+/keyproc {/kadj exch def /msg exch def /yy1 exch def /xx1 exch def
+mark {msg (\n) search {exch pop exch /msg exch def dup length 0 le
+{pop} if}{dup length 0 le {pop} if exit} ifelse} loop ] /karray
+exch def 0 0 karray 0 get cw 0 0 karray 1 get cw add 2 div dup
+0 0 karray dup length 1 sub get cw 0 0 karray dup length 2 sub get
+cw add 2 div sub neg karray length 1 sub div dup /kinc exch def
+2 div sub /kstart exch def /txtwide 10000 def 0 0 1 karray length
+1 sub {/kpn exch def 0 0 karray kpn get cw kstart kinc kpn mul add
+sub 2 copy lt {exch} if pop} for kstart add  1.01 mul dup /kstart
+exch def /txtwide exch def /justifylastline true def 0 1 karray
+length 1 sub { /posn exch def yy1 xx1 kstart kadj exch posn karray
+exch get cf /txtwide txtwide kinc add def /xx1 xx1 kinc kadj def
+/yy1 yy1 yinc sub def} for} def
+
+% these are the three keystone routines. Use xpos ypos true (msg strings)
+% cck, etc. true for keystone; false for ordinary justify.
+
+/cck {save /keysnap exch def exch {{2 div sub} keyproc} {cc} ifelse
+keysnap restore} def     % callout centered keystone
+
+/clk {save /keysnap exch def exch {{pop} keyproc} {cl} ifelse
+keysnap restore} def     % callout left keystone 
+
+/crk {save /keysnap exch def exch {{sub} keyproc} {cr} ifelse
+keysnap restore} def     % callout right keystone
+
+end  % close gonzo dictionary
+
+
+%%%%%% doembeddedproc executes |/name installdoembeddedproc links it
+
+/doembeddedproc {mark 50 {stringmode {getstringchar}{currentfile
+read} ifelse not {exit} if dup dup dup 32 eq exch 13 eq or exch 10
+eq or {pop exit} if} repeat counttomark dup string /pstr1 exch def
+1 sub -1 0 {pstr1 3 1 roll exch put} for pstr1 exch pop cvx exec} def
+
+/installdoembeddedproc {gonzo begin commands (/) 0
+                        get {doembeddedproc} put end} def
+
+installdoembeddedproc
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% your gonzo code goes here. The usual way of starting it is with
+
+%%  gonzo begin
+%%  ps.util.1 begin
+%%  printerror
+%%  nuisance begin
+
+%% Additional use details appear in the POSTSCRIPT BEGINNER STUFF
+%% package from SYNERGETICS.
+
+% ============== end gonzo utilities =====================
+
+% Gonzo character colorizer
+
+/blueon {mark /blue cvx 0.33 /setgray cvx] cvx
+        printlist exch 3 index exch put exch 1 add exch} def
+
+/blueoff {mark /lime cvx 0  /setgray cvx] cvx
+        printlist exch 3 index exch put exch 1 add exch} def
+
+/tinton {mark 0.33 /setgray cvx] cvx
+        printlist exch 3 index exch put exch 1 add exch} def
+
+/tintoff {mark 0 /setgray cvx] cvx
+        printlist exch 3 index exch put exch 1 add exch} def
+
+%%%%%%%%%%%%%% COMPACT  VERSION OF  COLORIZER II %%%%%%%%%%%%%%%%%%%%%%
+
+/settint {dup /currenttint exch store 5.999 mul dup floor cvi /&cbar
+          exch store dup floor sub /&cwt exch store [
+{/setgray [ /dup cvx 0.3 &cwt 0.59 mul add /ge cvx
+ [1 /exch cvx &cwt 0.59 mul 0.30 add /sub cvx 1 &cwt sub
+ 0.59 mul 0.11 add /div cvx /dup cvx 1 &cwt sub /mul cvx
+ &cwt /add cvx /exch cvx ] cvx [ &cwt 0.59 mul 0.3 add /div
+ cvx /dup cvx &cwt /mul cvx 0] cvx /ifelse cvx /setrgbcolor
+ cvx] cvx /def cvx}
+{/setgray [/dup cvx 0.59 1 &cwt sub 0.3 mul add /ge cvx
+ [1 &cwt sub 0.3 mul 0.59 add /sub cvx &cwt 0.3 mul 0.11 add
+ /div cvx /dup cvx &cwt /mul cvx 1 &cwt sub /add cvx /exch cvx
+ 1 /exch cvx] cvx [1 &cwt sub 0.3 mul 0.59 add /div cvx /dup
+ cvx 1 &cwt sub /mul cvx /exch cvx 0] cvx /ifelse cvx
+ /setrgbcolor cvx] cvx /def cvx}
+{/setgray [/dup cvx 0.59 &cwt 0.11 mul add /ge cvx [&cwt
+ 0.11 mul 0.59 add /sub cvx 1 &cwt sub 0.11 mul 0.30 add
+ /div cvx /dup cvx 1 &cwt sub /mul cvx &cwt /add cvx 1 /exch
+ cvx] cvx [0 /exch cvx &cwt 0.11 mul 0.59 add /div cvx /dup cvx
+ &cwt /mul cvx] cvx /ifelse cvx /setrgbcolor cvx] cvx
+ /def cvx}
+{/setgray [/dup cvx 0.59 1 &cwt sub mul 0.11 add /ge cvx [1 &cwt
+ sub 0.59 mul 0.11 add /sub cvx &cwt 0.59 mul 0.30 add /div cvx
+ /dup cvx &cwt /mul cvx 1 &cwt sub /add cvx 1] cvx [0 /exch cvx
+ 1 &cwt sub 0.59 mul 0.11 add /div cvx /dup cvx 1 &cwt sub /mul
+ cvx /exch cvx] cvx /ifelse cvx /setrgbcolor cvx] cvx
+/def cvx}
+{/setgray [/dup cvx 0.11 &cwt 0.30 mul add /ge cvx[&cwt 0.30 mul
+ 0.11 add /sub cvx 1 &cwt sub 0.30 mul 0.59 add /div cvx /dup
+ cvx 1 &cwt sub /mul cvx &cwt /add cvx /exch cvx 1] cvx [ &cwt
+ 0.30 mul 0.11 add /div cvx /dup cvx &cwt /mul cvx /exch cvx 0
+ /exch cvx ] cvx /ifelse cvx /setrgbcolor cvx ] cvx /def cvx}
+{/setgray [ /dup cvx 0.30 1 &cwt sub 0.11 mul add /ge cvx[ 1
+ /exch cvx 1 &cwt sub 0.11 mul 0.30 add /sub cvx &cwt 0.11 mul
+ 0.59 add /div cvx /dup cvx &cwt /mul cvx 1 &cwt sub /add cvx
+ ] cvx [ 1 &cwt sub 0.11 mul 0.30 add /div cvx /dup cvx
+ 1 &cwt sub /mul cvx 0 /exch cvx] cvx /ifelse cvx /setrgbcolor
+ cvx ] cvx /def cvx}
+
+] &cbar get exec exec} bind def
+
+/beige  {0.11 settint} def      % examples of convenience operators
+/aqua   {0.52 settint} def
+/blue    {0.67 settint} def
+/lime     {0.44 settint} def
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+lime
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+gonzo begin
+ps.util.1 begin
+printerror
+nuisance begin
+
+
+

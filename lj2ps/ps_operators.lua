@@ -73,19 +73,9 @@ exports.top = top
 
 
 local function copy(vm)
-    -- create temporary stack
-    local tmp = stack()
-
     -- get the n items into temp stack
     local n = vm.OperandStack:pop()
-    for i=0,n-1 do 
-        tmp:push(vm.OperandStack:nth(i))
-    end
-
-    -- push from temp stack back onto stk
-    for i=0,n-1 do 
-        vm.OperandStack:push(tmp:pop())
-    end
+    vm.OperandStack:copy(n)
 
     return true
 end
@@ -347,9 +337,9 @@ end
 -- get
 -- array index get any
 local function get(vm)
-    local index = vm.OperandStack:pop()
+    local idx = vm.OperandStack:pop()
     local arr = vm.OperandStack:pop()
-    vm.OperandStack:push(arr[index])
+    vm.OperandStack:push(arr[idx])
 
     return true
 end
@@ -360,26 +350,14 @@ exports.get = get
 -- array index any -
 local function put(vm)
     local item = vm.OperandStack:pop()
-    local index = vm.OperandStack:pop()
+    local idx = vm.OperandStack:pop()
     local arr = vm.OperandStack:pop()
-    arr[index] = item
+    arr[idx] = item
 
     return true
 end
 exports.put = put
 
---[[
--- dict key value put -
-local function put(vm)
-    local value = vm.OperandStack:pop()
-    local key = vm.OperandStack:pop()
-    local dict = vm.OperandStack:pop()
-    rawset(dict, key, value)
-    
-    return true
-end
-exports.put = put
---]]
 
 -- getinterval
 -- putinterval
@@ -963,7 +941,15 @@ exports.executive = executive
 --echo
 --prompt
 
+exports["="] = function(vm)
+    local any = vm.OperandStack:pop()
+    print(any)
+end
 
+exports["=="] = function(vm)
+    local any = vm.OperandStack:pop()
+    print(tostring(any))
+end
 
 
 return exports

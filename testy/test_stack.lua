@@ -11,6 +11,16 @@ local function pstack(s)
     end
 end
 
+local function test_copy()
+    local s = Stack()
+    for i=1,10 do
+        s:push(i)
+    end
+
+    s:copy(#s)
+    pstack(s)
+end
+
 local function test_enumerate()
     local s = Stack()
     s:push(1)
@@ -93,6 +103,7 @@ local function test_nth()
     print("nth(3): ", s:nth(3))
 end
 
+test_copy()
 --test_nth()
 --test_popn()
-test_roll()
+--test_roll()

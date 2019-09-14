@@ -150,6 +150,16 @@ function Stack.pop(self)
 	return value
 end
 
+function Stack.copy(self, n)
+    local sentinel = self.last
+
+    for i=1,n do 
+        self:push(self[sentinel-(n-i)])
+    end
+
+    return self
+end
+
 -- n is the number of items to consider
 -- j is the number of positions to exchange
 -- this is a brute force implementation which simply

@@ -76,3 +76,8 @@ cholla.mmto.org/computers/postscript/tutorial.html
 
 https://mostlymaths.net/2008/12/quick-postscript-programming-tutorial.html/
 
+http://www.math.ubc.ca/~cass/graphics/manual/
+
+https://www.tinaja.com/post01.shtml
+
+
