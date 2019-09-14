@@ -27,9 +27,47 @@ end
 
 local function test_procedure()
   interp:run([[
-/sum { 1 3 add} def
+/add3 { 3 add} def
+5 add3
+pstack
 ]])
 end
+
+local function test_if()
+  interp:run([[
+3 4 lt { (3 is less than 4) } if
+pstack
+]])
+
+end
+
+local function test_ifelse()
+interp:run([[
+4 3 lt {(TruePart)} {(FalsePart)} ifelse
+pstack
+]])
+end
+
+local function test_for()
+  interp:run([[
+0 1 1 4 {add} for
+pstack
+  ]])
+end
+
+local function test_fork()
+interp:run([[
+/Tahoma findfont
+16 scalefont
+setfont
+
+newpath
+
+0 12 600 {0 moveto (k) show } for
+showpage
+]])
+end
+
 
 local function test_def()
   print("==== test_def ====")
@@ -113,11 +151,16 @@ pstack
 end
 
 --test_procedure()
+--test_if()
+--test_ifelse()
+--test_for()
+test_fork()
+
 --test_simple()
 --test_def()
 --test_index()
 --test_string()
-test_astore()
+--test_astore()
 --test_atan()
 --test_cos()
 --test_count()

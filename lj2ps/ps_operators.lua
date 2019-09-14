@@ -787,9 +787,54 @@ exports["if"] = function(vm)
 end
 
 --ifelse
+-- bool  proc1  proc2 ifelse
+exports["ifelse"] = function(vm)
+    local proc2 = vm.OperandStack:pop()
+    local proc1 = vm.OperandStack:pop()
+    local abool = vm.OperandStack:pop()
+
+    if abool then 
+        vm:execArray(proc1)
+    else
+        vm:execArray(proc2)
+    end
+
+    return true
+end
+
 --exec
+
 --for
+-- initial  increment  limit  proc  for
+exports["for"] = function(vm)
+    local proc = vm.OperandStack:pop()
+    local limit = vm.OperandStack:pop()
+    local increment = vm.OperandStack:pop()
+    local initial = vm.OperandStack:pop()
+
+    print("for: ", initial, limit, increment, proc)
+
+    for i=initial, limit, increment do
+        vm.OperandStack:push(i)
+        vm:execArray(proc)
+    end
+
+    return true
+end
+
 --repeat
+-- n proc
+exports["repeat"] = function(vm)
+    local proc = vm.OperandStack:pop()
+    local n = vm.OperandStack:pop()
+    
+    for i=1,n do 
+        vm:execArray(proc)
+    end
+
+    return true
+end
+
 --loop
 --forall
 --exit

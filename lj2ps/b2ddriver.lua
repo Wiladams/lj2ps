@@ -371,7 +371,7 @@ function Blend2DDriver.show(self, pos, txt)
     local dst = BLPoint(pos[1],pos[2])
     local font = self.CurrentState.Font
 
-    print("Blend2DDriver.show: ", dst, font, txt, #txt)
+    --print("Blend2DDriver.show: ", dst, font, txt, #txt)
 
     -- need to unflip temporarirly
     self.DC:save()

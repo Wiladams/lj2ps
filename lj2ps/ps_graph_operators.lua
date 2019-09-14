@@ -390,7 +390,7 @@ local function show(vm)
 
     -- use the current point as location
     local pos = vm.Driver:getCurrentPosition()
-    print("show: ", pos[1], pos[2], str)
+    --print("show: ", pos[1], pos[2], str)
     vm.Driver:show(pos, str)
 
     return true

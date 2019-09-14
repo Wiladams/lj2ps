@@ -118,6 +118,51 @@ function PSVM.pushLiteralName(self, value)
 end
 
 
+--[[
+    Given an executable array, go through and start executing
+    the elements of that array.  
+
+    Currently, putting elementary types on the stack, calling ops
+    and calling procedures will work.
+]]
+function PSVM.execArray(self, arr)
+    --print("EXEC EXECUTABLE ARRAY: ", #arr)
+    --print("--- stack ---")
+    --self.Vm:pstack()
+    --print("----")
+
+    for i=1,#arr do
+        local value = arr[i]
+        --print(value)
+
+        -- lookup the name
+        -- BUGBUG, need to distinguish between literal things
+        -- and executable things.  We can do it for tables
+        -- but not for strings.  Relying on the dictionary won't
+        -- allow for things like redefining a stored variable
+        local op = self.DictionaryStack:load(value)
+
+        if op then
+            if type(op) == "function" then
+                -- it's an operator, so call the function
+                op(self)
+            elseif type(op) == "table" then
+                -- handle a bit of 'recursion'
+                -- if the thing is an executable array
+                -- then call it
+                if op.isExecutable then
+                    self:execArray(value)
+                end
+            else
+                self.Vm.OperandStack:push(value)
+            end
+        else
+            self.OperandStack:push(value)
+        end
+    end
+end
+
+
 
 
 return PSVM
