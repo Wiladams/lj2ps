@@ -40,21 +40,21 @@ interp:run([[
 newpath
 252 324 moveto
 box
-0 setgray
+0 0 0  setrgbcolor
 fill
 
 % Second Box
 newpath
 270 360 moveto
 box
-0.4 setgray
+0.4 0.4 0.4 0.8 setrgbacolor
 fill
 
 % Third Program
 newpath
 288 396 moveto
 box
-0.8 setgray
+0.8 0.4 setgraya
 fill
 
 showpage

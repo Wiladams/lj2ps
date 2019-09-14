@@ -161,8 +161,8 @@ end
 -- Postscript VM and operand stack.
 lexemeMap[B'{'] = function(self, bs) 
     --print("LEFT_CURLY BRACE")
+    self.Vm:beginProc()
     self.isBuildingProcedure = true
-    self.Vm.OperandStack:push(ps_common.MARK)
 end
 
 --[[
@@ -181,14 +181,10 @@ end
 lexemeMap[B'}'] = function(self, bs)
     --print("RIGHT_CURLY_BRACE")
 
-    self.Vm:endArray()
-
-    local arr = self.Vm:pop()
-
+    local arr = self.Vm:endProc()
     self.isBuildingProcedure = false;
 
     -- and hand an executable array to the scanner
-    arr.isExecutable = true;
     return Token{kind = TokenType.EXECUTABLE_ARRAY, value = arr, line=bs:tell()}
 end
 

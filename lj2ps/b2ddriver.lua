@@ -175,25 +175,31 @@ end
 
 -- setgray
 -- currentgray
-function Blend2DDriver.setGray(self, value)
-    -- need to set stroke color
-    -- and fill color
+function Blend2DDriver.setGraya(self, value, a)
     local c = BLRgba32()
+    
+    a = a or 1.0
+    a = math.floor(a*255)
     local gray = math.floor(value*255)
     c.r = gray 
     c.g = gray 
     c.b = gray
-    c.a = 255
+    c.a = a
+
+    -- need to set stroke color
+    -- and fill color
     self.DC:setFillStyle(c);
     self.DC:setStrokeStyle(c);
 
-    return self.CurrentState:setGray(value)
+    return self.CurrentState:setGray(c)
 end
 
 -- setcolor
 -- currentcolor
 -- r, g, b in range [0..1]
-function Blend2DDriver.setRgbColor(self, r, g, b)
+function Blend2DDriver.setRgbaColor(self, r, g, b,a)
+    a = a or 1.0
+    a = math.floor(a*255)
     r = math.floor(r*255)
     g = math.floor(g*255)
     b = math.floor(b*255)
@@ -202,7 +208,7 @@ function Blend2DDriver.setRgbColor(self, r, g, b)
     c.r = r
     c.g = g 
     c.b = b 
-    c.a = 255
+    c.a = a
     self.DC:setFillStyle(c);
     self.DC:setStrokeStyle(c);
 
@@ -345,8 +351,21 @@ function Blend2DDriver.erasepage(self)
     return true
 end
 
+function Blend2DDriver.arc(self, x, y, r, angle1, angle2)
+-- blPathArcTo(BLPathCore* self, double x, double y, double rx, double ry, double start, double sweep, _Bool forceMoveTo)
+    self.CurrentState.Path:arcTo(x, y, r, r, math.rad(angle1), math.rad(angle2), true)
+
+    return true
+end
+
 function Blend2DDriver.fill(self)
     self.DC:fillPathD(self.CurrentState.Path)
+    return true
+end
+
+function Blend2DDriver.rectStroke(self, x, y, width, height)
+    self.DC:strokeRectD(BLRect(x, y, width, height))
+
     return true
 end
 

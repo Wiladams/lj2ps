@@ -90,6 +90,14 @@ local function setgray(vm)
 end
 exports.setgray = setgray
 
+local function setgraya(vm)
+    local a = vm.OperandStack:pop()
+    local value = vm.OperandStack:pop()
+    vm.Driver:setGraya(value, a)
+
+    return true
+end
+exports.setgraya = setgraya
 
 -- sethsbcolor
 -- currenthsbcolor
@@ -100,11 +108,23 @@ local function setrgbcolor(vm)
     local g = vm.OperandStack:pop()
     local r = vm.OperandStack:pop()
 
-    vm.Driver:setRgbColor(r,g,b)
+    vm.Driver:setRgbaColor(r,g,b,1.0)
 
     return true
 end
 exports.setrgbcolor = setrgbcolor
+
+local function setrgbacolor(vm)
+    local a = vm.OperandStack:pop()
+    local b = vm.OperandStack:pop()
+    local g = vm.OperandStack:pop()
+    local r = vm.OperandStack:pop()
+
+    vm.Driver:setRgbaColor(r,g,b, a)
+
+    return true
+end
+exports.setrgbacolor = setrgbacolor
 
 -- setcmykcolor
 -- currentcmykcolor
@@ -244,11 +264,26 @@ end
 exports.rlineto = rlineto
 
 --arc
+local function arc(vm)
+    local angle2 = vm.OperandStack:pop()
+    local angle1 = vm.OperandStack:pop()
+    local r = vm.OperandStack:pop()
+    local y = vm.OperandStack:pop()
+    local x = vm.OperandStack:pop()
+
+    vm.Driver:arc(x, y, r, angle1, angle2)
+
+    return true
+end
+exports.arc = arc
+
 --arcn
 --arct
 --arcto
 --curveto
 --rcurveto
+
+
 local function closepath(vm)
     vm.Driver:closePath()
 end
@@ -296,6 +331,18 @@ exports.fill = fill
 
 --eofill
 --rectstroke
+local function rectstroke(vm)
+    local height = vm.OperandStack:pop()
+    local width = vm.OperandStack:pop()
+    local y = vm.OperandStack:pop()
+    local x = vm.OperandStack:pop()
+
+    vm.Driver:rectStroke(x,y,width,height)
+
+    return true
+end
+exports.rectstroke = rectstroke
+
 --rectfill
 --ustroke
 --ufill

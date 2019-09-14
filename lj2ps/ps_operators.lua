@@ -790,7 +790,7 @@ exports["for"] = function(vm)
     local increment = vm.OperandStack:pop()
     local initial = vm.OperandStack:pop()
 
-    print("for: ", initial, limit, increment, proc)
+    --print("for: ", initial, limit, increment, proc)
 
     for i=initial, limit, increment do
         vm.OperandStack:push(i)
@@ -897,6 +897,15 @@ exports.pstack = pstack
 --]]
 
 --bind
+local function bind(vm)
+    -- pop a proc
+    -- go through and bind everything
+    -- put it back on the stack
+
+    return true
+end
+exports.bind = bind
+
 --null
 local function null(vm)
     vm.OperandStack:push(ps_common.NULL)
