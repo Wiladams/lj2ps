@@ -61,6 +61,27 @@ showpage
 ]])
 end
 
+local function test_nested()
+interp:run([[
+  /bdef {bind def} bind def
+  /ldef {load def} bdef
+  /xdef {exch def} bdef
+  % graphic state operators
+  /_K { 3 index add neg dup 0 lt {pop 0} if 3 1 roll } bdef
+  /_k /setcmybcolor where {
+      /setcmybcolor get
+  } {
+      { 1 sub 4 1 roll _K _K _K setrgbcolor pop } bind
+  } ifelse def
+]])
+end
+
+local function test_binddef()
+  interp:run([[  /bdef {bind def} bind def]])
+end
+
 --test_var()
 --test_proc()
-test_boxes()
+--test_boxes()
+--test_nested()
+test_binddef()

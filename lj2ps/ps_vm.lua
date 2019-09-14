@@ -61,8 +61,12 @@ function PSVM.new(self, obj)
         ClippingPathStack = Stack();
 
         Driver = Blend2DDriver();
+
+        -- Internal stuff
+        buildProcDepth = 0;
     }
 
+    obj.buildProcDepth = 0
     obj.OperandStack = obj.OperandStack or Stack()
     obj.ExecutionStack = obj.ExecutionStack or Stack()
     obj.DictionaryStack = obj.DictionaryStack or DictionaryStack()
@@ -87,9 +91,6 @@ end
 --[[
     Built-in functions, NOT operators
 ]]
-function PSVM.popTopAndPrint(vm)
-    print(vm.OperandStack:pop())
-end
 
 -- push a value onto the operand stack
 function PSVM.push(self, value)
@@ -108,6 +109,9 @@ function PSVM.push(self, value)
     return true
 end
 
+
+
+
 function PSVM.pushExecutableName(self, name)
 end
 
@@ -120,14 +124,20 @@ end
 function PSVM.beginProc(self)
     --self.isBuildingProcedure = true
     self.OperandStack:push(ps_common.MARK)
+    self.buildProcDepth = self.buildProcDepth + 1
 end
 
 function PSVM.endProc(self)
     self:endArray()
     local arr = self.OperandStack:pop()
     arr.isExecutable = true;
+    self.buildProcDepth = self.buildProcDepth - 1
 
     return arr
+end
+
+function PSVM.isBuildingProc(self)
+    return self.buildProcDepth > 0
 end
 
 --[[
@@ -138,14 +148,14 @@ end
     and calling procedures will work.
 ]]
 function PSVM.execArray(self, arr)
-    --print("EXEC EXECUTABLE ARRAY: ", #arr)
+    print("EXEC EXECUTABLE ARRAY: ", #arr)
     --print("--- stack ---")
     --self.Vm:pstack()
     --print("----")
 
     for i=1,#arr do
         local value = arr[i]
-        --print(value)
+        print(value)
 
         -- lookup the name
         -- BUGBUG, need to distinguish between literal things
@@ -163,10 +173,10 @@ function PSVM.execArray(self, arr)
                 -- if the thing is an executable array
                 -- then call it
                 if op.isExecutable then
-                    self:execArray(value)
+                    self:execArray(op)
                 end
             else
-                self.Vm.OperandStack:push(value)
+                self.OperandStack:push(op)
             end
         else
             self.OperandStack:push(value)
@@ -175,7 +185,7 @@ function PSVM.execArray(self, arr)
 end
 
 function PSVM.bindArray(self, arr)
-    --print("EXEC EXECUTABLE ARRAY: ", #arr)
+    --print("BIND EXECUTABLE ARRAY: ", #arr)
     --print("--- stack ---")
     --self.Vm:pstack()
     --print("----")
@@ -190,7 +200,7 @@ function PSVM.bindArray(self, arr)
         -- but not for strings.  Relying on the dictionary won't
         -- allow for things like redefining a stored variable
         local op = self.DictionaryStack:load(value)
-
+--print("op: ", op)
         if op then
             if type(op) == "function" then
                 -- it's an operator, so call the function
@@ -203,14 +213,34 @@ function PSVM.bindArray(self, arr)
                     self:execArray(value)
                 end
             else
-                self.Vm.OperandStack:push(value)
+                -- the lookup gave us back a literal value
+                -- so put it on the stack
+                self.OperandStack:push(op)
             end
         else
             self.OperandStack:push(value)
         end
+        --print("---- stack ----")
+        --self:pstack()
+        --print("-----")
     end
 end
 
+function PSVM.bind(self)
+    --print("PSVM.BIND")
+    -- pop executable array off of stack
+    local arr = self.OperandStack:pop()
+
+    self:beginProc()
+
+    -- hand it to bind array
+    self:bindArray(arr)
+    
+    -- put it back on the stack
+    arr = self:endProc()
+
+    self.OperandStack:push(arr)
+end
 
 
 return PSVM

@@ -74,7 +74,7 @@ end
 lexemeMap[B']'] = function(self, bs) 
     self.Vm:endArray()
     
-    if not self.isBuildingProcedure then
+    if not self.Vm:isBuildingProc() then
         local arr = self.Vm:pop()
         return (Token{kind = TokenType.LITERAL_ARRAY, value = arr, line=bs:tell()}); 
     else
@@ -160,29 +160,14 @@ end
 -- Doing it this way would avoid going through the 
 -- Postscript VM and operand stack.
 lexemeMap[B'{'] = function(self, bs) 
-    --print("LEFT_CURLY BRACE")
+    print("LEFT_CURLY BRACE")
     self.Vm:beginProc()
-    self.isBuildingProcedure = true
 end
 
---[[
-    local function endExecutableArray(vm)
-    --endArray(vm)
-    counttomark(vm)
-    array(vm)
-    astore(vm)
-    exch(vm)
-    pop(vm)
-    print("endExecutableArray, stack: ")
-    pstack(vm)
-end
-
-]]
 lexemeMap[B'}'] = function(self, bs)
-    --print("RIGHT_CURLY_BRACE")
+    print("RIGHT_CURLY_BRACE")
 
     local arr = self.Vm:endProc()
-    self.isBuildingProcedure = false;
 
     -- and hand an executable array to the scanner
     return Token{kind = TokenType.EXECUTABLE_ARRAY, value = arr, line=bs:tell()}
@@ -191,6 +176,7 @@ end
 -- processing a comment, consume til end of line or EOF
 -- totally throw away comment
 lexemeMap[B'%'] = function(self, bs)
+    --print("COMMENT")
     while bs:peekOctet() ~= B'\n' and not bs:isEOF() do
         bs:skip(1)
     end
@@ -319,12 +305,13 @@ function Scanner.tokens(self)
             if lexemeMap[c] then
                 local tok, err = lexemeMap[c](self, bs)
                 if tok then
-                    if self.isBuildingProcedure then
+                    if self.Vm:isBuildingProc() then
                         self.Vm:push(tok.value)
                     else
                         return bs:tell(), tok
                     end
                 else
+                    print("no token for: "..string.char(c))
                     -- deal with error if there was one
                 end
             else
@@ -333,8 +320,7 @@ function Scanner.tokens(self)
                     local value = lex_number(self, bs)
 
                     if value then
-                        if self.isBuildingProcedure then
-                            --print("push number: ", value)
+                        if self.Vm:isBuildingProc() then
                             self.Vm.OperandStack:push(value)
                         else
                             return bs:tell(), Token({kind = TokenType.NUMBER, value=value, line=bs:tell()})
@@ -344,7 +330,7 @@ function Scanner.tokens(self)
                 elseif isgraph(c) then
                     bs:skip(-1)
                     local tok = lex_name(self, bs)
-                    if self.isBuildingProcedure then
+                    if self.Vm:isBuildingProc() then
                         self.Vm.OperandStack:push(tok.value)
                     else
                         return bs:tell(), tok

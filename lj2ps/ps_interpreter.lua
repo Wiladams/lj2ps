@@ -42,7 +42,7 @@ function Interpreter.run(self, bs)
 
     local scnr = Scanner(self.Vm, bs)
     for _, token in scnr:tokens(bs) do
-        --print("INTERP: ", token)
+        print("INTERP: ", token)
         
         if token.kind == TokenType.LITERAL_NAME then
             self.Vm:pushLiteralName(token.value)
@@ -64,6 +64,9 @@ function Interpreter.run(self, bs)
                         print("REGULAR ARRAY")
                         self.Vm.OperandStack:push(op)
                     end
+                else
+                    --print("PUSH EXECUTABLE_NAME: ", token.value, op)
+                    self.Vm.OperandStack:push(op)
                 end
             else
                 print("UNKNOWN EXECUTABLE_NAME: ", token.value)

@@ -371,7 +371,7 @@ exports.put = put
 local function def(vm)
     local value = vm.OperandStack:pop()
     local key = vm.OperandStack:pop()
---print("def: ", key, value)
+print("def: ", key, value)
     return vm.DictionaryStack:def(key, value)
 end
 exports.def = def
@@ -790,7 +790,7 @@ exports["for"] = function(vm)
     local increment = vm.OperandStack:pop()
     local initial = vm.OperandStack:pop()
 
-    --print("for: ", initial, limit, increment, proc)
+    print("for: ", initial, limit, increment, proc)
 
     for i=initial, limit, increment do
         vm.OperandStack:push(i)
@@ -899,12 +899,14 @@ exports.pstack = pstack
 --bind
 local function bind(vm)
     -- pop a proc
+    vm:bind()
     -- go through and bind everything
     -- put it back on the stack
 
     return true
 end
 exports.bind = bind
+
 
 --null
 local function null(vm)
@@ -960,5 +962,17 @@ exports["=="] = function(vm)
     print(tostring(any))
 end
 
+local function save(vm)
+    vm.OperandStack:push({})
+    return true
+end
+exports.save = save
+
+local function restore(vm)
+    local vmstate = vm.OperandStack:pop()
+
+    return true
+end
+exports.restore = restore
 
 return exports

@@ -75,6 +75,25 @@ exports.setlinejoin = setlinejoin
 -- currentstrokeadjust
 -- setdash
 -- currentdash
+local function setdash(vm)
+    local offset = vm.OperandStack:pop()
+    local arr = vm.OperandStack:pop()
+
+    vm.Driver.CurrentState.Dash = {offset=offset, array=arr}
+
+    return true
+end
+exports.setdash = setdash
+
+local function currentdash(vm)
+    local dsh = vm.Driver.CurrentState.Dash
+    vm.OperandStack:push(dsh.array)
+    vm.OperandStack:push(dsh.offset)
+
+    return true
+end
+exports.currentdash = currentdash
+
 -- setcolorspace
 -- currentcolorspace
 -- setcolor
@@ -131,27 +150,45 @@ exports.setrgbacolor = setrgbacolor
 
 --[[
 -- Graphics State - Device Dependent
-sethalftone
-currenthalftone
-setscreen
-currentscreen
-setcolorscreen
-currentcolorscreen
-settransfer
-currenttransfer
-setcolortransfer
-currentcolortransfer
-setblackgeneration
-currentblackgeneration
-setundercolorremoval
-currentundercolorremoval
-setcolorrendering
-currentcolorrendering
-setflat
-currentflat
-setoverprint
-currentoverprint
 --]]
+--sethalftone
+--currenthalftone
+--setscreen
+--currentscreen
+--setcolorscreen
+--currentcolorscreen
+--settransfer
+--currenttransfer
+--setcolortransfer
+--currentcolortransfer
+--setblackgeneration
+--currentblackgeneration
+--setundercolorremoval
+--currentundercolorremoval
+--setcolorrendering
+--currentcolorrendering
+
+--setflat
+--currentflat
+local function setflat(vm)
+    local num = vm.OperandStack:pop()
+    vm.Driver.CurrentState.Flat = num
+
+    return true
+end
+exports.setflat = setflat
+
+local function currentflat(vm)
+    local num = vm.Driver.CurrentState.Flat;
+    vm.OperandStack:push(num)
+
+    return true
+end
+exports.currentflat = currentflat
+
+--setoverprint
+--currentoverprint
+
 
 -- Coordinate System and Matrix Operators
 --matrix
