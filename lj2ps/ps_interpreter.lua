@@ -33,56 +33,75 @@ end
     Instance Methods
 ]]
 
+function Interpreter.execName(self, name)
+    -- lookup the name
+    local op = self.Vm.DictionaryStack:load(name)
+
+    -- op can either be one of the literal types
+    -- bool, number, string, null
+    -- or it's a table or function
+    -- if it's a table, we need to check whether it's a procedure
+    -- or an array
+    if op then
+        if type(op) == "function" then
+            -- it's a function operator, so execute it
+            op(self.Vm)
+        elseif type(op) == "table" then
+            if op.isExecutable then
+                -- it's a procedure, so run the procedure
+                self.Vm:execArray(op)
+            else
+                -- it's just a normal array, so put it on the stack
+                --print("REGULAR ARRAY")
+                self.Vm.OperandStack:push(op)
+            end
+        else
+            --print("PUSH EXECUTABLE_NAME: ", token.value, op)
+            self.Vm.OperandStack:push(op)
+        end
+    else
+        print("UNKNOWN EXECUTABLE_NAME: ", name)
+    end
+end
 
 -- bs - type can be either 'string' or 'ectetstream' (table)
-function Interpreter.run(self, bs)
-    if type(bs) == "string" then
-        bs = octetstream(bs)
-    end
+function Interpreter.runStream(self, bs)
 
     local scnr = Scanner(self.Vm, bs)
+
+    -- Iterate through tokens
     for _, token in scnr:tokens(bs) do
-        print("INTERP: ", token)
+        --print("INTERP: ", token)
         
         if token.kind == TokenType.LITERAL_NAME then
-            self.Vm:pushLiteralName(token.value)
+            -- defining a name with '/name'
+            self.Vm.OperandStack:push(token.value)
         elseif token.kind == TokenType.EXECUTABLE_NAME then
-            -- lookup the name
-            local op = self.Vm.DictionaryStack:load(token.value)
-
-            -- if found, execute procedure
-            if op then
-                if type(op) == "function" then
-                    -- it's an operator, so call the function
-                    op(self.Vm)
-                elseif type(op) == "table" then
-                    if op.isExecutable then
-                        -- it's a procedure, so run the procedure
-                        self.Vm:execArray(op)
-                    else
-                        -- it's just a normal array, so put it on the stack
-                        print("REGULAR ARRAY")
-                        self.Vm.OperandStack:push(op)
-                    end
-                else
-                    --print("PUSH EXECUTABLE_NAME: ", token.value, op)
-                    self.Vm.OperandStack:push(op)
-                end
-            else
-                print("UNKNOWN EXECUTABLE_NAME: ", token.value)
-            end
-        elseif token.kind == TokenType.EXECUTABLE_ARRAY then
-            -- a procedure
-            self.Vm:push(token.value)
+            self:execName(token.value)
+        elseif token.kind == TokenType.LITERAL_ARRAY then
+            self.Vm.OperandStack:push(token.value)
+        elseif token.kind == TokenType.PROCEDURE then
+            -- pure procedure definition, push it on the stack
+            -- probably saving for a bind or control flow or looping
+            self.Vm.OperandStack:push(token.value)
         else
+            -- it's some other literal value type
             --print("INTERP, push: ", TokenType[token.kind], token.value)
-            self.Vm:push(token.value)
+            self.Vm.OperandStack:push(token.value)
         end
 
         --print("--- stack ---")
         --self.Vm:pstack()
         --print("-----")
     end
+end
+
+function Interpreter.run(self, bs)
+    if type(bs) == "string" then
+        bs = octetstream(bs)
+    end
+
+    return self:runStream(bs)
 end
 
 return Interpreter

@@ -19,6 +19,6 @@ local f = io.open(filename, "r")
 local bytes = f:read("*a")
 f:close()
 
-print("run")
+print("==== RUN SCRIPT ====")
 interp:run(bytes)
-print("finished")
+print("==== FINISHED ====")

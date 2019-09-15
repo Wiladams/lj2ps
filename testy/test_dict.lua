@@ -26,7 +26,7 @@ vm:dict()
 vm:BEGIN(vm)
 
 -- /proc1 { pop } def  
-vm:pushLiteralName("proc1")
+vm:push("proc1")
 vm:push(ops.pop)
 vm:def()
 

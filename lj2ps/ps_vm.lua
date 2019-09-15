@@ -91,7 +91,7 @@ end
 --[[
     Built-in functions, NOT operators
 ]]
-
+--[[
 -- push a value onto the operand stack
 function PSVM.push(self, value)
     -- check the type of the value
@@ -108,26 +108,15 @@ function PSVM.push(self, value)
 
     return true
 end
-
-
-
-
-function PSVM.pushExecutableName(self, name)
-end
-
-
-function PSVM.pushLiteralName(self, value)
-    self.OperandStack:push(value)
-    return true
-end
+--]]
 
 function PSVM.beginProc(self)
-    --self.isBuildingProcedure = true
     self.OperandStack:push(ps_common.MARK)
     self.buildProcDepth = self.buildProcDepth + 1
 end
 
 function PSVM.endProc(self)
+    --self:pstack()
     self:endArray()
     local arr = self.OperandStack:pop()
     arr.isExecutable = true;
@@ -148,14 +137,14 @@ end
     and calling procedures will work.
 ]]
 function PSVM.execArray(self, arr)
-    print("EXEC EXECUTABLE ARRAY: ", #arr)
+    --print("EXEC EXECUTABLE ARRAY: ", #arr)
     --print("--- stack ---")
     --self.Vm:pstack()
     --print("----")
 
     for i=1,#arr do
         local value = arr[i]
-        print(value)
+        --print(value)
 
         -- lookup the name
         -- BUGBUG, need to distinguish between literal things
@@ -192,7 +181,7 @@ function PSVM.bindArray(self, arr)
 
     for i=1,#arr do
         local value = arr[i]
-        --print(value)
+        --print("  BIND_ARRAY: ", value, type(value))
 
         -- lookup the name
         -- BUGBUG, need to distinguish between literal things
@@ -202,28 +191,27 @@ function PSVM.bindArray(self, arr)
         local op = self.DictionaryStack:load(value)
 --print("op: ", op)
         if op then
-            if type(op) == "function" then
-                -- it's an operator, so call the function
-                op(self)
-            elseif type(op) == "table" then
-                -- handle a bit of 'recursion'
-                -- if the thing is an executable array
-                -- then call it
+            if type(op) == "table" then
                 if op.isExecutable then
-                    self:execArray(value)
+                    -- recursive binding
+                    bindArray(op)
+                else
+                    -- just a regular array or dictionary
+                    self.OperandStack:push(op)
                 end
             else
-                -- the lookup gave us back a literal value
-                -- so put it on the stack
                 self.OperandStack:push(op)
             end
         else
+            -- lookup unsuccessfu, just put it back on the stack
+            -- it's some form of literal (bool, number, string)
             self.OperandStack:push(value)
         end
-        --print("---- stack ----")
-        --self:pstack()
-        --print("-----")
+
     end
+    --print("---- stack ----")
+    --self:pstack()
+    --print("-----")
 end
 
 function PSVM.bind(self)
@@ -240,6 +228,10 @@ function PSVM.bind(self)
     arr = self:endProc()
 
     self.OperandStack:push(arr)
+
+    --print("-- stack after bind --")
+    --self:pstack()
+    --print("-----")
 end
 
 

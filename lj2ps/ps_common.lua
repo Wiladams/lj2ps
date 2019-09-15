@@ -8,6 +8,7 @@ as well as a parse state.  Makes things easier
 local TokenType = enum {                                   
     -- Single-character tokens.                      
     -- matched sets
+--[[
     "LEFT_PAREN",       -- (
     "RIGHT_PAREN",      -- )
     "LEFT_ANGLE",       -- <
@@ -16,8 +17,9 @@ local TokenType = enum {
     "RIGHT_BRACKET",    -- ]
     "LEFT_BRACE",       -- {
     "RIGHT_BRACE",      -- }
+--]]
 
-
+--[[
     -- single characters
     "COLON",        -- :
     "COMMA",        -- ,
@@ -29,20 +31,11 @@ local TokenType = enum {
     "SLASH",        -- /
     "STAR",         -- *
     "QUESTION",     -- ?
+--]]
 
-
-
-    -- values                                     
-    "BEGIN_OBJECT",
-    "END_OBJECT",
-    
-    "BEGIN_PROCEDURE",  -- {
-    "END_PROCEDURE",    -- }
-
-    "BEGIN_ARRAY",      -- [
-    "END_ARRAY",        -- ]
-    "LITERAL_ARRAY",
-    "EXECUTABLE_ARRAY",
+    -- Token Kinds
+    "LITERAL_ARRAY",    -- []
+    "PROCEDURE",        -- {}
     
     "LITERAL_NAME",     -- /name
     "EXECUTABLE_NAME",  -- name
@@ -58,7 +51,7 @@ local Token_mt = {
     __tostring = function(self)
         --print("__tostring, Kind: ", self.Kind, TokenType[self.Kind])
         --return string.format("'%s' %s %s", TokenType[self.kind], self.lexeme, self.literal or self.value or '')
-        return string.format("'%s' %s", TokenType[self.kind], self.literal or self.value or '')
+        return string.format("'%s' %s", TokenType[self.kind], tostring(self.value))
     end;
 }
 local function Token(obj)

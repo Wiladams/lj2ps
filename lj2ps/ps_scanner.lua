@@ -30,12 +30,7 @@ local function isgraph(c)
 	return c > 0x20 and c < 0x7f
 end
 
---[[
-local function iswhitespace(c)
-    return c == B' ' or c == B'\t' or
-        c == B'\n' or c == '\r'
-end
---]]
+
 local function skipspaces(bs)
     while true do
         if bs:isEOF() then
@@ -160,17 +155,17 @@ end
 -- Doing it this way would avoid going through the 
 -- Postscript VM and operand stack.
 lexemeMap[B'{'] = function(self, bs) 
-    print("LEFT_CURLY BRACE")
+    --print("LEFT_CURLY BRACE")
     self.Vm:beginProc()
 end
 
 lexemeMap[B'}'] = function(self, bs)
-    print("RIGHT_CURLY_BRACE")
+    --print("RIGHT_CURLY_BRACE")
 
     local arr = self.Vm:endProc()
 
     -- and hand an executable array to the scanner
-    return Token{kind = TokenType.EXECUTABLE_ARRAY, value = arr, line=bs:tell()}
+    return Token{kind = TokenType.PROCEDURE, value = arr, line=bs:tell()}
 end
 
 -- processing a comment, consume til end of line or EOF
@@ -248,6 +243,12 @@ local function lex_name(self, bs)
     local tok =  Token{kind = TokenType.EXECUTABLE_NAME, value = value, position=bs:tell()}
 
     if value == "true" or value == "false" then
+        if value == "true" then
+            tok.value = true
+        else
+            tok.value = false
+        end
+
         tok.kind = TokenType.BOOLEAN    
     end
 
@@ -306,16 +307,16 @@ function Scanner.tokens(self)
                 local tok, err = lexemeMap[c](self, bs)
                 if tok then
                     if self.Vm:isBuildingProc() then
-                        self.Vm:push(tok.value)
+                        self.Vm.OperandStack:push(tok.value)
                     else
                         return bs:tell(), tok
                     end
                 else
-                    print("no token for: "..string.char(c))
+                    --print("no token for: "..string.char(c))
                     -- deal with error if there was one
                 end
             else
-                if digitChars[c] or c == B'-' then
+                if digitChars[c] or c == B'-' or c == B'.' then
                     bs:skip(-1)
                     local value = lex_number(self, bs)
 

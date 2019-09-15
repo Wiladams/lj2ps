@@ -49,6 +49,7 @@ end
 -- Associate key and value in current dictionary
 function DictionaryStack.def(self, key, value)
     local current = self:currentdict()
+    --print("DictionaryStack.def: ", key, value)
     rawset(current, key, value)
 end
 
@@ -56,7 +57,8 @@ function DictionaryStack.load(self, key)
     -- search for which dictionary has the key
     -- in stack order
     local d = self:where(key)
-    
+    --print("Dictionary.load: ", key, d)
+
     -- if we didn't find the key, then return nil
     if not d then 
         return nil 

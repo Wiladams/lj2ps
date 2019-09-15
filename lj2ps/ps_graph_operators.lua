@@ -103,7 +103,7 @@ exports.currentdash = currentdash
 -- currentgray
 local function setgray(vm)
     local value = vm.OperandStack:pop()
-    vm.Driver:setGray(value)
+    vm.Driver:setGraya(value)
 
     return true
 end

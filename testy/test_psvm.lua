@@ -62,7 +62,7 @@ local function test_stack()
 end
 
 local function test_procedure()
-    vm:pushLiteralName("average")
+    vm:push("average")
     vm:beginProcedure()
     vm:pushOperator('add')
     vm:push(2)

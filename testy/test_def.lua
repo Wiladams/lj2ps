@@ -9,7 +9,7 @@ local ops = require("lj2ps.ps_operators")
 --]]
 
 local vm = PostscriptVM()
-vm:pushLiteralName("ppi")
+vm:push("ppi")
 vm:push(72)
 vm:def()
 

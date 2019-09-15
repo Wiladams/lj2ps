@@ -166,6 +166,7 @@ exports.sub = sub
 local function mul(vm)
     local num2 = vm.OperandStack:pop()
     local num1 = vm.OperandStack:pop()
+    print("MUL: ", num1, num2)
     vm.OperandStack:push(num1*num2)
 end
 exports.mul = mul
@@ -381,6 +382,7 @@ exports.def = def
 local function load(vm)
     local key = vm.OperandStack:pop()
     local value = vm.DictionaryStack:load(key)
+    print("LOAD: ", key, value)
     if not value then
         vm.OperandStack:push(ps_common.NULL)
     else
