@@ -71,9 +71,13 @@ function Interpreter.runStream(self, bs)
 
     -- Iterate through tokens
     for _, token in scnr:tokens(bs) do
-        --print("INTERP: ", token)
-        
-        if token.kind == TokenType.LITERAL_NAME then
+        print("INTERP: ", token)
+        if token.kind == TokenType.BOOLEAN or 
+            token.kind == TokenType.NUMBER or
+            token.kind == TokenType.STRING or
+            token.kind == TokenType.HEXSTRING then
+            self.Vm.OperandStack:push(token.value)
+        elseif token.kind == TokenType.LITERAL_NAME then
             -- defining a name with '/name'
             self.Vm.OperandStack:push(token.value)
         elseif token.kind == TokenType.EXECUTABLE_NAME then
@@ -86,8 +90,9 @@ function Interpreter.runStream(self, bs)
             self.Vm.OperandStack:push(token.value)
         else
             -- it's some other literal value type
+            print("INTERP, KUNKNOWN Token Kind: ", token.kind)
             --print("INTERP, push: ", TokenType[token.kind], token.value)
-            self.Vm.OperandStack:push(token.value)
+            --self.Vm.OperandStack:push(token.value)
         end
 
         --print("--- stack ---")

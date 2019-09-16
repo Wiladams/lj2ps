@@ -179,7 +179,7 @@ function PSVM.execArray(self, arr)
     -- The array should be filled with tokens
     for i=1,#arr do
         local value = arr[i]
-        print("  ARR: ", value, type(value))
+        --print("  ARR: ", value, type(value))
 
         if value.kind then
             print("KIND: ", TokenType[value.kind], value.value)
