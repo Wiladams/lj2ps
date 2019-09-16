@@ -36,6 +36,7 @@ local TokenType = enum {
     -- Token Kinds
     "LITERAL_ARRAY",    -- []
     "PROCEDURE",        -- {}
+    "OPERATOR",         -- a function which has been bound
     
     "LITERAL_NAME",     -- /name
     "EXECUTABLE_NAME",  -- name

@@ -17,6 +17,7 @@
 local ps_common = require("lj2ps.ps_common")
 local Stack = ps_common.Stack
 local TokenType = ps_common.TokenType
+local Token = ps_common.Token
 
 local ops = require("lj2ps.ps_operators")
 local gops = require("lj2ps.ps_graph_operators")
@@ -131,18 +132,22 @@ function PSVM.isBuildingProc(self)
 end
 
 function PSVM.execName(self, name)
-    print("== EXEC NAME ==: ", name)
     -- lookup the name
     local op = self.DictionaryStack:load(name)
+    local otype = type(op)
+    --print("PSVM.execName: ", name, op, otype)
 
-    print("  EXEC NAME LOOKUP: ", name, op, type(op))
     -- op can either be one of the literal types
     -- bool, number, string, null
     -- or it's a table or function
     -- if it's a table, we need to check whether it's a procedure
     -- or an array
     if op then
-        if type(op) == "function" then
+        if otype == "boolean" or
+            otype == "number" or
+            otype == "string" then
+            self.OperandStack:push(op)
+        elseif otype == "function" then
             -- it's a function operator, so execute it
             op(self)
         elseif type(op) == "table" then
@@ -150,25 +155,30 @@ function PSVM.execName(self, name)
                 -- it's a procedure, so run the procedure
                 self:execArray(op)
             else
-                -- it's just a normal array, so put it on the stack
+                -- it's just a normal array, or dictionary, so put it on the stack
                 --print("REGULAR ARRAY")
                 self.OperandStack:push(op)
             end
         else
+            print("UNKNOWN EXECUTABLE TYPE: ", name, otype)
             --print("PUSH EXECUTABLE_NAME: ", token.value, op)
-            self.OperandStack:push(op)
+            --self.Vm.OperandStack:push(op)
         end
     else
         print("UNKNOWN EXECUTABLE_NAME: ", name)
     end
+
+    return true
 end
+
 
 --[[
     Given an executable array, go through and start executing
     the elements of that array.  
 
-    Currently, putting elementary types on the stack, calling ops
-    and calling procedures will work.
+    The elements within the array are the same as they were
+    when the procedure was constructed.  All elements are
+    token objects.
 ]]
 function PSVM.execArray(self, arr)
     print("== EXEC EXECUTABLE ARRAY: ==", #arr)
@@ -182,8 +192,7 @@ function PSVM.execArray(self, arr)
         --print("  ARR: ", value, type(value))
 
         if value.kind then
-            print("KIND: ", TokenType[value.kind], value.value)
-
+            --print("KIND: ", TokenType[value.kind], value.value)
 
             if value.kind == TokenType.BOOLEAN or 
                value.kind == TokenType.NUMBER or
@@ -194,6 +203,9 @@ function PSVM.execArray(self, arr)
                 -- STRING
                 -- HEXSTRING
                 self.OperandStack:push(value.value)
+            elseif value.kind == TokenType.OPERATOR then
+                -- it's a function pointer, so execute it
+                value.value(self) 
             elseif  value.kind == TokenType.LITERAL_NAME then
                 -- LITERAL_NAME
                 self.OperandStack:push(value.value)
@@ -205,23 +217,69 @@ function PSVM.execArray(self, arr)
                 self.OperandStack:push(value.value)
             elseif value.kind == TokenType.PROCEDURE then
                 -- PROCEDURE
-                self:execArray(value.value)
-            elseif value.isExecutable then
-                self:execArray(value)
+                self.OperandStack:push(value.value)
             else
                 print("UNKNOWN VALUE KIND: ", value.kind, value.value)
-                --self.OperandStack:push(value)
             end
         end
     end
 end
 
+-- binding an array, basically reconstructing a 
+-- procedure binding ops to their actual functions
 function PSVM.bindArray(self, arr)
     --print("BIND EXECUTABLE ARRAY: ", #arr)
     --print("--- stack ---")
     --self.Vm:pstack()
     --print("----")
 
+    for i=1,#arr do
+        local tok = arr[i]
+        --print("  ARR: ", tok, type(tok))
+
+        if tok.kind then
+            print("bindArray, KIND: ", TokenType[tok.kind], tok.value)
+
+            if tok.kind == TokenType.BOOLEAN or 
+                tok.kind == TokenType.NUMBER or
+                tok.kind == TokenType.STRING or
+                tok.kind == TokenType.HEXSTRING then
+                -- BOOLEAN
+                -- NUMBER
+                -- STRING
+                -- HEXSTRING
+                -- For these literals, just push the token back 
+                -- on the operand stack
+                self.OperandStack:push(tok)
+            elseif  tok.kind == TokenType.LITERAL_NAME then
+                -- LITERAL_NAME
+                self.OperandStack:push(tok)
+            elseif tok.kind == TokenType.EXECUTABLE_NAME then
+                -- EXECUTABLE_NAME
+                -- lookup the executable thing and put that on the stack
+                local op = self.DictionaryStack:load(tok.value)
+                if op and type(op) == "function" then
+                    local functok = Token{kind = TokenType.OPERATOR, value=op}
+                    self.OperandStack:push(functok)
+                else
+                    -- it's not a function, so just put the 
+                    -- name back on the stack for later lookup
+                    self.OperandStack:push(tok)
+                end
+            elseif tok.kind == TokenType.LITERAL_ARRAY then
+                -- LITERAL_ARRAY
+                self.OperandStack:push(tok)
+            elseif tok.kind == TokenType.PROCEDURE then
+                -- PROCEDURE
+                -- put the procedure back on the stack
+                self.OperandStack:push(tok)
+            else
+                print("BIND UNKNOWN VALUE KIND: ", value.kind, value.value)
+            end
+        end
+    end
+
+--[[
     for i=1,#arr do
         local value = arr[i]
         --print("  BIND_ARRAY: ", value, type(value))
@@ -252,9 +310,8 @@ function PSVM.bindArray(self, arr)
         end
 
     end
-    --print("---- stack ----")
-    --self:pstack()
-    --print("-----")
+--]]
+
 end
 
 function PSVM.bind(self)
