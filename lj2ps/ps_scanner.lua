@@ -307,7 +307,7 @@ function Scanner.tokens(self)
                 local tok, err = lexemeMap[c](self, bs)
                 if tok then
                     if self.Vm:isBuildingProc() then
-                        self.Vm.OperandStack:push(tok.value)
+                        self.Vm.OperandStack:push(tok)
                     else
                         return bs:tell(), tok
                     end
@@ -319,12 +319,13 @@ function Scanner.tokens(self)
                 if digitChars[c] or c == B'-' or c == B'.' then
                     bs:skip(-1)
                     local value = lex_number(self, bs)
+                    local tok = Token({kind = TokenType.NUMBER, value=value, line=bs:tell()})
 
                     if value then
                         if self.Vm:isBuildingProc() then
-                            self.Vm.OperandStack:push(value)
+                            self.Vm.OperandStack:push(tok)
                         else
-                            return bs:tell(), Token({kind = TokenType.NUMBER, value=value, line=bs:tell()})
+                            return bs:tell(), tok
                         end
                     end
                     
@@ -332,12 +333,12 @@ function Scanner.tokens(self)
                     bs:skip(-1)
                     local tok = lex_name(self, bs)
                     if self.Vm:isBuildingProc() then
-                        self.Vm.OperandStack:push(tok.value)
+                        self.Vm.OperandStack:push(tok)
                     else
                         return bs:tell(), tok
                     end
                 else
-                    print("UNKNOWN: ", c, string.char(c)) 
+                    print("SCANNER UNKNOWN: ", c, string.char(c)) 
                 end
             end
         end

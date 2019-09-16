@@ -372,7 +372,7 @@ exports.put = put
 local function def(vm)
     local value = vm.OperandStack:pop()
     local key = vm.OperandStack:pop()
-print("def: ", key, value)
+print("DEF: ", key, value)
     return vm.DictionaryStack:def(key, value)
 end
 exports.def = def
@@ -584,6 +584,7 @@ local function known(vm)
 
     return true
 end
+exports.known = known
 
 --maxlength
 
@@ -596,6 +597,7 @@ local function undef(vm)
 
     return true;
 end
+exports.undef = undef
 
 -- <<key1,value1, key2,value2...>>
 -- <<, alias for mark

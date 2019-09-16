@@ -15,5 +15,5 @@ interp:run([[
 %/bdef {bind def} bind def
 %/ldef {load def} bdef
 %/xdef {exch def} bdef
-pstack
+
 ]])

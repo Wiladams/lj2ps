@@ -1,0 +1,18 @@
+%!
+/test {
+    newpath
+    0 0 moveto
+    100 100 lineto
+    4 setlinewidth
+
+    3 3 le {
+        0 1 0 setrgbcolor
+    } {
+        1 0 0 setrgbcolor
+    } ifelse
+
+    stroke
+} def
+
+test
+showpage

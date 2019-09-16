@@ -16,6 +16,7 @@
 
 local ps_common = require("lj2ps.ps_common")
 local Stack = ps_common.Stack
+local TokenType = ps_common.TokenType
 
 local ops = require("lj2ps.ps_operators")
 local gops = require("lj2ps.ps_graph_operators")
@@ -129,6 +130,39 @@ function PSVM.isBuildingProc(self)
     return self.buildProcDepth > 0
 end
 
+function PSVM.execName(self, name)
+    print("== EXEC NAME ==: ", name)
+    -- lookup the name
+    local op = self.DictionaryStack:load(name)
+
+    print("  EXEC NAME LOOKUP: ", name, op, type(op))
+    -- op can either be one of the literal types
+    -- bool, number, string, null
+    -- or it's a table or function
+    -- if it's a table, we need to check whether it's a procedure
+    -- or an array
+    if op then
+        if type(op) == "function" then
+            -- it's a function operator, so execute it
+            op(self)
+        elseif type(op) == "table" then
+            if op.isExecutable then
+                -- it's a procedure, so run the procedure
+                self:execArray(op)
+            else
+                -- it's just a normal array, so put it on the stack
+                --print("REGULAR ARRAY")
+                self.OperandStack:push(op)
+            end
+        else
+            --print("PUSH EXECUTABLE_NAME: ", token.value, op)
+            self.OperandStack:push(op)
+        end
+    else
+        print("UNKNOWN EXECUTABLE_NAME: ", name)
+    end
+end
+
 --[[
     Given an executable array, go through and start executing
     the elements of that array.  
@@ -137,38 +171,47 @@ end
     and calling procedures will work.
 ]]
 function PSVM.execArray(self, arr)
-    --print("EXEC EXECUTABLE ARRAY: ", #arr)
+    print("== EXEC EXECUTABLE ARRAY: ==", #arr)
     --print("--- stack ---")
-    --self.Vm:pstack()
+    --self:pstack()
     --print("----")
 
+    -- The array should be filled with tokens
     for i=1,#arr do
         local value = arr[i]
-        --print(value)
+        print("  ARR: ", value, type(value))
 
-        -- lookup the name
-        -- BUGBUG, need to distinguish between literal things
-        -- and executable things.  We can do it for tables
-        -- but not for strings.  Relying on the dictionary won't
-        -- allow for things like redefining a stored variable
-        local op = self.DictionaryStack:load(value)
+        if value.kind then
+            print("KIND: ", TokenType[value.kind], value.value)
 
-        if op then
-            if type(op) == "function" then
-                -- it's an operator, so call the function
-                op(self)
-            elseif type(op) == "table" then
-                -- handle a bit of 'recursion'
-                -- if the thing is an executable array
-                -- then call it
-                if op.isExecutable then
-                    self:execArray(op)
-                end
+
+            if value.kind == TokenType.BOOLEAN or 
+               value.kind == TokenType.NUMBER or
+               value.kind == TokenType.STRING or
+               value.kind == TokenType.HEXSTRING then
+                -- BOOLEAN
+                -- NUMBER
+                -- STRING
+                -- HEXSTRING
+                self.OperandStack:push(value.value)
+            elseif  value.kind == TokenType.LITERAL_NAME then
+                -- LITERAL_NAME
+                self.OperandStack:push(value.value)
+            elseif value.kind == TokenType.EXECUTABLE_NAME then
+                -- EXECUTABLE_NAME
+                self:execName(value.value)
+            elseif value.kind == TokenType.LITERAL_ARRAY then
+                -- LITERAL_ARRAY
+                self.OperandStack:push(value.value)
+            elseif value.kind == TokenType.PROCEDURE then
+                -- PROCEDURE
+                self:execArray(value.value)
+            elseif value.isExecutable then
+                self:execArray(value)
             else
-                self.OperandStack:push(op)
+                print("UNKNOWN VALUE KIND: ", value.kind, value.value)
+                --self.OperandStack:push(value)
             end
-        else
-            self.OperandStack:push(value)
         end
     end
 end
