@@ -1,0 +1,59 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 500 225
+%%BeginProlog
+/u 16 def % 16 point per unit
+/lw {1 u div} def % default linewidth
+/Times-Roman findfont 8 u div scalefont setfont 
+/display {dup 3 1 roll 10 exch exp mul round 
+          10 3 -1 roll exp div} def
+/str {10 string} def
+/n 10 def
+/dp 2 def % display precision
+%%EndProlog
+u dup scale
+lw setlinewidth
+1.8 1.8 translate
+% left diagram
+0 1 n { 
+  /i exch def
+  i 0.1 add -0.75 moveto
+  i n div dp display str cvs show % draw horizontal label 
+  -1 i 0.25 add moveto
+  i n div dp display str cvs show % draw vertical label   
+  0 1 n {
+    /j exch def 
+    gsave  % draw filled rectangle
+      i n div j n div add 3 div dup dup setrgbcolor
+      newpath i j 1 1 rectfill
+      0 setgray
+      newpath i j 1 1 rectstroke
+    grestore
+    } for
+} for
+n 2 div -1.5 moveto (r) show
+-1.5 n 2 div moveto (g) show
+n 2 div 1.5 sub n 1.5 add moveto (normal gray shading) show
+%
+n 3 add 0 translate
+% right diagram
+0 1 n { 
+  /i exch def
+  i 0.1 add -0.75 moveto
+  i n div dp display str cvs show % draw horizontal label 
+  -1 i 0.25 add moveto
+  i n div dp display str cvs show % draw vertical label   
+  0 1 n {
+    /j exch def 
+    gsave  % draw filled rectangle
+      0.3 i n div mul 0.59 j n div mul add dup dup setrgbcolor
+      newpath i j 1 1 rectfill
+      0 setgray
+      newpath i j 1 1 rectstroke
+    grestore
+    } for
+} for
+n 2 div -1.5 moveto (r) show
+-1.5 n 2 div moveto (g) show
+n 2 div 1 sub n 1.5 add moveto (tv gray shading) show
+showpage
+%%EOF

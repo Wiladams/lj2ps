@@ -1,0 +1,47 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 173 150
+%%BeginProlog
+/n 4 def % how many iterations 
+/u 147 def % 147 points per unit (about 3*sqrt(3) cm)
+/lw 1 u div def 
+/side {
+    dup     % store current depth
+    0 gt {  % test if depth is already 0
+      1 sub % reduce depth by 1
+      1 3 div dup scale % scale to 1/3
+      /lw 3 lw mul def % adjust linewidth
+      lw setlinewidth
+      %%%%% draw one side as components
+      side 
+      60 rotate side 
+      -120 rotate side 
+      60 rotate side % 
+      3 dup scale % back to original scale
+      /lw lw 3 div def % reset linewidth
+      lw setlinewidth
+      1 add % restore prev depth to stack
+    }
+    {
+      newpath 
+      %%%%% draw line from 0,0 to 0,1 in current coordinate system
+      0 0 moveto 0 1 lineto stroke 
+      0 1 translate
+    }
+    ifelse
+} bind def
+
+/Koch { % draw initial triangle
+    side 
+    -120 rotate side
+    -120 rotate side
+    pop % clear stack
+} bind def
+%%EndProlog
+u dup scale
+lw setlinewidth
+1 setlinecap
+0.3 0.01 translate
+n Koch
+showpage
+showpage
+%%EOF

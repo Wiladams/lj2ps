@@ -1,0 +1,77 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 120 136
+%%Pages: 1
+/point {1.5 0 360 arc gsave 0 setgray fill grestore stroke} def
+/arrowhead {
+   gsave
+	currentpoint
+	4 2 roll exch 4 -1 roll exch
+	sub 3 1 roll sub
+	exch atan rotate dup scale
+	-7 2 rlineto
+	1 -2 rlineto
+	-1 -2 rlineto
+	closepath fill
+   grestore
+   newpath
+} bind def
+/f1 {/Times-Italic findfont 10 scalefont setfont} bind def
+/f2 {/Times-Italic findfont 9 scalefont setfont} bind def
+/f3 {/Times-Roman findfont 10 scalefont setfont} bind def
+/f4 {/Times-Roman findfont 7 scalefont setfont} bind def
+/fs {/Symbol findfont 10 scalefont setfont} bind def
+%%EndProlog
+%%Page: 1 1
+16 40 translate
+newpath 
+[2] 0 setdash
+% draw dashed lines
+0.6 setlinewidth
+-10 0 moveto
+72 0 lineto
+0 0 moveto 
+30 cos 90 mul 30 sin 90 mul lineto
+0 0 moveto 
+80 cos 90 mul 80 sin 90 mul lineto
+stroke
+[] 0 setdash
+%
+% draw curved arrows
+newpath
+0 0 44 0 30 arc stroke
+30 cos 44 mul 30 sin 44 mul moveto
+1 48 0 arrowhead
+0 0 50 0 80 arc stroke
+80 cos 50 mul 80 sin 50 mul moveto
+1 200 0 arrowhead
+1.2 setlinewidth
+%
+% draw line and arc segment
+newpath
+50 -16 moveto
+0 0 72 30 80 arc 
+stroke
+newpath
+%
+% draw points
+0 0 point
+50 -16 point
+30 cos 72 mul 30 sin 72 mul point
+80 cos 72 mul 80 sin 72 mul point
+%
+% draw text
+-9 -9 moveto fs (\050) show f1 (x,y) show fs (\051) show 
+18 5 moveto f1 (angle) show
+39 1 moveto f4 (1) show 
+9 33 moveto f1 (angle) show
+31 28 moveto f4 (2) show 
+38 -25 moveto f3 (current) show
+43 -33 moveto f3 (point) show
+30 cos 72 mul 10 add 30 sin 72 mul 4 sub moveto f3 (first) show
+30 cos 72 mul 1 add 30 sin 72 mul 12 sub moveto f3 (endpoint) show
+80 cos 72 mul 7 add 80 sin 72 mul 10 add moveto f3 (second) show
+80 cos 72 mul 3 add 80 sin 72 mul 2 add moveto f3 (endpoint) show
+
+
+showpage
+%%EOF

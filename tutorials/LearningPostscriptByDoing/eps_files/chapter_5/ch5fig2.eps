@@ -1,0 +1,22 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 76 76
+%%BeginProlog
+/u 36 def % unit: 0.5 inch
+/lw {1 u div} def
+/n 6 def
+/da {360 n div} def % angle increment
+/a 90 def % initial angle
+%%EndProlog
+u dup scale
+lw setlinewidth
+1.05 1.05 translate
+%
+newpath
+0 1 moveto 
+n 1 sub {/a a da add def % increase angle
+   a cos a sin lineto
+} repeat
+closepath
+stroke
+showpage
+%%EOF

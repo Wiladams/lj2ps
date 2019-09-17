@@ -1,0 +1,33 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 120 120
+%%BeginProlog
+/u 28.34645 def % unit: 1 cm
+realtime srand % set seed for random number generation
+/point {1.5 u div 0 360 arc gsave fill grestore stroke} def
+/randnum {% stack:  l r
+          % output: random number between l and r
+   2 dict begin 
+   /r exch def 
+   /l exch def
+   r type /realtype eq r type /integertype eq or
+   l type /realtype eq r type /integertype eq or and
+   l r lt and {
+   r l r sub rand 1000 mod 1000 div mul add } 
+   { 0 } ifelse % 
+end } bind def  
+%
+/randpoint {% stack: l r b u
+            % output random point in region [l,r] x [b,u]
+            % in random color
+  /savecolor { currentrgbcolor } def
+  0 1 randnum 0 1 randnum 0 1 randnum setrgbcolor 
+  randnum 3 1 roll randnum % random point on stack
+  gsave newpath 1.5 u div 0 360 arc fill grestore
+  savecolor setrgbcolor
+} bind def
+%%EndProlog
+%%Page: 1 1
+u dup scale 0.1 0.1 translate 
+500 {0 4 0 4 randpoint} repeat
+showpage
+%%EOF

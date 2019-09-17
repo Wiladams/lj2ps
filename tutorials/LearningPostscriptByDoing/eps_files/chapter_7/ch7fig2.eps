@@ -1,0 +1,68 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 300 215
+%%BeginProlog
+/u 28.34568 def % unit: cm
+/size 1.8 def
+/branchrotation 50 def %
+/thinning 0.7 def
+/shortening 0.8 def
+/width 0.4 def% starting line width
+/min {2 copy gt {exch pop}{pop} ifelse }def
+/randdeviate {rand 1000 mod 1000 div mul} bind def 
+/colortable [ [0.013 0.750 0.028]
+              [0.109 0.937 0.118]
+              [0.085 0.727 0.092]
+              [0.070 0.602 0.076] 
+              [0.055 0.469 0.059]
+              [0.046 0.395 0.050]
+              [0.033 0.281 0.035]
+              [0.469 0.196 0.059]
+              [0.500 0.210 0.063]
+              [0.547 0.229 0.069]
+              [0.562 0.236 0.071]
+            ] def 
+/tree{ 
+  save 
+  3 dict begin % stack: n 
+    /saveobj exch def
+    /n exch def
+    n 0 gt {
+      newpath
+      gsave
+        0 0 moveto
+        colortable n 1 sub 10 min get aload pop setrgbcolor 
+        width setlinewidth
+        0 size rlineto
+        currentpoint currentpoint % store current point twice 
+        stroke
+      grestore
+      %%%%% draw right branch from current point
+      newpath
+      gsave
+        translate
+        thinning shortening scale
+        -10 branchrotation randdeviate sub rotate
+        0 0 n 1 sub tree
+        stroke
+      grestore
+      %%%%% draw left branch from current point
+      newpath
+      gsave
+        translate
+        thinning shortening scale
+        10 branchrotation randdeviate add rotate
+        n 1 sub tree
+        stroke
+      grestore
+    } if
+   saveobj
+  end 
+  restore
+} bind def
+%%EndProlog
+150 8 translate
+u dup scale
+1 setlinecap
+14 tree
+showpage
+%%EOF

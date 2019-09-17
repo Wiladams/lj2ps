@@ -1,0 +1,34 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 140 100
+%%BeginProlog
+/u 28.343452 def % unit: 1 cm
+/lw1 {1 u div} def
+/lw2 {1.5 u div} def
+/xmin 0 def /xmax 4 def
+/ymin 0 def /ymax 2 def
+/dx 0.01 def % stepsize
+%%EndProlog
+u dup scale
+0.75 1 translate
+lw1 setlinewidth
+2 setlinejoin
+2 setlinecap
+% draw axes
+newpath
+xmin 0 moveto xmax 0 lineto
+0 ymin moveto 0 ymax lineto
+stroke
+% draw graph
+0 0 1 setrgbcolor
+lw2 setlinewidth 1 setlinecap
+/x xmin def
+newpath
+x x sqrt moveto
+{/x x dx add def x xmax 0.0001 add gt {exit} if
+ x x sqrt lineto } loop
+stroke 
+showpage
+%%EOF
+
+
+

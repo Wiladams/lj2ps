@@ -1,0 +1,47 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 65 65
+%%BeginProlog
+/dir {dup cos exch sin} def
+/scalevec {3 dict begin
+/y exch def 
+/x exch def
+/s exch def
+s x mul s y mul
+end} def
+/addvec {4 dict begin
+/y2 exch def
+/x2 exch def
+/y1 exch def
+/x1 exch def
+x1 x2 add y1 y2 add
+end} def
+/s 28.34645 def
+/c 0.6 def 
+%%EndProlog
+s s scale
+1 s div setlinewidth
+1.1 1.1 translate
+%
+0 setgray
+newpath
+0 0 1 0 360 arc
+stroke
+newpath
+0 -1 moveto
+currentpoint c 157 dir scalevec addvec 
+0 0 c 203 dir scalevec addvec
+0 0
+curveto
+currentpoint c 23 dir scalevec addvec 
+0 1 c 347 dir scalevec addvec
+0 1
+curveto
+0 0 1 90 -90 arcn
+closepath
+%0 setgray
+fill
+newpath 0  0.5 0.1 0 360 arc fill
+1 setgray
+newpath 0 -0.5 0.1 0 360 arc fill
+showpage
+%%EOF 

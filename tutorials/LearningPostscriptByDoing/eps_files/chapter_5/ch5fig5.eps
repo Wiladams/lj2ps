@@ -1,0 +1,95 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 150 150
+%%BeginProlog
+/u 14.173225 def % unit: 0.5 cm
+/lw1 {1 u div} def
+/lw2 {0.7 u div} def
+/f1 {/Times-Roman findfont 10 u div scalefont setfont} bind def
+/f2 {/Times-Italic findfont 12 u div scalefont setfont} bind def
+/str 2 string def
+/sx 0.5 def % scale factors for x, y
+/sy 1 def
+/f { % the function f(x)
+  1 dict begin 
+  /x exch def
+  x 5 exp            % x^5
+  x 3 exp -5 mul add % -5x^3 
+  x 2 exp sub        % -x^2
+  x 4 mul add        % +4x
+  2 add              % +2
+end } bind def
+/f' { % the function f'(x)
+  1 dict begin
+  /x exch def
+  x 4 exp 5 mul       % 5x^4
+  x 2 exp -15 mul add % -15x^2
+  x 2 mul sub         % -2x
+  4 add               % +4
+end } bind def
+/scoord {% scales coordinates
+  % stack:      x y
+  exch sx div % y x/sx
+  exch sy div % x/sx y/sy
+} bind def
+/n 10 def
+/x0 -2.4 def % set x range that
+/x1 2.4 def  % contains 0
+/y0 -4.8 def % set yrange that
+/y1 4.8 def  % contains 0
+%%EndProlog
+u dup scale
+lw1 setlinewidth
+% translate origin
+x0 sx div neg 0.5 add 
+y0 sy div neg 0.5 add translate
+% draw axes
+lw2 setlinewidth
+newpath
+x0 0 scoord moveto x1 0 scoord lineto
+0 y0 scoord moveto 0 y1 scoord lineto
+stroke
+x1 sx div 0.4 sub 0.2 moveto f2 (x) show
+0.1 sx div y1 sy div 0.4 sub moveto f2 (y) show
+% draw ticks
+newpath
+/start x0 ceiling cvi def
+/finish x1 floor cvi def
+start 1 finish {/i exch def 
+  i 0 scoord moveto 0 0.1 rlineto
+  i 0 ne {-0.2 -0.75 rmoveto f1 i str cvs show} if
+} for
+/start y0 ceiling cvi def
+/finish y1 floor cvi def
+start 1 finish {/i exch def 
+  0 i scoord moveto 0.1 0 rlineto
+  i 0 lt {-0.8 -0.2 rmoveto f1 i str cvs show} if
+  i 0 gt {-0.6 -0.2 rmoveto f1 i str cvs show} if
+} for
+stroke
+% restrict drawing area
+x0 y0 scoord moveto 
+x1 y0 scoord lineto 
+x1 y1 scoord lineto 
+x0 y1 scoord lineto 
+closepath clip 
+% draw graph
+lw1 setlinewidth
+1 0 0 setrgbcolor
+/x x0 def
+/dx x1 x0 sub n div def
+newpath
+x x f scoord moveto % P0
+/f'x x f' def
+n {
+  x dx 3 div add
+  x f dx 3 div f'x mul add scoord % P1
+  /x x dx add def
+  x dx 3 div sub
+  /f'x x f' def
+  x f dx 3 div f'x mul sub scoord % P2
+  x x f scoord % P3
+  curveto
+} repeat
+stroke
+showpage
+%%EOF

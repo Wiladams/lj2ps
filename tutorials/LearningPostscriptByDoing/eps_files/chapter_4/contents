@@ -1,0 +1,13 @@
+List of files of chapter 4
+
+file		page	description
+====		====	===========		
+ch4fig1		42	dashing
+ch4fig2		44	color chart
+ch4fig3		46	linecap
+ch4fig4		46	linejoin
+ch4fig5		47	miterlimit
+ch4fig6		47	miter length
+
+ch4ex33		45	graylevel chart
+ch4ex34		45	tv color to gray conversion

@@ -1,0 +1,57 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 140 100
+%%BeginProlog
+/u 28.343452 def % unit: 1 cm
+/lw1 {1 u div} def
+/lw2 {1.5 u div} def
+/fr {/Helvetica findfont 10 u div scalefont setfont} bind def
+/fi {/Helvetica-Italic findfont 10 u div scalefont setfont} bind def
+/fs {/Symbol findfont 10 u div scalefont setfont} bind def
+/f { % the function f(x)
+  1 dict begin 
+  /x exch def
+  x sqrt % sqrt(x)
+end } bind def
+/xmin 0 def /xmax 4 def /ymin 0 def /ymax 2 def
+/txmin xmin ceiling def  /txmax xmax floor def % ticks
+/tymin ymin ceiling def  /tymax ymax floor def 
+/dx 0.01 def % stepsize
+%%EndProlog
+u dup scale
+0.75 1 translate
+lw1 setlinewidth 2 setlinecap
+% draw axes
+newpath
+xmin 0 moveto xmax 0 lineto
+0 ymin moveto 0 ymax lineto
+stroke
+% draw ticks and axis labels
+newpath
+txmin 1 txmax {/i exch def 
+  i 0 moveto 0 0.1 rlineto
+  -0.1 -0.5 rmoveto fr i 1 string cvs show
+} for
+tymin 1 tymax {/i exch def 
+  0 i moveto 0.1 0 rlineto
+  -0.4 -0.1 rmoveto fr i 1 string cvs show
+} for
+% draw text
+txmax txmin sub 2 div 0.1 sub -0.8 moveto fi (x) show
+-0.6 tymax tymin sub 2 div 0.1 sub moveto fi (y) show
+2.5 1.2 moveto fi (y) show fr ( = ) show fs (\326) show fi (x) show
+3.08 1.21 moveto fs (\140) show
+stroke
+% draw graph
+0 0 1 setrgbcolor
+lw2 setlinewidth 0 setlinecap 
+/x xmin def
+newpath
+x x f moveto
+{/x x dx add def x xmax 0.0001 add gt {exit} if
+ x x f lineto } loop
+stroke 
+showpage
+%%EOF
+
+
+

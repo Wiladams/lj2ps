@@ -1,0 +1,58 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 150 150
+%%BeginProlog
+/u 28.34645 def % unit: 1 cm
+/lw1 1 u div def 
+/lw2 0.7 u div def  
+/f1 {/Times-Roman findfont 8 u div scalefont setfont} bind def
+/f2 {/Times-Italic findfont 8 u div scalefont setfont} bind def
+/n 3000 def % number of line segments
+/dt 0.01 def
+/mu 0.8 def
+%%EndProlog
+%%%%%%%%% x(t) and y(t) vs. t
+75 75 translate
+u dup scale
+lw2 setlinewidth
+2 setlinejoin
+%%%%% draw axes
+newpath
+-2.6 0 moveto
+2.6 0 lineto
+0 -2.6 moveto
+0 2.6 lineto
+-2 1 2 { /i exch def
+  i 0 moveto 0 0.1 rlineto
+} for
+-2 1 2 { /i exch def
+  0 i moveto 0.1 0 rlineto
+} for
+stroke
+% labels
+-2.3 -0.25 moveto f1 (-2) show
+-1.13 -0.25 moveto f1 (-1) show
+ 0.95 -0.25 moveto f1 (1) show
+ 2.07 -0.25 moveto f1 (2) show
+-0.25 -1.95 moveto f1 (-2) show
+-0.25 -1.1 moveto f1 (-1) show
+-0.17 -0.25 moveto f1 (0) show
+-0.17  0.9 moveto f1 (1) show
+-0.17  1.77 moveto f1 (2) show
+%%%%% approximation of x(t) and y(t)
+newpath 
+lw1 setlinewidth
+1 0 0 setrgbcolor
+/t 0 def
+/x 0 def /y 0.1 def 
+x y moveto % initial position
+n {
+  /x' y def % x' = y, y'=-x+mu*(1-x^2)*y   
+  /y' x neg mu 1 x x mul sub mul y mul add def 
+  /x x x' dt mul add def
+  /y y y' dt mul add def
+  /t t dt add def
+  x y lineto 
+} repeat
+stroke
+showpage
+%%EOF

@@ -1,0 +1,76 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 230 175
+%%BeginProlog
+/u 28.34645 def % unit: 1 cm
+/e 2.71828 def  % base of natural logarithm
+/lw1 {1 u div} def
+/lw2 {1.5 u div} def
+/fr {/Times-Roman findfont 10 u div scalefont setfont} bind def
+/fi {/Helvetica-Italic findfont 10 u div scalefont setfont} bind def
+/fis {/Helvetica-Italic findfont 7 u div scalefont setfont} bind def
+/str 10 string def
+/f { % the function f(x)
+  1 dict begin 
+  /x exch def
+  e x exp 1 x add div % f(x) = exp(x)/(1+x)
+end } bind def
+/coord {% coordinates in logplot
+  % stack: x y
+  log 2.5 mul    % x 2.5*log10(y)
+} bind def
+/n 100 def
+/xmax 6 def 
+/ny 2 def
+/ymax 10 ny exp def % always choose a power of 10 
+%%EndProlog
+u dup scale
+% translate origin
+1 0.6 translate
+% draw axes
+lw1 setlinewidth
+newpath
+0 1 coord moveto xmax 0.5 add 1 coord lineto
+0 1 coord moveto 0 ymax coord 0.5 add lineto
+xmax 0.3 add -0.4 moveto fi (x) show
+-0.3 ymax coord 0.3 add moveto fi (y) show
+stroke
+% draw ticks
+newpath
+0 1 xmax floor cvi  {/i exch def 
+  i 1 coord moveto 0 0.1 rlineto
+  -0.1 -0.5 rmoveto fr i str cvs show
+} for
+1 1 ny {/i exch def
+  1 1 10 {/j exch def 
+    /yj {10 i 1 sub exp j mul cvi } def % yj=j*10^(i-1)
+    0 yj coord moveto 0.1 0 rlineto
+    j 5 mod 0 eq { % j a 5-fold  
+       /lbl yj str cvs def
+       -0.2 lbl stringwidth pop sub -0.1 rmoveto 
+       fr lbl show
+    } if
+  } for
+} for
+-0.3 -0.1 moveto fr (1) show
+% draw text
+0.5 50 coord moveto fr (graph of ) show 
+gsave 0 -0.3 rmoveto fr ( 1 + ) show fi (x) show grestore
+gsave 0.02 0.1 rmoveto fr (_____) show grestore
+0.3 0.2 rmoveto fi (e) show
+0.04 0.15 rmoveto fis (x) show
+stroke
+% draw graph
+lw2 setlinewidth 
+0 0 1 setrgbcolor 2 setlinecap
+/x 0 def
+/dx xmax n div def
+newpath
+x x f coord moveto % 
+n {
+  /x x dx add def
+  x x f coord 
+  lineto
+} repeat
+stroke
+showpage
+%%EOF

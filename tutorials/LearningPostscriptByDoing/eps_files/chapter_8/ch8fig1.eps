@@ -1,0 +1,36 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 180 180
+%%BeginProlog
+/u 72 def % unit: 1 inch
+/lw1 1 u div def 
+/lw2 0.7 u div def  
+/n 360 def % number of line segments
+/t0 0 def /t1 360 def
+/p 3 def /q 2 def
+/X {p mul sin} bind def  % sin(p*t)
+/Y {q mul sin} bind def  % sin(q*t)
+%%EndProlog
+90 90 translate
+u dup scale
+lw2 setlinewidth
+2 setlinejoin
+%%%%% draw axes
+newpath
+-1.2 0 moveto
+1.2 0 lineto
+0 -1.2 moveto
+0 1.2 lineto
+stroke
+newpath %%%%% polygon approximation of curve
+lw1 setlinewidth
+1 0 0 setrgbcolor
+/dt t1 t0 sub n div def
+/t t0 def
+t X t Y moveto
+n {
+/t t dt add def
+t X t Y lineto
+} repeat
+stroke
+showpage
+%%EOF

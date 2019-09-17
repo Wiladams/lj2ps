@@ -1,0 +1,33 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 30 30
+%%BeginProlog
+/n 2 def % how many iterations 
+/s 9 def
+/lw 1 s div def
+% reflect about line from (0,0) to (1,-1)
+/R {90 rotate -1 1 scale} bind def
+/invR { -1 1 scale -90 rotate} bind def
+% reflect about line from (0,0) to (1,1)
+/M {-1 1 scale 90 rotate} def
+/invM { -90 rotate -1 1 scale } def
+/H {
+  dup 0 gt {
+    1 sub
+    M H invM 1 0 rlineto 
+    H 0 1 rlineto
+    H -1 0 rlineto 
+    R H invR 
+    1 add
+  } if
+} bind def
+%%EndProlog
+2 2 translate
+s dup scale
+lw setlinewidth
+newpath
+2 setlinecap
+0 0 moveto 0 0 rlineto
+n H
+stroke
+showpage
+%%EOF

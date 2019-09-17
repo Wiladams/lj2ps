@@ -1,0 +1,45 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 150 150
+%%Pages: 1
+/arrowhead {% stack: s x1 y1
+            % current point: x0 y0
+  gsave
+    currentpoint   % s x1 y1 x0 y0
+    4 2 roll exch  % s x0 y0 y1 x1
+    4 -1 roll exch % s y0 y1 x0 x1
+    sub 3 1 roll   % s x1-x2 y0 y1
+    sub exch       % s y0-y1 x1-x2
+  % rotate over arctan((y0-y1)/(x1-x2))
+    atan rotate    % s 
+    dup scale      % scale by s
+    -7 2 rlineto   % draw arrowhead
+    1 -2 rlineto
+    -1 -2 rlineto
+   closepath fill  % fill arrowhead
+ grestore
+ newpath
+} def
+%%EndProlog
+%%Page: 1 1
+75 75 translate
+% draw axes
+newpath 
+-72 0 moveto 144 0 rlineto
+0 -72 moveto 0 144 rlineto
+stroke
+% draw arrowheads
+newpath
+0 0 moveto 36 18 lineto stroke
+newpath 36 18 moveto 1 0 0 arrowhead 
+0 0 moveto 36 54 lineto stroke
+newpath 36 54 moveto 3 0 0 arrowhead
+0 0 moveto -36 -36 lineto stroke
+newpath -36 -36 moveto 2 0 0 arrowhead
+-18 18 moveto -18 54 lineto stroke
+newpath -18 54 moveto 1.5 -18 18 arrowhead
+-27 18 moveto -27 54 lineto stroke
+newpath -27 18 moveto 1.5 -27 54 arrowhead
+0.7 setgray
+36 54 moveto 3 -36 moveto 9 4 -36 arrowhead
+showpage
+%%EOF

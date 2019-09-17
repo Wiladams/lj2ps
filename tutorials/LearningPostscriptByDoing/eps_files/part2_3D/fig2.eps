@@ -1,0 +1,100 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 90 90
+
+/punt {1 0 360 arc fill} def
+
+/arrowhead {
+   gsave
+	currentpoint
+	4 2 roll exch 4 -1 roll exch
+	sub 3 1 roll sub
+	exch atan rotate dup scale
+	-7 2 rlineto
+	1 -2 rlineto
+	-1 -2 rlineto
+	closepath fill
+   grestore
+   newpath
+} bind def
+
+
+
+30 30 translate
+
+60 60 scale
+
+/x0 0 def
+/y0 0 def
+
+/xb 1 def
+/yb 0 def
+
+/xa -.5 def
+/ya -.4 def
+
+/xc 0 def
+/yc 1 def
+
+
+newpath
+xa ya moveto
+1 0 rlineto
+0 1 rlineto
+-1 0 rlineto
+closepath
+.8 setgray
+fill
+
+newpath
+0 1 moveto
+xa ya rlineto
+1 0 rlineto
+xa neg ya neg rlineto
+closepath
+.9 setgray
+fill
+
+newpath
+1 1 moveto
+xa ya rlineto
+0 -1 rlineto
+xa neg ya neg rlineto
+closepath
+.7 setgray
+fill
+
+0 setgray
+0.015 setlinewidth
+newpath
+xa ya moveto
+1 0 rlineto
+xa neg ya neg rlineto
+0 1 rlineto
+-1 0 rlineto
+xa ya rlineto
+closepath
+stroke
+1 1 moveto
+xa ya rlineto
+-1 0 rlineto
+1 0 rlineto
+0 -1 rlineto
+stroke
+
+0.005 setlinewidth
+
+1 0 moveto
+.55 0 lineto
+stroke
+.45 0 moveto
+0 0 lineto
+xa ya rlineto
+xa neg ya neg rlineto
+0 .55 rlineto
+stroke
+0 .65 moveto
+0 1 lineto
+stroke
+
+showpage
+

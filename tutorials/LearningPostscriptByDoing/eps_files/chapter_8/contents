@@ -1,0 +1,15 @@
+List of files of chapter 8
+
+file		page	description
+====		====	===========		
+ch8fig1		83	polygon approximation if Lissajous figure
+ch8fig2		84	Bezier approximation if Lissajous figure
+ch8fig3		85	the Folium in polar coordinates
+ch8fig4		86	solution curve of van der Pol ODE
+ch8fig5		86	phase plot of a solution of van der Pol ODE
+ch8fig6		88	Lorenz butterfly
+ch8fig7		89	surface plot
+ch8fig8		91	cobweb diagram
+ch8fig9		92	bifurcation diagram
+ch8fig10	95	triangle with markers
+

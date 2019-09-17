@@ -1,0 +1,59 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 250 250
+%%BeginProlog
+/u 432 def % unit: 6 inch
+/lw1 1 u div def  /lw2 0.7 u div def
+/f1 {/Times-Roman findfont 10 u div scalefont setfont} bind def 
+/pi 3.1415927 def
+/cosine {pi div 180 mul cos} bind def
+/f {mul cosine} bind def % f(x,y) = cos(x*y)   
+/xmin 0.5 def /xmax 1 def 
+/ymin xmin def /ymax xmax def
+/dx 0.02 def
+%%EndProlog
+u dup scale
+% drawaxes
+0.05 xmin sub 0.05 ymin sub translate 
+lw1 setlinewidth
+xmin ymin moveto xmax ymin lineto
+xmin ymin moveto xmin ymax lineto  
+stroke
+% labels near axes
+xmin ymin 0.03 sub moveto f1 xmin 4 string cvs show
+xmax 0.01 sub ymin 0.03 sub moveto f1 xmax 4 string cvs show
+xmin 0.04 sub ymin moveto f1 ymin 4 string cvs show
+xmin 0.02 sub ymax 0.03 sub moveto f1 ymax 4 string cvs show
+% draw identity graph
+newpath
+lw2 setlinewidth 0.7 setgray
+xmin ymin moveto xmax ymax lineto
+stroke
+% draw cosine graph
+newpath
+lw2 setlinewidth  1 0 0 setrgbcolor
+/x xmin def
+x x cosine moveto
+{/x x dx add def 
+ x xmax 0.001 add gt {exit} if 
+ x x cosine lineto  
+} loop
+stroke
+% compute and draw orbit
+newpath
+lw2 setlinewidth  0 0 1 setrgbcolor
+/initial 1 def % first some initial iterations 
+/x 1.0 def % the starting point
+/orbitlength 15 def 
+1 1 initial { 
+  /x x cosine def
+} for
+x x cosine moveto
+currentpoint 
+gsave newpath 0.006 0 360 arc fill grestore  
+1 1 orbitlength {
+  /x x cosine def 
+  x x lineto x x cosine lineto
+} for
+stroke
+showpage
+%%EOF

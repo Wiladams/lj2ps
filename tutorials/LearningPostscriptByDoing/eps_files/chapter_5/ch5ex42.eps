@@ -1,0 +1,179 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 570 565
+%%BeginProlog
+/u 28.34645 def      % unit: 1 cm
+/lw1 {0.8 u div} def % normal line width
+/lw2 {0.4 u div} def % line width for 5 mm lines
+/lw3 {0.2 u div} def % line width for 5 mm lines
+/s 9 def % size of one vertical cycle
+/logcoord {log s mul} bind def
+/hf1 {/Helvetica findfont 8 u div scalefont setfont} bind def
+/hf2 {/Helvetica findfont 5 u div scalefont setfont} bind def
+/makelogpaper {5 dict begin % stack: nx ny 
+  /ny exch def % number of vertical cycles 
+  /nx exch def % number of horizontal units
+  /h {s ny mul} def
+  /w {s nx mul} def
+  % draw horizontal lines
+  0 1 ny 1 sub {
+    /i exch def
+    % draw lines between 1 and 2
+    0 1 10 {
+      /j exch def
+      0 i s mul moveto  
+      j 10 mod 0 eq 
+        {gsave lw1 setlinewidth -0.4 1 j 10 div add logcoord rmoveto 
+               w 0.8 add 0 rlineto stroke grestore}
+        {j 5 mod 0 eq 
+           {gsave lw2 setlinewidth -0.2 1 j 10 div add logcoord rmoveto 
+                  w 0.4 add 0 rlineto stroke grestore}
+           {gsave lw3 setlinewidth 0 1 j 10 div add logcoord rmoveto 
+                w 0 rlineto stroke grestore
+        } ifelse
+      } ifelse
+    } for
+    % draw lines between 2 and 4
+    1 1 10 {
+      /j exch def
+      0 i s mul moveto  
+      j 5 mod 0 eq
+        {gsave lw1 setlinewidth -0.4 2 j 5 div add logcoord rmoveto 
+               w 0.8 add 0 rlineto stroke grestore}
+        {gsave lw3 setlinewidth 0 2 j 5 div add logcoord rmoveto 
+               w 0 rlineto stroke grestore
+      } ifelse
+    } for
+    % draw lines between 4 and 10
+    1 1 12 {
+      /j exch def
+      0 i s mul moveto  
+      j 2 mod 0 eq
+        {gsave lw1 setlinewidth -0.4 4 j 2 div add logcoord rmoveto 
+               w 0.8 add 0 rlineto stroke grestore}
+        {gsave lw3 setlinewidth -0.2 4 j 2 div add logcoord rmoveto 
+               w 0.4 add 0 rlineto stroke grestore
+      } ifelse
+    } for
+  } for
+  % draw vertical lines
+  0 1 nx 1 sub {
+    /i exch def
+    % draw lines between 1 and 2
+    0 1 10 {
+      /j exch def
+      i s mul 0 moveto  
+      j 10 mod 0 eq 
+        {gsave lw1 setlinewidth 1 j 10 div add logcoord -0.4 rmoveto 
+               0 h 0.8 add rlineto stroke grestore}
+        {j 5 mod 0 eq 
+           {gsave lw2 setlinewidth 1 j 10 div add logcoord -0.2 rmoveto 
+                  0 h 0.4 add rlineto stroke grestore}
+           {gsave lw3 setlinewidth 1 j 10 div add logcoord 0 rmoveto 
+                0 h rlineto stroke grestore
+        } ifelse
+      } ifelse
+    } for
+    % draw lines between 2 and 4
+    1 1 10 {
+      /j exch def
+      i s mul 0 moveto  
+      j 5 mod 0 eq
+        {gsave lw1 setlinewidth 2 j 5 div add logcoord -0.4 rmoveto 
+               0 h 0.8 add rlineto stroke grestore}
+        {gsave lw3 setlinewidth 2 j 5 div add logcoord 0 rmoveto 
+               0 h rlineto stroke grestore
+      } ifelse
+    } for
+    % draw lines between 4 and 10
+    1 1 12 {
+      /j exch def
+      i s mul 0 moveto  
+      j 2 mod 0 eq
+        {gsave lw1 setlinewidth 4 j 2 div add logcoord -0.4 rmoveto 
+               0 h 0.8 add  rlineto stroke grestore}
+        {gsave lw3 setlinewidth 4 j 2 div add logcoord -0.2 rmoveto 
+               0 h 0.4 add rlineto stroke grestore
+      } ifelse
+    } for
+  } for
+  % draw horizontal labels
+  % down
+  0 1 nx 1 sub {/i exch def
+    i s mul 0.08 sub -0.8 moveto 
+    i 0 eq 
+      {hf1 (1) show} 
+      {-0.1 0 rmoveto hf1 (10) show 
+       0 0.2 rmoveto hf2 i 1 string cvs show
+    } ifelse
+    2 1 9 {
+      /j exch def
+      i s mul 0.08 sub -0.8 moveto 
+      j logcoord 0 rmoveto 
+      hf1 j 1 string cvs show
+    } for
+  % up
+    i s mul 0.08 sub h 0.5 add moveto 
+    i 0 eq 
+      {hf1 (1) show} 
+      {-0.1 0 rmoveto hf1 (10) show 
+       0 0.2 rmoveto hf2 i 1 string cvs show
+    } ifelse
+    2 1 9 {
+      /j exch def
+      i s mul 0.08 sub h 0.5 add moveto 
+      j logcoord 0 rmoveto 
+      hf1 j 1 string cvs show
+    } for
+  } for
+  h 0.08 sub -0.8 moveto
+  -0.1 0 rmoveto hf1 (10) show 
+  0 0.2 rmoveto hf2 ny 1 string cvs show
+  h 0.08 sub h 0.5 add moveto
+  -0.1 0 rmoveto hf1 (10) show 
+  0 0.2 rmoveto hf2 ny 1 string cvs show
+  % draw vertical labels
+  % left
+  0 1 ny 1 sub {/i exch def
+    -0.6 i s mul 0.1 sub moveto 
+    i 0 eq 
+      {hf1 (1) show} 
+      {-0.2 0 rmoveto hf1 (10) show 
+       0 0.2 rmoveto hf2 i 1 string cvs show
+    } ifelse
+    2 1 9 {
+      /j exch def
+      -0.6 i s mul 0.1 sub moveto 
+      0 j logcoord rmoveto 
+      hf1 j 1 string cvs show
+    } for 
+  % right
+    w 0.5 add i s mul 0.1 sub moveto 
+    i 0 eq 
+      {hf1 (1) show} 
+      {hf1 (10) show 
+       0 0.2 rmoveto hf2 i 1 string cvs show
+    } ifelse
+    2 1 9 {
+      /j exch def
+      w 0.5 add i s mul 0.1 sub moveto 
+      0 j logcoord rmoveto 
+      hf1 j 1 string cvs show
+    } for
+  } for
+  -0.6 h 0.1 sub moveto
+  -0.2 0 rmoveto hf1 (10) show 
+  0 0.2 rmoveto hf2 ny 1 string cvs show
+  w 0.5 add h 0.1 sub moveto
+  hf1 (10) show 
+  0 0.2 rmoveto hf2 ny 1 string cvs show
+
+end} def
+%%EndProlog
+u dup scale 
+lw1 setlinewidth
+1 1 translate
+1 0 0 0 setcmykcolor
+newpath
+2 2 makelogpaper 
+showpage
+%%EOF

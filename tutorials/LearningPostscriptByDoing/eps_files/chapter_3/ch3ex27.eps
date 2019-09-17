@@ -1,0 +1,39 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 150 150
+%%BeginProlog
+/rectangle {% stack: w h, current point: x y
+    currentpoint   % w h x y
+    moveto exch    % h w
+    dup            % h w w
+    3 1 roll       % w h w
+    0 rlineto      % w h
+    0 exch rlineto % w  
+    neg 0 rlineto  % -
+    closepath 
+} def
+%%EndProlog
+75 75 translate
+% draw axes
+newpath 
+-72 0 moveto 144 0 rlineto
+0 -72 moveto 0 144 rlineto
+stroke
+% draw rectangles
+newpath
+9 -54 moveto 45 45 rectangle
+18 9 moveto 36 54 rectangle
+stroke
+newpath -64 9 moveto 54 36 rectangle fill 
+newpath
+gsave
+  9 1 scale
+  -0.7 -9 moveto
+  0 -27 rlineto
+  -7 0 rlineto
+  0 27 rlineto
+  closepath
+  stroke
+grestore
+stroke
+showpage
+%%EOF

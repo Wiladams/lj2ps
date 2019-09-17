@@ -1,0 +1,61 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 425 280
+%%BeginProlog
+/u 14 def % 14 points per unit
+/lw1 {0.5 u div} def % default linewidth
+/lw2 {1 u div} def % default linewidth
+/fh0 {/Helvetica findfont 12 u div scalefont setfont} bind def
+/fh1 {/Helvetica findfont 9 u div scalefont setfont} bind def
+/fh2 {/Helvetica findfont 6 u div scalefont setfont} bind def
+/fs {/Symbol findfont 12 u div scalefont setfont} bind def
+%%EndProlog
+u dup scale
+4 2 translate
+% draw grid 
+lw1 setlinewidth       
+.36040 0.97647 0.97647  setrgbcolor
+newpath 
+0 0 moveto 25 {1 17 rmoveto 0 -17 rlineto} repeat
+0 0 moveto 17 {25 1 rmoveto -25 0 rlineto} repeat 
+stroke
+% draw axes, plus labels and text near axes
+0 setgray
+25 0 moveto -25 0 rlineto 0 17 rlineto
+fh1
+0.8 -0.7 moveto (1) show 4.8 -0.7 moveto (5) show
+9.6 -0.7 moveto (10) show 14.6 -0.7 moveto (15) show
+19.6 -0.7 moveto (20) show 24.6 -0.7 moveto (25) show
+-1.2 -0.2  moveto fh1 (10) show 0.05 0.3 rmoveto fh2 (2) show 
+-1.2  1.8  moveto fh1 (10) show 0.05 0.3 rmoveto fh2 (4) show 
+-1.2  3.8  moveto fh1 (10) show 0.05 0.3 rmoveto fh2 (6) show 
+-1.2  5.8  moveto fh1 (10) show 0.05 0.3 rmoveto fh2 (8) show 
+-1.5  7.8  moveto fh1 (10) show 0.05 0.3 rmoveto fh2 (10) show 
+-1.5  9.8  moveto fh1 (10) show 0.05 0.3 rmoveto fh2 (12) show 
+-1.5 11.8  moveto fh1 (10) show 0.05 0.3 rmoveto fh2 (14) show 
+-1.5 13.8  moveto fh1 (10) show 0.05 0.3 rmoveto fh2 (16) show 
+-1.5 15.8  moveto fh1 (10) show 0.05 0.3 rmoveto fh2 (18) show
+fh0 
+-2 10 moveto gsave 90 rotate (number of bacteria) show grestore
+20.5 -1.5 moveto (time in days) show
+stroke
+% draw line with text label
+newpath
+1 0 0 setrgbcolor
+lw2 setlinewidth
+0 1 moveto 25 16 lineto
+10 8 moveto gsave 
+  15 25 atan rotate fh0 (cooled at 4 ) show 
+  fs (\260) show fh0 (C) show
+grestore
+stroke
+% draw line with rotated text label
+newpath
+0.7490 0.4 0.9843 setrgbcolor
+0 1 moveto 25 9.75 lineto
+12 4 moveto gsave 
+  8.75 25 atan rotate fh0 (cooled at 0 ) show 
+  fs (\260) show fh0 (C) show
+grestore
+stroke
+showpage
+%%EOF

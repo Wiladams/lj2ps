@@ -1,0 +1,49 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 330 330
+%%BeginProlog
+/u 283.4645 def % unit: 10 cm
+/lw1 1 u div def  /lw2 0.7 u div def
+/f1 {/Times-Roman findfont 12 u div scalefont setfont} bind def 
+/f2 {/Times-Italic findfont 12 u div scalefont setfont} bind def 
+/n 175 def 
+/rmin 2.9 def /rmax 3.9 def 
+/dr rmax rmin sub n div def
+%%EndProlog
+u dup scale
+% drawaxes
+0.1 rmin sub 0.1 translate 
+lw1 setlinewidth
+rmin 0 moveto rmax 0.05 add 0 lineto
+rmin 0 moveto rmin 1.05 lineto  
+% ticks and labels near axes
+/rmid rmax rmin add 2 div def
+rmid 0 moveto 0 0.02 rlineto
+rmax 0 moveto 0 0.02 rlineto
+rmin 0.5 moveto 0.02 0 rlineto
+rmin 1 moveto 0.02 0 rlineto 
+stroke
+rmin 0.02 sub -0.05 moveto f1 rmin 4 string cvs show
+rmid 0.02 sub -0.05 moveto f1 rmid 4 string cvs show
+rmax 0.02 sub -0.05 moveto f1 rmax 4 string cvs show
+rmin 0.04 sub 0 moveto f1 (0) show
+rmin 0.06 sub 0.49 moveto f1 (0.5) show
+rmin 0.04 sub 0.99 moveto f1 (1) show
+rmid rmax add 2 div -0.05 moveto f2 (r) show
+gsave rmin 0.7 translate 90 rotate 0 0.02 moveto f2 (orbit) show grestore
+% draw bifurcation diagram
+/r rmin def
+/dr rmax rmin sub n div def
+n {
+  /x 0.5 def % our starting point
+  75 { % initial iterations
+     /x r x mul 1 x sub mul def % x := r*x*(1-x)
+  } repeat
+  150 {% the next 150 iterations
+     /x r x mul 1 x sub mul def % x := r*x*(1-x)
+     newpath r x 0.5 u div 0 360 arc fill
+  } repeat
+  /r r dr add def 
+} repeat
+showpage
+showpage
+%%EOF

@@ -1,0 +1,26 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 70 55
+%%BeginProlog
+/cm {28.34645 mul} def
+/mainfont {/Symbol findfont 10 scalefont setfont} bind def
+/s1 {/Symbol findfont 1.2 cm scalefont setfont} bind def
+/s2 {/Symbol findfont 2.4 cm scalefont setfont} bind def
+/s3 {/Symbol findfont 2.1 cm scalefont setfont} bind def 
+%%EndProlog
+5 20 translate 
+newpath % triangle
+0 0 moveto 3 sqrt cm 0 rlineto 0 1 cm rlineto closepath
+stroke
+%
+newpath
+49 5 moveto 
+gsave 0.5 1 scale s1 (\175) show grestore
+39 24 moveto
+gsave 120 rotate 0.18 1 scale s2 (\175) show grestore
+9 -1 moveto
+gsave -90 rotate 0.25 1 scale s3 (\175) show grestore
+57 13 moveto mainfont (1) show
+15 20 moveto mainfont (2) show
+19 -18 moveto mainfont (\3263) show
+showpage
+%%EOF

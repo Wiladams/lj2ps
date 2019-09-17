@@ -1,0 +1,51 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 105 150
+%%BeginProlog
+/u 2.834645 0.5 mul def % unit: 0.5 mm
+/lw1 0.7 u div def 
+/lw2 0.4 u div def  
+/n 20000 def % number of line segments
+/dt 0.001 def
+/Xr [-1 0] def
+/Yr [0.7 -0.7] def
+/Zr [0 1] def
+/project { 3 dict begin % stack x y z
+  /z exch def /y exch def /x exch def
+  x Xr 0 get mul y Yr 0 get mul add z Zr 0 get mul add
+  x Xr 1 get mul y Yr 1 get mul add z Zr 1 get mul add
+end } bind def
+%%EndProlog
+%%%%%%%%% t -> x(t), y(t), z(t)
+50 35 translate
+u dup scale
+lw2 setlinewidth
+2 setlinejoin
+%%%%% draw reference frame
+gsave
+  newpath
+  30 30 scale
+  lw2 30 div setlinewidth
+  0 0 moveto Xr aload pop lineto
+  0 0 moveto Yr aload pop lineto
+  0 0 moveto Zr aload pop lineto
+  stroke
+grestore  
+%%%%% approximation of x(t), y(t), z(t)
+newpath 
+lw1 setlinewidth 1 0 0 setrgbcolor
+/t 0 def  /x -12.5 def  /y -17.4 def  /z 26 def 
+x y z project moveto % initial position
+n {
+%%%% x'=10(y-x), y'=28x-xz-y, z'=xy-8z/3    
+  /x' 10 y x sub mul def % 
+  /y' 28 x mul x z mul sub y sub def  
+  /z' x y mul 8 div 3 z mul sub def
+  /x x x' dt mul add def
+  /y y y' dt mul add def
+  /z z z' dt mul add def  
+  /t t dt add def
+  x y z project lineto 
+} repeat
+stroke
+showpage
+%%EOF

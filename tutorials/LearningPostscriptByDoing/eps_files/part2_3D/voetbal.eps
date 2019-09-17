@@ -1,0 +1,229 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 400 400
+2 setlinejoin
+200 200 translate
+128 rotate
+/eh 2.2 def
+eh eh scale
+/gr1 0.2 def %%%%% grijstint vijfhoeken
+/gr2 0.9 def %%%%% grijstint zeshoeken
+/kleur1 {0 0 1} def  %%%%%%% kleur vijfhoeken
+/kleur2 {1 1 0} def  %%%%%%% kleur zeshoeken
+/R 98 def
+/lw1 2 eh div def   %%%% lijndikte
+/c5 72 cos def
+/s5 72 sin def
+%%%%%%%%% tangens
+/tan {
+  /a exch def
+  a sin a cos div 
+} bind def
+%%%%%%%% projectiehoeken:
+/alpha 32 def
+/beta 7 def
+%%%%%%%%% geprojecteerde basisvectoren:
+/xa alpha sin def
+/ya alpha cos beta sin mul def
+/xb alpha cos def
+/yb alpha sin beta sin neg mul def
+/xc 0 def
+/yc beta cos def
+%%%%%%%%% orthogonale projectie:
+/coord {
+/z exch def 
+/y exch def
+/x exch def
+x xa mul y xb mul add z xc mul add 
+x ya mul y yb mul add z yc mul add
+} bind def
+
+%%%%%%%%% cosinus hoek vector (n1,n2,n3) 
+%%%%%%%%% met projectierichting
+/projCos {
+/n3 exch def
+/n2 exch def
+/n1 exch def
+/nm n1 n1 mul n2 n2 mul add n3 n3 mul add sqrt def
+n1 alpha cos mul beta cos mul 
+n2 alpha sin mul neg beta cos mul add 
+n3 beta sin mul neg add nm div} bind def 
+%%%%%%%%% cross product (aa1,aa2,aa3)X(bb1,bb2,bb3)
+/cp {
+/bb3 exch def
+/bb2 exch def
+/bb1 exch def
+/aa3 exch def
+/aa2 exch def
+/aa1 exch def
+aa2 bb3 mul aa3 bb2 mul sub
+aa3 bb1 mul aa1 bb3 mul sub
+aa1 bb2 mul aa2 bb1 mul sub
+} bind def
+
+%%%%%%%%% tekenen van een regelmatige zeshoek binnen een gelijkzijdige driehoek 
+%%%%%%%%% hoekpunten: a1 a2 a3 b1 b2 b3 c1 c2 c3
+/driehoek {
+/c3 exch def  /c2 exch def  /c1 exch def
+/b3 exch def  /b2 exch def  /b1 exch def
+/a3 exch def  /a2 exch def  /a1 exch def
+/proj 
+  c1 a1 sub c2 a2 sub c3 a3 sub b1 a1 sub b2 a2 sub b3 a3 sub 
+  cp projCos def
+proj 0 gt {
+  newpath
+  a1 2 mul b1 add 3 div a2 2 mul b2 add 3 div a3 2 mul b3 add 3 div coord moveto
+  b1 2 mul a1 add 3 div b2 2 mul a2 add 3 div b3 2 mul a3 add 3 div coord lineto
+  b1 2 mul c1 add 3 div b2 2 mul c2 add 3 div b3 2 mul c3 add 3 div coord lineto
+  c1 2 mul b1 add 3 div c2 2 mul b2 add 3 div c3 2 mul b3 add 3 div coord lineto
+  c1 2 mul a1 add 3 div c2 2 mul a2 add 3 div c3 2 mul a3 add 3 div coord lineto
+  a1 2 mul c1 add 3 div a2 2 mul c2 add 3 div a3 2 mul c3 add 3 div coord lineto
+  closepath
+% gsave gr2 setgray fill grestore 
+  gsave kleur2 setrgbcolor fill grestore 
+  stroke
+  } if
+} bind def
+%%%%%%%%% rotatie over 72 graden om z-as
+/rot5z {
+/z exch def 
+/y exch def
+/x exch def
+x c5 mul y s5 mul sub 
+x s5 mul y c5 mul add
+z
+} bind def
+%%%%%%% phi: halve hoek tussen twee 5-assen
+/phi 2 1 atan 2 div def 
+/c phi 2 mul cos def
+/s phi 2 mul sin def
+%%%%%%%%% spiegeling in bissectricevlak van twee 5-assen
+%%%%%%%%% (de z-as en as in het xz-vlak)
+/r2p {
+/z exch def 
+/y exch def
+/x exch def
+x c mul neg z s mul add 
+y
+x s mul z c mul add
+} bind def
+%%%%%%%%%%%%% verdere samengestelde rotaties
+/rot1 {r2p rot5z} def
+/rot2 {r2p rot5z rot5z} def
+/rot3 {r2p rot5z rot5z rot5z} def
+/rot4 {r2p rot5z rot5z rot5z rot5z} def
+/rot5 {r2p rot5z rot5z rot5z rot5z rot5z} def
+
+
+%%%%%%% basisvectoren (eutactische ster)
+0 0 R                %%%%%% langs z-as
+/w0 exch def /v0 exch def /u0 exch def
+0 0 R r2p            %%%%%% in xz-vlak
+/w1 exch def /v1 exch def /u1 exch def
+0 0 R r2p rot5z
+/w2 exch def /v2 exch def /u2 exch def
+0 0 R r2p rot5z rot5z
+/w3 exch def /v3 exch def /u3 exch def
+0 0 R r2p rot5z rot5z rot5z
+/w4 exch def /v4 exch def /u4 exch def
+0 0 R r2p rot5z rot5z rot5z rot5z
+/w5 exch def /v5 exch def /u5 exch def
+
+%%%%%%%%%%% array van 10 van de 12 hoekpunten icosaeder (niet top en bottom)
+/vert [[u1 v1 w1] [u1 neg v1 neg w1 neg] 
+       [u2 v2 w2] [u2 neg v2 neg w2 neg]
+       [u3 v3 w3] [u3 neg v3 neg w3 neg]
+       [u4 v4 w4] [u4 neg v4 neg w4 neg]
+       [u5 v5 w5] [u5 neg v5 neg w5 neg]] def
+
+lw1 setlinewidth
+%%%%%%%%%% alle vijfhoeken tekenen
+kleur1 setrgbcolor
+gsave
+/px u0 2 mul u1 add 3 div def
+/py v0 2 mul v1 add 3 div def
+/pz w0 2 mul w1 add 3 div def
+2 {
+newpath
+ px py pz coord moveto
+ px py pz rot5z coord lineto
+ px py pz rot5z rot5z coord lineto
+ px py pz rot5z rot5z rot5z coord lineto
+ px py pz rot5z rot5z rot5z rot5z coord lineto
+ closepath
+ gsave fill grestore
+stroke
+newpath
+ px py pz rot1 coord moveto
+ px py pz rot5z rot1 coord lineto
+ px py pz rot5z rot5z rot1 coord lineto
+ px py pz rot5z rot5z rot5z rot1 coord lineto
+ px py pz rot5z rot5z rot5z rot5z rot1 coord lineto
+ closepath
+ gsave fill grestore
+stroke
+newpath
+ px py pz rot2 coord moveto
+ px py pz rot5z rot2 coord lineto
+ px py pz rot5z rot5z rot2 coord lineto
+ px py pz rot5z rot5z rot5z rot2 coord lineto
+ px py pz rot5z rot5z rot5z rot5z rot2 coord lineto
+ closepath
+ gsave fill grestore
+stroke
+newpath
+ px py pz rot3 coord moveto
+ px py pz rot5z rot3 coord lineto
+ px py pz rot5z rot5z rot3 coord lineto
+ px py pz rot5z rot5z rot5z rot3 coord lineto
+ px py pz rot5z rot5z rot5z rot5z rot3 coord lineto
+ closepath
+ gsave fill grestore
+stroke
+newpath
+ px py pz rot4 coord moveto
+ px py pz rot5z rot4 coord lineto
+ px py pz rot5z rot5z rot4 coord lineto
+ px py pz rot5z rot5z rot5z rot4 coord lineto
+ px py pz rot5z rot5z rot5z rot5z rot4 coord lineto
+ closepath
+ gsave fill grestore
+stroke
+newpath
+ px py pz rot5 coord moveto
+ px py pz rot5z rot5 coord lineto
+ px py pz rot5z rot5z rot5 coord lineto
+ px py pz rot5z rot5z rot5z rot5 coord lineto
+ px py pz rot5z rot5z rot5z rot5z rot5 coord lineto
+ closepath
+ gsave fill grestore
+stroke
+ /px px neg def
+ /py py neg def
+ /pz pz neg def
+} repeat
+%showpage
+%%%%%%%%%%%% zichtbare zeshoeken tekenen
+gsave
+/i 0 def
+5 {
+u0 v0 w0  
+vert i 10 mod get aload pop 
+vert i 2 add 10 mod get aload pop 
+driehoek
+vert i 10 mod get aload pop 
+vert i 7 add 10 mod get aload pop
+vert i 2 add 10 mod get aload pop 
+driehoek
+vert i 7 add 10 mod get aload pop 
+vert i 9 add 10 mod get aload pop
+vert i 2 add 10 mod get aload pop 
+driehoek
+u0 neg v0 neg w0 neg 
+vert i 3 add 10 mod get aload pop 
+vert i 1 add 10 mod get aload pop 
+driehoek
+/i i 2 add def
+} repeat
+grestore
+
+showpage

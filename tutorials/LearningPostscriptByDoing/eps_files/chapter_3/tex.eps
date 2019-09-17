@@ -1,0 +1,45 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 200 50
+%%BeginProlog
+% define and assign the scale 
+% note:  1 cm = 28.34645 points,
+%      1 inch = 72 points.
+/s 28.34645 def 
+/BeginImport {
+  save /SavedState exch def
+  count /OpStackSize exch def
+  /DictStackSize countdictstack def
+  /showpage {} def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [] 0 setdash newpath
+  /languagelevel where
+  {pop languagelevel 1 ne
+    {false setstrokeadjust false setoverprint} if
+  } if
+} bind def
+/EndImport {
+  count OpStackSize sub
+  dup 0 gt { {pop} repeat} {pop} ifelse
+  countdictstack DictStackSize sub
+  dup 0 gt { {end} repeat} {pop} ifelse
+  SavedState restore
+} bind def
+%%EndProlog
+s s scale
+1 s div setlinewidth
+newpath
+0.07 0.07 moveto
+gsave
+  1 s div 1 s div scale
+  /TimesRoman findfont 20 scalefont setfont
+  0 20 rmoveto (The formula: ) show
+  currentpoint pop 0 translate
+  -149 -621 translate
+  BeginImport
+  (formula.eps) run
+  EndImport
+  stroke
+grestore
+showpage
+%%EOF

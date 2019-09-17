@@ -1,0 +1,134 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 115 150
+%%BeginProlog
+/u 28.34645 def % unit: 1cm
+/lw1 1 u div def  /lw2 0.5 u div def
+/f1 {/Times-Roman findfont 12 u div scalefont setfont} bind def 
+/f2 {/Times-Italic findfont 12 u div scalefont setfont} bind def 
+/angleradius 0.4 def /angledelta 0.05 def /marksize 0.2 def
+/angle {exch atan} def
+%
+/markangle {4 dict begin % stack: P common Q n
+  /n exch def /Q exch def /common exch def /P exch def
+  P common Q angleradius drawangle 
+  n 1 gt {P common Q angleradius angledelta add drawangle } if
+  n 2 gt {P common Q angleradius angledelta sub drawangle } if
+  n 3 gt {P common Q angleradius 2 angledelta mul add drawangle } if
+end } bind def
+/drawangle {7 dict begin % a c b r
+  /r exch def /b exch def /c exch def /a exch def
+  /beta b 0 get c 0 get sub b 1 get c 1 get sub angle def
+  /alpha a 0 get c 0 get sub a 1 get c 1 get sub angle def
+  /phi beta alpha sub def
+  gsave
+    lw2 setlinewidth
+    c aload pop translate
+    alpha rotate
+    phi 0 gt {
+      phi 180 lt {
+        newpath 0 0 r 0 phi arc stroke
+        }{
+        /phi phi 360 sub def
+        newpath 0 0 r 0 phi arcn stroke
+      } ifelse 
+      }{
+       phi -180 lt {
+        /phi phi 360 add def
+        newpath 0 0 r 0 phi arc stroke
+        }{
+        newpath 0 0 r 0 phi arcn stroke      
+      } ifelse 
+ 
+    } ifelse
+  grestore  
+end } bind def
+%
+/markrightangle {6 dict begin % stack: a c b
+  /b exch def /c exch def /a exch def
+  /beta b 0 get c 0 get sub b 1 get c 1 get sub angle def
+  /alpha a 0 get c 0 get sub a 1 get c 1 get sub angle def
+  /phi beta alpha sub def
+  gsave
+    lw2 marksize div setlinewidth
+    c aload pop translate marksize dup scale
+    alpha rotate 
+    phi 0 gt {
+      phi 180 lt {
+        newpath 1 0 moveto 0 1 rlineto -1 0 rlineto stroke
+        }{
+        newpath 1 0 moveto 0 -1 rlineto -1 0 rlineto stroke
+      } ifelse 
+      }{
+      phi -180 lt {
+        newpath 1 0 moveto 0 1 rlineto -1 0 rlineto stroke
+        }{
+        newpath 1 0 moveto 0 -1 rlineto -1 0 rlineto stroke
+      } ifelse 
+    } ifelse
+  grestore  
+end } bind def
+%
+/tickmark { 5 dict begin % stack: a b n
+  /n exch def /b exch def /a exch def
+  /phi b 0 get a 0 get sub b 1 get a 1 get sub angle def
+  /s a 0 get b 0 get sub dup mul a 1 get b 1 get sub dup mul add sqrt 2 div def
+  gsave
+    lw2 setlinewidth
+    a aload pop translate phi rotate 
+    n 1 eq { 
+      newpath s 0 moveto 0 marksize neg rlineto 0 2 marksize mul rlineto stroke
+    } if 
+    n 2 eq { 
+      newpath
+      s marksize 4 div sub 0 moveto 0 marksize neg rlineto 0 2 marksize mul rlineto 
+      s marksize 4 div add 0 moveto 0 marksize neg rlineto 0 2 marksize mul rlineto 
+      stroke
+    } if 
+    n 3 eq { 
+      newpath
+      s marksize 2 div sub 0 moveto 0 marksize neg rlineto 0 2 marksize mul rlineto
+      s 0 moveto 0 marksize neg rlineto 0 2 marksize mul rlineto stroke 
+      s marksize 2 div add 0 moveto 0 marksize neg rlineto 0 2 marksize mul rlineto 
+      stroke
+    } if 
+    n 4 ge { 
+      newpath
+      s marksize 3 mul 4 div sub 0 moveto 0 marksize neg rlineto 0 2 marksize mul rlineto
+      s marksize 4 div sub 0 moveto 0 marksize neg rlineto 0 2 marksize mul rlineto  
+      s marksize 4 div add 0 moveto 0 marksize neg rlineto 0 2 marksize mul rlineto 
+      s marksize 3 mul 4 div add 0 moveto 0 marksize neg rlineto 0 2 marksize mul rlineto 
+      stroke
+    } if 
+  grestore
+end } bind def
+%%EndProlog
+u dup scale
+0.5 0.5 translate
+lw1 setlinewidth
+/A [0 0] def
+/B [3 0] def
+/C [1.5 4] def
+/D [1.5 0] def
+A 0 get 0.3 sub A 1 get 0.4 sub moveto f1 (A) show
+B 0 get 0.05 add B 1 get 0.4 sub moveto f1 (B) show
+C 0 get 0.15 sub C 1 get 0.2 add moveto f1 (C) show
+D 0 get 0.15 sub D 1 get 0.4 sub moveto f1 (D) show
+newpath
+A aload pop moveto
+B aload pop lineto
+C aload pop lineto
+closepath
+C aload pop moveto
+D aload pop lineto
+stroke
+A D 1 tickmark
+B D 1 tickmark
+A C 2 tickmark
+B C 2 tickmark
+C A B 2 markangle
+A B C 2 markangle
+B C A 1 markangle
+C D B markrightangle
+showpage
+showpage
+%%EOF

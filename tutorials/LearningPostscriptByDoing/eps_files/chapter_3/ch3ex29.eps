@@ -1,0 +1,66 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 175 175
+%%BeginProlog
+/openpoint {2 0 360 arc gsave 1 setgray fill grestore stroke} def
+/arrowhead {% stack: s x1 y1, current point: x0 y0
+  gsave
+    currentpoint   % s x1 y1 x0 y0
+    4 2 roll exch  % s x0 y0 y1 x1
+    4 -1 roll exch % s y0 y1 x0 x1
+    sub 3 1 roll   % s x1-x2 y0 y1
+    sub exch       % s y0-y1 x1-x2
+    atan rotate    % rotate over arctan((y0-y1)/(x1-x2))
+    dup scale      % scale by factor s
+    -7 2 rlineto 1 -2 rlineto -1 -2 rlineto
+    closepath fill  % fill arrowhead
+  grestore
+  newpath
+} bind def
+/f1 {/Times-Italic findfont 15 scalefont setfont} bind def
+/f2 {/Times-Roman findfont 12 scalefont setfont} bind def
+/f3 {/Times-Roman findfont 15 scalefont setfont} bind def
+/f4 {/Times-Roman findfont 32 scalefont setfont} bind def
+/fs {/Symbol findfont 18 scalefont setfont} bind def
+%%EndProlog
+16 16 translate
+0.8 0.8 scale 
+newpath % the axes
+-15 0 moveto
+190 0 lineto
+0 -15 moveto
+0 190 lineto
+stroke
+gsave % the arrow
+  2 setlinewidth
+  newpath
+  0 0 moveto
+  120 150 lineto
+  stroke
+  newpath
+  124 155 moveto
+  2 0 0 arrowhead
+grestore
+.7 setlinewidth
+newpath % auxiliary lines
+124 0 moveto 
+124 155 lineto 
+0 155 lineto
+stroke
+0 0 openpoint % the origin
+% the labels
+-14 -14 moveto f1 (O) show
+120 -12 moveto f1 (a) show 
+-12 150 moveto f1 (b) show 
+180 -12 moveto f1 (x) show
+-12 180 moveto f1 (y) show
+129 155 moveto f3 (\050) show 
+f1 (a) show f3 (, ) show 
+f1 (b) show f3 (\051) show
+77 70 moveto 
+gsave 1 2 scale f3 (\050) show grestore 
+gsave 8 14 rmoveto f1 (a) show grestore 
+gsave 8 -6 rmoveto f1 (b) show grestore
+19 0 rmoveto 
+gsave 1 2 scale f3 (\051) show grestore
+showpage
+%%EOF

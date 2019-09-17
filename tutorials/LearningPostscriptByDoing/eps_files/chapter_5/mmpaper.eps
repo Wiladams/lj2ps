@@ -1,0 +1,47 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 600 792
+%%BeginProlog
+% /u 3.24 def    % unit: 1 mm (magic number for our printers)
+/u 2.834645 def % unit 1 mm
+/lw1 {0.8 u div} def   % normal line width
+/lw2 {0.5 u div} def % line width for 5 mm lines
+/lw3 {0.2 u div} def % line width for 1 mm lines
+/makepaper {5 dict begin % stack: nx ny 
+  /ny exch def % number of horizontal boxes of size 1 cm
+  /nx exch def % number of vertical boxes of size 1 cm
+  /w 10 nx mul def % graph paper width
+  /h 10 ny mul def % graph paper height
+  % draw vertical lines
+  0 1 10 nx mul {
+    /i exch def
+    i 0 moveto 
+    i 10 mod 0 eq
+      {gsave lw1 setlinewidth 0 h rlineto stroke grestore}
+      {i 5 mod 0 eq
+         {gsave lw2 setlinewidth 0 h rlineto stroke grestore}
+         {gsave lw3 setlinewidth 0 h rlineto stroke grestore
+      } ifelse
+    } ifelse
+  } for
+  % draw horizontal lines
+  0 1 10 ny mul {
+    /i exch def
+    0 i moveto 
+    i 10 mod 0 eq
+      {gsave lw1 setlinewidth w 0 rlineto stroke grestore}
+      {i 5 mod 0 eq
+         {gsave lw2 setlinewidth w 0 rlineto stroke grestore}
+         {gsave lw3 setlinewidth w 0 rlineto stroke grestore
+      } ifelse
+    } ifelse
+  } for
+end} def
+%%EndProlog
+u dup scale 
+lw1 setlinewidth
+15 25 translate
+1 0 0 0 setcmykcolor
+newpath
+16 23 makepaper 
+showpage
+%%EOF

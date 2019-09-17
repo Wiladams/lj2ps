@@ -1,0 +1,54 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 165 105
+%%BeginProlog
+/angle {exch atan} def
+/dir {dup cos exch sin} def
+/addvec {    % a b c d on stack
+  3 -1 roll  % a c d b
+  add        % a c b+d
+  3  1 roll  % b+d a c
+  add        % b+d a+c
+  exch       % a+c b+d
+} def
+/subvec {% a b c d on stack
+  3 -1 roll    % a c d b
+  sub neg      % a c b-d
+  3  1 roll    % b-d a c
+  sub          % b-d a-c
+  exch         % a-c b-d
+} def
+/scalarvec{  % c a b on stack
+  3 -1 roll  % a b c 
+  dup        % a b c c 
+  3 1 roll   % a c b c
+  mul        % a c bc
+  3 1 roll   % bc a c
+  mul        % bc ac
+  exch       % ac bc
+} def
+/s 28.34645 def
+/A {0 0} def /B {5 0} def /C {2 3} def
+/trianglepath {newpath A moveto B lineto 
+  C lineto closepath} def 
+%%EndProlog
+s s scale
+1 s div setlinewidth
+12 s div 5 s div translate
+% draw the triangle with vertices A, B, C
+trianglepath stroke
+gsave
+trianglepath clip
+% gamma is the bisector angle at C
+/gamma {A C subvec angle 2 div 
+        B C subvec angle 2 div add} def
+newpath 
+C moveto 10 gamma dir scalarvec rlineto
+stroke
+grestore
+% draw labels
+/Times-Roman findfont 12 s div scalefont setfont
+A 0.4 0 subvec moveto (A) show
+B 0.1 0 addvec moveto (B) show
+C -0.15 0.1 addvec moveto (C) show
+showpage
+%%EOF

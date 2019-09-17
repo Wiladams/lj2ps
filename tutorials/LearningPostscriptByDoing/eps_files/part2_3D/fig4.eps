@@ -1,0 +1,241 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 60 60
+
+/punt {1 0 360 arc fill} def
+
+/arrowhead {
+   gsave
+	currentpoint
+	4 2 roll exch 4 -1 roll exch
+	sub 3 1 roll sub
+	exch atan rotate dup scale
+	-7 2 rlineto
+	1 -2 rlineto
+	-1 -2 rlineto
+	closepath fill
+   grestore
+   newpath
+} bind def
+
+
+
+30 30 translate
+
+30 30 scale
+
+/alpha -15 def
+/beta -40 def
+/grijs 0.8 def
+
+/x0 0 def
+/y0 0 def
+
+/xa alpha sin def
+/ya alpha cos beta sin mul def
+
+/xb alpha cos def
+/yb alpha sin beta sin neg mul def
+
+/xc 0 def
+/yc beta cos def
+
+
+gsave
+newpath
+xb xc add yb yc add moveto 
+xb neg xc add yb neg yc add lineto 
+xb neg xc neg add yb neg yc neg add lineto
+xb xc neg add yb yc neg add lineto
+closepath
+grijs setgray
+fill 
+grestore
+
+0.01 setlinewidth
+
+newpath
+0 0 moveto
+xa .95 mul ya .95 mul lineto
+stroke
+xa ya moveto
+0.01 0 0 arrowhead 
+
+newpath
+0 0 moveto
+xb .95 mul yb .95 mul lineto
+stroke
+xb yb moveto
+0.01 0 0 arrowhead 
+
+newpath
+0 0 moveto
+xc .95 mul yc .95 mul lineto
+stroke
+xc yc moveto
+0.01 0 0 arrowhead 
+
+
+
+.003 setlinewidth
+
+newpath
+0 0 moveto
+xb neg yb neg lineto
+0 0 lineto
+xc neg yc neg lineto
+stroke
+
+/d 1 def
+/h -90 def
+
+%xb neg yb neg moveto
+%180 {
+%h cos xa mul h sin xb mul sub h cos ya mul h sin yb mul sub lineto
+%/h h d add def
+%} repeat
+%stroke 
+
+%/f .25 def
+%2{
+%/h 90 def
+%xb f mul yb f mul moveto
+%33 {
+%h cos xa mul h sin xb mul add f mul h cos ya mul h sin yb mul add f mul lineto
+%/h h d sub def
+%} repeat
+%stroke 
+%/f f .03 add def
+%} repeat
+
+/alpha1 -33 def
+/beta1 -32 def
+
+
+
+0.01 setlinewidth
+
+/h alpha1 def
+
+%2{
+%newpath
+%0 0 moveto
+%h cos xa mul h sin xb mul add h cos ya mul h sin yb mul add lineto
+%stroke
+%h cos xa mul h sin xb mul add h cos ya mul h sin yb mul add moveto
+%0.01 0 0 arrowhead
+
+%/h h 90 add def
+
+%} repeat
+
+/h alpha1 def
+/k beta1 def
+/f .75 def
+
+2{ 
+/x1 h cos k cos mul xa mul h sin xb mul add h cos k sin mul xc mul add def
+/y1 h cos k cos mul ya mul h sin yb mul add h cos k sin mul yc mul add def
+stroke
+
+0 0 moveto
+x1 y1 lineto
+stroke
+x1 y1 moveto
+0.01 0 0 arrowhead
+
+/x2 x1 h cos k cos mul xa mul sub def
+/y2 y1 h cos k cos mul ya mul sub def
+0 0 moveto
+x2 y2 lineto
+stroke
+x2 y2 moveto
+.01 0 0 arrowhead
+
+gsave
+0.005 setlinewidth
+[.07 .03] 0 setdash
+newpath
+x1 y1 moveto
+x2 y2 lineto
+stroke
+x1 x2 2 mul add 3 div y1 y2 2 mul add 3 div moveto
+.008 x1 y1 arrowhead
+grestore
+
+/h h 90 add def
+/f .79 def
+} repeat
+
+
+
+gsave
+.05 setlinewidth
+grijs setgray
+
+/k -30 def
+
+k cos xc mul k sin xa mul sub k cos yc mul k sin ya mul sub moveto
+40 {
+k cos xc mul k sin xa mul sub k cos yc mul k sin ya mul sub lineto
+/k k d sub def
+} repeat
+stroke 
+grestore
+
+/k beta1 def
+
+
+/x3 k cos xc mul k sin xa mul sub def
+/y3 k cos yc mul k sin ya mul sub def 
+
+/x4 k cos xc mul def
+/y4 k cos yc mul def 
+
+0 0 moveto
+x3 y3 lineto
+stroke
+x3 y3 moveto
+.01 0 0 arrowhead
+
+x4 y4 moveto
+.01 0 0 arrowhead
+
+gsave
+0.005 setlinewidth
+[.07 .03] 0 setdash
+newpath
+x3 y3 moveto
+x4 y4 lineto
+stroke
+x3 x4 2 mul add 3 div y3 y4 2 mul add 3 div moveto
+.008 x3 y3 arrowhead
+grestore
+
+
+
+
+
+.003 setlinewidth
+
+
+/k 0 def
+
+xc yc moveto
+180 {
+k cos xc mul k sin xa mul sub k cos yc mul k sin ya mul sub lineto
+/k k d sub def
+} repeat
+stroke 
+
+
+%/f .45 def
+%/k 0 def
+%xc f mul yc f mul moveto
+%32 {
+%k cos xc mul k sin xa mul sub f mul k cos yc mul k sin ya mul sub f mul lineto
+%/k k d sub def
+%} repeat
+%stroke 
+
+showpage
+

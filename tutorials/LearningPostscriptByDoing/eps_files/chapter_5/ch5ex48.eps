@@ -1,0 +1,68 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 190 130
+%%BeginProlog
+/u 28.34645 def % unit: 1 cm
+/lw1 {1 u div} def
+/lw2 {1.5 u div} def
+/fs {/Symbol findfont 10 u div scalefont setfont} bind def
+/fi {/Helvetica-Italic findfont 10 u div scalefont setfont} bind def
+/fis {/Helvetica-Italic findfont 7 u div scalefont setfont} bind def
+/str 10 string def
+/f { % the function f(x)
+  1 dict begin 
+  /x exch def
+  1 x div
+end } bind def
+/n 100 def
+/xmin 0.25 def /xmax 6 def 
+/ymax 1 xmin div def 
+/dx xmax xmin sub n div def
+%%EndProlog
+u dup scale
+lw1 setlinewidth
+% translate origin
+0.5 0.5 translate
+% draw graph
+lw2 setlinewidth 
+2 setlinecap
+/x xmin def
+newpath
+x x f moveto % 
+5 {
+  /x x dx add def
+  x x f 
+  lineto
+} repeat
+stroke
+newpath
+/xleft x def
+x x f moveto
+50 {
+  /x x dx add def
+  x x f  
+  lineto
+} repeat
+gsave 
+  0 x f neg rlineto 
+  xleft x sub 0 rlineto 
+  closepath 
+  gsave 0.8 setgray fill grestore 
+  lw1 setlinewidth 0 setgray
+  stroke 
+grestore
+n 60 sub {
+  /x x dx add def
+  x x f  
+  lineto
+} repeat
+stroke
+% draw axes
+lw1 setlinewidth 0 setgray
+newpath
+0 0 moveto xmax 0 lineto
+0 0 moveto 0 ymax lineto
+xmax 0.3 sub -0.4 moveto fi (x) show
+-0.3 ymax 0.3 sub moveto fi (y) show
+stroke
+showpage
+%%EOF

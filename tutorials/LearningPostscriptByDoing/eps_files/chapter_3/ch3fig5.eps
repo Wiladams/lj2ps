@@ -1,0 +1,73 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 146 160
+%%Pages: 1
+/point {1.5 0 360 arc gsave 0 setgray fill grestore stroke} def
+/arrowhead {
+   gsave
+	currentpoint
+	4 2 roll exch 4 -1 roll exch
+	sub 3 1 roll sub
+	exch atan rotate dup scale
+	-7 2 rlineto
+	1 -2 rlineto
+	-1 -2 rlineto
+	closepath fill
+   grestore
+   newpath
+} bind def
+/f1 {/Times-Italic findfont 10 scalefont setfont} bind def
+/f2 {/Times-Italic findfont 9 scalefont setfont} bind def
+/f3 {/Times-Roman findfont 10 scalefont setfont} bind def
+/f4 {/Times-Roman findfont 7 scalefont setfont} bind def
+/fs {/Symbol findfont 10 scalefont setfont} bind def
+/r 36 def
+%%EndProlog
+%%Page: 1 1
+70 50 translate
+newpath 
+[2] 0 setdash
+0.5 setlinewidth
+% draw dashed lines and arcs
+r 0 moveto
+0 0 r 0 360 arc
+0 0 moveto
+0 r neg lineto
+0 0 moveto
+30 cos r mul 30 sin r mul lineto
+r neg 20 sub r neg moveto % P0
+3 sqrt r mul r neg lineto % P0--P1
+r neg 2 div 4 3 sqrt add r mul 2 div lineto % P1--P2
+stroke
+% draw arct segment
+[] 0 setdash
+1.4 setlinewidth 
+newpath
+r neg 20 sub r neg moveto % P0
+3 sqrt r mul r neg 
+r neg 2 div 4 3 sqrt add r mul 2 div  r arct
+stroke
+% draw points
+newpath
+r neg 20 sub r neg point
+3 sqrt r mul r neg point
+r neg 2 div 4 3 sqrt add r mul 2 div point
+%
+% draw text
+% r
+2 r neg 2 div moveto f1 (r) show
+% P0
+r neg 31 sub r neg 13 add moveto f3 (current) show
+r neg 31 sub r neg 5 add moveto f3 (point) show
+r neg 31 sub r neg 10 sub moveto fs (\050) show f1 (x  ,y ) show fs (\051) show 
+r neg 23.2 sub r neg 13 sub moveto f4 (0) show 
+r neg 12.4 sub r neg 13 sub moveto f4 (0) show
+% P1
+3 sqrt r mul 11 sub r neg 10 sub moveto fs (\050) show f1 (x ,y ) show fs (\051) show 
+3 sqrt r mul 4 sub r neg 13 sub moveto f4 (1) show 
+3 sqrt r mul 5.5 add r neg 13 sub moveto f4 (1) show 
+% P2
+r neg 2 div 3 add 4 3 sqrt add r mul 2 div 2 sub moveto fs (\050) show f1 (x  ,y ) show fs (\051) show 
+r neg 2 div 11 add 4 3 sqrt add r mul 2 div 4.2 sub moveto f4 (2) show 
+r neg 2 div 22 add 4 3 sqrt add r mul 2 div 4.2 sub moveto f4 (2) show 
+showpage
+%%EOF

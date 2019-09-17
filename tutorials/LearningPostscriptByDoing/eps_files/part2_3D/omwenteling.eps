@@ -1,0 +1,197 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 235 182
+2 setlinejoin
+/punt {1.5 eh div 0 360 arc gsave 1 setgray fill grestore stroke} def
+/arrowhead {
+   gsave
+    currentpoint
+    4 2 roll exch 4 -1 roll exch
+    sub 3 1 roll sub
+    exch atan rotate dup scale
+    -7 2 rlineto
+    1 -2 rlineto
+    -1 -2 rlineto
+    closepath fill
+   grestore
+   newpath
+} bind def
+50 60 translate
+/eh 30 def
+eh eh scale
+/lijn1 1.2 eh div def
+/lijn2 .7 eh div def
+lijn1 setlinewidth
+/grijs1 .9 def
+/grijs2 .83 def
+/grijs3 .76 def
+/grijs4 .7 def
+%%%%%%%%%%%%% orthogonale projectie
+/alpha -21 def
+/beta -23 def
+/xa alpha sin def
+/ya alpha cos beta sin mul def
+/xb alpha cos def
+/yb alpha sin beta sin neg mul def
+/xc 0 def
+/yc beta cos def 
+/coord {
+  /z exch def /y exch def /x exch def 
+  x xa mul y xb mul add z xc mul add 
+  x ya mul y yb mul add z yc mul add} bind def 
+%%%%%%%% functievoorschrift:
+/f {/t exch 4 div def 1 t t mul 2 div sub t t mul t mul t mul 24 div add 3 mul} bind def
+%%%%%%%%% keuze en verdeling van het interval [a,b] met tussenpunt y0
+/n 45 def
+/n1 25 def
+/a .7 def
+/del .1 def
+/b a del n mul add def
+/y0 a del n1 mul add def 
+%%%%%%%%% assen
+newpath
+0 0 0 coord moveto
+4.3 0 0 coord lineto
+0 0 0 coord lineto
+0 6.5 0 coord lineto
+0 0 0 coord lineto
+0 0 4.3 coord lineto
+stroke
+%%%%%%%%%%% omwentelingsoppervlak, eerst in lichtgrijs
+/y a def
+/phi 0 def
+newpath
+y f y 0 coord moveto
+90 {
+/phi phi 1 add def
+phi cos y f mul y phi sin y f mul coord lineto 
+} repeat
+n {
+/y y del add def
+0 y y f coord lineto
+} repeat
+90 {
+/phi phi 1 sub def
+phi cos y f mul y phi sin y f mul coord lineto 
+} repeat
+n {
+/y y del sub def
+y f y 0 coord lineto
+} repeat
+gsave grijs1 setgray fill grestore
+stroke
+%showpage
+/y a def
+/phi 0 def
+newpath
+y f y 0 coord moveto
+90 {
+/phi phi 1 add def
+phi cos y f mul y phi sin y f mul coord lineto 
+} repeat
+n1 {
+/y y del add def
+0 y y f coord lineto
+} repeat
+90 {
+/phi phi 1 sub def
+phi cos y f mul y phi sin y f mul coord lineto 
+} repeat
+n1 {
+/y y del sub def
+y f y 0 coord lineto
+} repeat
+gsave grijs2 setgray fill grestore
+stroke
+%showpage
+lijn2 setlinewidth 
+%%%%%%%%% assen, dun
+newpath
+0 0 0 coord moveto
+4.3 0 0 coord lineto
+0 0 0 coord lineto
+0 5.9 0 coord lineto
+0 0 0 coord lineto
+0 0 4.3 coord lineto
+stroke
+newpath
+a f a 0 coord moveto
+0 a 0 coord lineto
+0 a a f coord lineto
+stroke
+%showpage
+lijn1 setlinewidth
+newpath
+b f b 0 coord moveto
+0 b 0 coord lineto
+0 b b f coord lineto
+/phi 90 def
+90 {
+phi cos b f mul b phi sin b f mul coord lineto
+/phi phi 1 sub def
+} repeat
+gsave grijs4 setgray fill grestore
+stroke
+%showpage
+/dely .15 def  %%%%%%%% dikte van het plakje
+newpath
+0 y0 y0 f coord moveto
+/phi 90 def
+90 {
+/phi phi 1 sub def
+phi cos y0 f mul y0 phi sin y0 f mul coord lineto
+} repeat
+phi cos y0 f mul y0 dely add phi sin y0 f mul coord lineto
+90 {
+/phi phi 1 add def
+phi cos y0 f mul y0 dely add phi sin y0 f mul coord lineto
+} repeat
+closepath
+gsave grijs4 setgray fill grestore
+stroke
+newpath
+y0 f y0 dely add 0 coord moveto
+0 y0 dely add 0 coord lineto
+0 y0 dely add y0 f coord lineto
+/phi 90 def
+90 {
+phi cos y0 f mul y0 dely add phi sin y0 f mul coord lineto
+/phi phi 1 sub def
+} repeat
+gsave grijs4 setgray fill grestore
+stroke
+%showpage
+lijn2 setlinewidth
+newpath
+0 y0 y0 f coord moveto
+0 y0 0 coord lineto
+y0 f y0 0 coord lineto
+stroke
+newpath 
+0 y0 .7 sub 0 coord moveto
+0 y0 dely add 0 coord lineto
+stroke
+%showpage
+newpath
+0 y0 1.1 add y0 f .1 add coord moveto
+0 y0 -.2 add y0 f -1.1 add coord lineto
+stroke
+%%%%%%%%%%%%%%%%%%%%% pijlpunt
+newpath
+0 y0 -.2 add y0 f -1.1 add coord moveto
+.025 0 y0 1.1 add y0 f .1 add coord arrowhead
+%%%%%%%%%%%%% belettering
+/f1 {/Palatino-Italic findfont 14 eh div scalefont setfont} bind def
+/f2 {/Palatino findfont 10 eh div scalefont setfont} bind def
+/f3 {/Palatino findfont 14 eh div scalefont setfont} bind def
+/f4 {/Palatino-Bold findfont 14 eh div scalefont setfont} bind def
+0 .8 .1 coord moveto f1 (a) show
+0 3.5 .15 coord moveto f1 (y+dy) show
+0 2.9 .15 coord moveto f1 (y) show
+4.5 .3 -.05 coord moveto f1 (x) show f3 (-as) show
+0 5.4 .1 coord moveto f1 (b) show
+0 .15 4.1 coord moveto f1 (z) show f3 (-as) show
+.95 6 -.05 coord moveto f1 (y) show f3 (-as) show
+0 y0 1.2 add y0 f .2 add coord moveto f1 (dI) show
+0 1.4 1.4 coord moveto f1 (I(y)) show
+0 1.9 2.9 coord moveto f1 (z = f(y)) show
+showpage

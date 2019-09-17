@@ -1,0 +1,27 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 173 31
+%%BeginProlog
+/u 14.173225 def % unit is 0.5 cm
+/lw {1 u div} def % default linewidth
+/n 10 def
+/circle { % arguments: graylevel x y
+  0.25 0 360 arc setgray fill } def 
+%%EndProlog
+u dup scale
+lw setlinewidth
+1.1 1.1 translate
+newpath % draw border
+-1 -1 moveto
+n 2 add 0 rlineto
+0 2 rlineto
+-2 n sub 0 rlineto
+closepath
+stroke
+newpath
+0 1 n { 
+  /i exch def
+  % draw filled circle
+  i n div i 0 circle
+} for
+showpage
+%%EOF

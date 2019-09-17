@@ -1,0 +1,96 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 540 270
+%%BeginProlog
+/u 28.343452 def % unit: 1 cm
+/pi 3.14159265 def
+/lw1 {1 u div} def
+/lw2 {1.5 u div} def
+/fr {/Helvetica findfont 10 u div scalefont setfont} bind def
+/fi {/Helvetica-Italic findfont 10 u div scalefont setfont} bind def
+/fs {/Symbol findfont 10 u div scalefont setfont} bind def
+/rad {180 pi div mul} def
+/f {dup rad sin exch rad cos div} bind def % tangens
+/xmin -7 def /xmax 7 def
+/ymin -4.2 def /ymax 4.2 def
+/txmin xmin pi div ceiling cvi def  % used for ticks
+/txmax xmax pi div floor cvi def 
+/tymin ymin ceiling cvi def  
+/tymax ymax floor cvi def 
+/n 2500 def % number of segments
+/dx {xmax xmin sub n div} bind def %stepsize
+%%EndProlog
+u dup scale
+-0.5 xmin add neg -0.2 ymin add neg translate
+lw1 setlinewidth
+2 setlinecap
+% draw axes
+newpath
+xmin 0 moveto xmax 0 lineto
+0 ymin moveto 0 ymax lineto
+stroke
+% draw ticks and axis labels
+newpath
+txmin 1 txmax {
+  /i exch def 
+  i 0 gt {
+    i pi mul 0 moveto 0 0.1 rlineto
+    i 1 eq {
+      -0.1 -0.5 rmoveto fs (p) show} {
+      -0.1 -0.5 rmoveto fs i 2 string cvs show fs (p) show  
+    } ifelse
+  } if
+  i 0 lt {
+    i pi mul 0 moveto 0 0.1 rlineto
+    i -1 eq {
+      -0.1 -0.5 rmoveto fs (-p) show} {
+      -0.1 -0.5 rmoveto fs i 2 string cvs show fs (p) show  
+    } ifelse
+  } if
+  i 0 eq { 0.1 -0.4 moveto fs (0) show } if
+} for
+tymin 1 tymax {/i exch def 
+  i 0 lt {
+    0 i moveto 0.1 0 rlineto
+   -0.55 -0.1 rmoveto i 2 string cvs show } if
+  i 0 gt {
+    0 i moveto 0.1 0 rlineto
+   -0.37 -0.1 rmoveto i 2 string cvs show } if
+} for
+% draw text (manually)
+2.9 .9 moveto fr (tan) show .1 0 rmoveto fi (x) show
+stroke
+% draw asymptotic lines
+0 setgray [.3 .2] 0 setdash
+lw1 setlinewidth 
+newpath
+txmin 1 txmax {
+  /i exch def 
+  i 0 lt {
+    2 i mul 1 add pi mul 2 div ymin moveto
+    0 ymax ymin sub rlineto
+  } if
+  i 0 gt {
+    2 i mul 1 sub pi mul 2 div ymin moveto
+    0 ymax ymin sub rlineto
+  } if
+} for
+stroke
+% draw graph of tangens
+0 0 1 setrgbcolor [] 0 setdash
+lw2 setlinewidth 0 setlinecap
+/x xmin def
+newpath
+x x f moveto
+n {
+  /x x dx add def
+  x f ymin gt x f ymax lt and   
+    {x x f lineto } 
+    { x x f moveto} 
+  ifelse
+} repeat
+stroke 
+showpage
+%%EOF
+
+
+

@@ -1,0 +1,67 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 380 78
+%%BeginProlog
+/u 28.343452 def % unit: 1 cm
+/pi 3.14159265 def
+/lw1 {1 u div} def
+/lw2 {1.5 u div} def
+/fr {/Helvetica findfont 10 u div scalefont setfont} bind def
+/fi {/Helvetica-Italic findfont 10 u div scalefont setfont} bind def
+/fs {/Symbol findfont 10 u div scalefont setfont} bind def
+/f {180 mul pi div sin} bind def
+/f' {180 mul pi div cos} bind def
+/nmin -2 def /nmax 2 def 
+/xmin nmin pi mul def /xmax nmax pi mul def
+/ymin -1.2 def /ymax 1.2 def
+/n 15 def % number of segments
+/dx {xmax xmin sub n div} bind def %stepsize
+%%EndProlog
+u dup scale
+-0.5 xmin add neg -0.2 ymin add neg translate
+lw1 setlinewidth
+2 setlinecap
+% draw axes
+newpath
+xmin 0 moveto xmax 0 lineto
+0 ymin moveto 0 ymax lineto
+stroke
+% draw ticks
+newpath
+3 nmin mul 1 3 nmax mul {
+  /i exch def 
+  i 0 ne {
+  i 3 div pi mul 0 moveto 0 0.1 rlineto} if
+} for
+-1 1 1 {/i exch def 
+  i 0 ne {0 i moveto 0.1 0 rlineto} if
+} for
+% draw text (manually)
+-0.4 -1.1 moveto fr (-1) show
+-0.3 0.9 moveto fr (1) show
+-6.7 -0.4 moveto fs (-2p) show
+-3.4 -0.4 moveto fs (-p) show
+3.05 -0.4 moveto fs (p) show
+6.2 -0.4 moveto fs (2p) show
+3 0.5 moveto fi (y) show fr ( = sin ) show fi (x) show
+stroke
+% draw sine graph
+0 0 1 setrgbcolor
+lw2 setlinewidth 0 setlinecap
+/x xmin def
+newpath
+x x f moveto
+n {
+  x dx 3 div add 
+  x f dx 3 div x f' mul add % P1
+  /x x dx add def
+  x dx 3 div sub 
+  x f dx 3 div x f' mul sub % P2
+  x x f % P3
+  curveto
+} repeat
+stroke 
+showpage
+%%EOF
+
+
+

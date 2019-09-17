@@ -1,0 +1,40 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 65 75
+%%BeginProlog
+/u 28.34645 def % unit: 1 cm
+/ellipse {7 dict begin
+  /endangle exch def
+  /startangle exch def
+  /yradius exch def
+  /xradius exch def
+  /yC exch def
+  /xC exch def
+  /savematrix matrix currentmatrix def % save current transformation matrix
+  xC yC translate                      % translate to center of ellipse
+  xradius yradius scale                % scale by radius values
+  0 0 1 startangle endangle arc        % add arc to path
+  savematrix setmatrix                 % restore the transformation matrix
+end
+} def
+%%EndProlog
+u dup scale
+1 u div setlinewidth
+2.7 2.3 translate
+gsave
+  -2 0 translate
+  0 0 0.5 0.25 0 360 ellipse
+  stroke
+grestore
+gsave
+  60 rotate
+  -2 0 translate
+  0 0 0.5 0.25 0 360 ellipse
+  stroke
+grestore
+-1.5 0 moveto
+0 0 1.5 180 240 arc
+-2.5 0 moveto
+0 0 2.5 180 240 arc
+stroke
+showpage
+%%EOF

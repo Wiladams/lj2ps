@@ -1,0 +1,216 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 260 240
+
+%%%%%%%%% dodecahedron 
+
+
+%%%%%%%%% tangens
+/tan {
+  /a exch def
+  a sin a cos div 
+} bind def
+
+
+%%%%%%%%% orthogonale projectie:
+
+/coord {
+/z exch def 
+/y exch def
+/x exch def
+x xa mul y xb mul add z xc mul add 
+x ya mul y yb mul add z yc mul add
+} bind def
+
+
+%%%%%%%% projectiehoeken:
+/alpha 13 def
+/beta -10 def
+
+%%%%%%%% lichtrichtinghoeken:
+/alpha1 47 def
+/beta1 -40 def
+
+
+
+%%%%%%%%% geprojecteerde basisvectoren:
+
+/xa alpha sin def
+/ya alpha cos beta sin mul def
+
+/xb alpha cos def
+/yb alpha sin beta sin neg mul def
+
+/xc 0 def
+/yc beta cos def
+
+%%%%%%%%% normaalrichtingen
+
+/norm {
+/n3 exch def
+/n2 exch def
+/n1 exch def
+/nm n1 n1 mul n2 n2 mul add n3 n3 mul add sqrt def
+n1 alpha cos mul beta cos mul 
+n2 alpha sin mul neg beta cos mul add 
+n3 beta sin mul neg add nm div} bind def 
+
+
+/norm1 {
+/n3 exch def
+/n2 exch def
+/n1 exch def
+/nm n1 n1 mul n2 n2 mul add n3 n3 mul add sqrt def
+n1 alpha1 cos mul beta1 cos mul 
+n2 alpha1 sin mul neg beta1 cos mul add 
+n3 beta1 sin mul neg add nm div} bind def 
+
+%%%%%%%%% cosinus hoek vector (n1,n2,n3) 
+%%%%%%%%% met projectierichting
+
+/projCos {
+/n3 exch def
+/n2 exch def
+/n1 exch def
+/nm n1 n1 mul n2 n2 mul add n3 n3 mul add sqrt def
+n1 alpha cos mul beta cos mul 
+n2 alpha sin mul neg beta cos mul add 
+n3 beta sin mul neg add nm div} bind def 
+
+
+
+%%%%%%%%% cosinus hoek vector (n1,n2,n3) 
+%%%%%%%%% met lichtrichting
+
+/lichtCos {
+/nn3 exch def
+/nn2 exch def
+/nn1 exch def
+/nnm nn1 nn1 mul nn2 nn2 mul add nn3 nn3 mul add sqrt def
+nn1 alpha1 cos mul beta1 cos mul 
+nn2 alpha1 sin mul neg beta1 cos mul add 
+nn3 beta1 sin mul neg add nnm div} bind def 
+
+
+%%%%%%%%% rotatie over 72 graden om z-as
+
+/c5 72 cos def
+/s5 72 sin def
+
+/rot5z {
+/z exch def 
+/y exch def
+/x exch def
+x c5 mul y s5 mul sub 
+x s5 mul y c5 mul add
+z
+} bind def
+
+%%%%%%%%% rotatie over a graden om z-as
+
+/rotaz {
+/ca a cos def
+/sa a sin def
+/z exch def 
+/y exch def
+/x exch def
+x ca mul y sa mul sub 
+x sa mul y ca mul add
+z
+} bind def
+
+
+
+%%%%%%% phi: halve hoek tussen twee 5-assen
+
+/phi 2 1 atan 2 div def 
+/c phi 2 mul cos def
+/s phi 2 mul sin def
+
+%%%%%%%%% spiegeling binnen xz-vlak 
+
+/r2p {
+/z exch def 
+/y exch def
+/x exch def
+x c mul neg z s mul add 
+y
+x s mul z c mul add
+} bind def
+
+
+/R 100 def
+/f 1.9 def
+/lw 2 def
+
+
+/x1 R phi tan mul def
+/y1 x1 36 tan mul def 
+/z1 R def
+
+130 120 translate
+
+
+/b 1 def
+
+2 {
+
+2 { 
+
+newpath
+x1 y1 z1 coord moveto
+5 {
+x1 y1 z1 rot5z 
+/z1 exch def
+/y1 exch def
+/x1 exch def
+x1 y1 z1 coord lineto
+} repeat
+0 0 R norm 0 gt b 0 gt or 
+{gsave 0 0 R norm1 .7 add 1.7 div setgray fill grestore
+stroke } if
+
+
+/trafo {r2p} bind def
+
+
+/k 5 def
+/a 0 def
+
+k {
+newpath
+x1 y1 z1 trafo coord moveto
+5 {
+x1 y1 z1 rot5z  
+/z1 exch def
+/y1 exch def
+/x1 exch def
+x1 y1 z1 trafo coord lineto
+} repeat
+0 0 R trafo norm 0 gt b 0 gt or 
+{gsave 0 0 R trafo norm1 .7 add 1.7 div setgray fill grestore
+stroke } if
+
+/a a 72 add def
+
+/trafo {r2p rotaz} def
+
+} repeat
+
+/x1 x1 neg def
+/y1 y1 neg def
+/z1 z1 neg def
+/R R neg def
+
+} repeat
+
+/b 0 def
+
+} repeat
+
+
+
+
+showpage
+
+
+

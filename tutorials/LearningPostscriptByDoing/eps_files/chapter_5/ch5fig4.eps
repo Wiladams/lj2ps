@@ -1,0 +1,96 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 150 300
+%%BeginProlog
+/u 14.173225 2 mul def % unit: 0.5 cm
+/lw1 {1 u div} def
+/lw2 {0.7 u div} def
+/f { % the function f(x)
+  1 dict begin 
+  /x exch def
+  x 5 exp            % x^5
+  x 3 exp -5 mul add % -5x^3 
+  x 2 exp sub        % -x^2
+  x 4 mul add        % +4x
+  2 add              % +2
+  end } bind def
+/f' { % the function f'(x)
+  1 dict begin 
+  /x exch def
+  x 4 exp 5 mul       % 5x^4
+  x 2 exp -15 mul add % -15x^2 
+  x 2 mul sub         % -2x
+  4 add               % +4
+  end } bind def
+/n 8 def
+%%EndProlog
+u dup scale
+lw1 setlinewidth
+2 setlinejoin
+% translate origin
+2.5 4.9 translate
+% draw axes
+lw2 setlinewidth
+newpath
+-2.4 0 moveto 2.4 0 lineto
+0 -4.8 moveto 0 4.8 lineto
+stroke
+% draw ticks
+newpath
+-2 1 2 {/i exch def 
+  i 0 moveto 0 0.1 rlineto
+} for
+-4 1 4 {/i exch def 
+  0 i moveto 0.1 0 rlineto
+} for
+stroke
+% draw graph
+lw1 setlinewidth
+% polygon approximation
+1 0 0 setrgbcolor
+/x -2.08 def
+/dx 4.29 n div def
+newpath
+x x f moveto
+n {
+/x x dx add def
+x x f lineto
+} repeat
+stroke 
+% Bezier aproximation
+0 0 1 setrgbcolor
+/x -2.08 def
+/dx 4.29 n div def
+newpath
+x x f moveto % P0
+/f'x x f' def
+n {
+  x dx 3 div add 
+  x f dx 3 div f'x mul add % P1
+  /x x dx add def
+  /f'x x f' def
+  x dx 3 div sub 
+  x f dx 3 div f'x mul sub % P2
+  x x f % P3
+  curveto
+} repeat
+stroke
+% real curve
+%/n 100 def
+%0 0 1 setrgbcolor
+%[1 u div 1 u div] 0 setdash
+%/x -2.08 def
+%/dx 4.29 n div def
+%newpath
+%x x f moveto % P0
+%n {
+%  x dx 3 div add 
+%  x f dx 3 div x f' mul add % P1
+%  /x x dx add def
+%  x dx 3 div sub 
+%  x f dx 3 div x f' mul sub % P2
+%  x x f % P3
+%  curveto
+%} repeat
+%stroke  
+showpage
+%%EOF

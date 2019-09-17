@@ -1,0 +1,80 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 165 105
+%%BeginProlog
+/angle {exch atan} def
+/dir {dup cos exch sin} def
+/addvec {    % a b c d on stack
+  3 -1 roll  % a c d b
+  add        % a c b+d
+  3  1 roll  % b+d a c
+  add        % b+d a+c
+  exch       % a+c b+d
+} def
+/subvec {% a b c d on stack
+  3 -1 roll    % a c d b
+  sub neg      % a c b-d
+  3  1 roll    % b-d a c
+  sub          % b-d a-c
+  exch         % a-c b-d
+} def
+/scalarvec{  % c a b on stack
+  3 -1 roll  % a b c 
+  dup        % a b c c 
+  3 1 roll   % a c b c
+  mul        % a c bc
+  3 1 roll   % bc a c
+  mul        % bc ac
+  exch       % ac bc
+} def
+/s 28.34645 def
+/A {0 0} def /B {5 0} def /C {2 3} def
+/trianglepath {newpath A moveto B lineto 
+  C lineto closepath} def 
+/closedpoint {1.5 s div 0 360 arc gsave 0 setgray fill grestore stroke} def
+/openpoint {1.5 s div0 360 arc gsave 1 setgray fill grestore stroke} def
+%%EndProlog
+s s scale
+1 s div setlinewidth
+12 s div 5 s div translate
+% draw the triangle with vertices A, B, C
+trianglepath stroke
+gsave
+trianglepath clip
+% gamma is the bisector angle at C
+/gamma {A C subvec angle 2 div 
+        B C subvec angle 2 div add} def
+newpath 
+C moveto 10 gamma dir scalarvec rlineto
+stroke
+grestore
+% draw labels
+newpath
+A closedpoint
+B closedpoint
+C closedpoint
+/Times-Roman findfont 12 s div scalefont setfont
+A 0.425 0 subvec moveto (A) show
+B 0.125 0 addvec moveto (B) show
+C -0.15 0.125 addvec moveto (C) show
+% draw lines to indicate equal angles
+newpath
+C 0.5 A C subvec angle B C subvec angle arc 
+stroke
+newpath 
+/phi {A C subvec angle gamma add 2 div} def
+C 0.4 phi dir scalarvec addvec moveto
+0.2 phi dir scalarvec rlineto
+/phi {B C subvec angle gamma add 2 div} def
+C 0.4 phi dir scalarvec addvec moveto
+0.2 phi dir scalarvec rlineto
+stroke
+% compute interscection point and draw it.
+% we use here the fact that AB is horizontal
+% first determine lambda such that
+% C + lambda * (gamma dir) =0
+% lambda = -y_C/sin(gamma)
+newpath
+/lambda {C exch pop neg gamma sin div} def
+C lambda gamma dir scalarvec addvec closedpoint
+showpage
+%%EOF

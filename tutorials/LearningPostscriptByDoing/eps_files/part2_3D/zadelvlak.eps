@@ -1,0 +1,100 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 310 300
+155 230 translate
+/eh 350 def
+eh eh scale
+/kleur2 {1 1 0} def
+/kleur1 {0 0 1} def
+/lw1 .7 eh div def
+lw1 setlinewidth
+%%%%%%%%%%% projectiehoeken
+/alpha -33 def
+/beta -12 def
+%%%%%%%%%%% projecties basisvectoren
+/xa alpha sin def
+/ya alpha cos beta sin mul def
+/za alpha cos beta cos mul def
+/xb alpha cos def
+/yb alpha sin beta sin neg mul def
+/zb alpha sin beta cos mul neg def
+/xc 0 def
+/yc beta cos def
+/zc beta sin neg def
+/coord {
+  /zz exch def /yy exch def /xx exch def 
+  xx xa mul yy xb mul add zz xc mul add 
+  xx ya mul yy yb mul add zz yc mul add} bind def 
+%%%%%%%%% zadelvlak:  z = x^2 - y^2
+/z {/y exch def /x exch def x x mul y y mul sub} bind def
+/delx .03 def /dely .03 def
+%%%%%%%% tekening, eerst bovenste plaatje (bool2 = 0), 
+%%%%%%%% dan het onderste (bool2 = 1). 
+/bool2 0 def
+2 {%%%%%%%%% bovenkant: bool1 = 0
+   %%%%%%%%% onderkant: bool1 = 1
+ /bool1 0 def 
+ 2 {/x -.3 def
+  20 {/y -.3 def
+   20 {%%%%%%%% patch tekenen
+     x y x y z coord /y1 exch def /x1 exch def 
+     /x x delx add def
+     x y x y z coord /y2 exch def /x2 exch def 
+     /y y dely add def
+     x y x y z coord /y3 exch def /x3 exch def 
+     /x x delx sub def
+     x y x y z coord /y4 exch def /x4 exch def 
+     /y y dely sub def
+     newpath
+     x1 y1 moveto
+     x2 y2 lineto
+     x3 y3 lineto
+     x4 y4 lineto
+     closepath
+     bool1 0 eq %%%%%%%%% ifelse constructie
+      { kleur2 setrgbcolor
+        gsave
+        kleur1 setrgbcolor
+	fill
+	grestore
+        bool2 0 eq %%%%%%% ifelse constructie
+          {stroke}{newpath
+          x1 y1 moveto
+          x3 y3 lineto
+          stroke
+          newpath
+          x2 y2 moveto
+          x4 y4 lineto
+          stroke} 
+        ifelse
+      }{%%%%%%%% als patch zichtbaar is van onderaf:
+        %%%%%%%% (if constructie)
+        x -2 mul za mul y 2 mul zb mul add zc add 0 le  
+	{ kleur1 setrgbcolor
+          gsave
+          kleur2 setrgbcolor
+          fill
+          grestore
+          bool2 0 eq %%%%%%%%%% ifelse constructie
+            {stroke}{newpath
+            x1 y1 moveto
+            x3 y3 lineto
+            stroke
+            newpath
+            x2 y2 moveto
+            x4 y4 lineto
+            stroke} 
+          ifelse
+        } if 
+      } ifelse
+   /y y dely add def
+   } repeat
+  /x x delx add def
+  } repeat
+  /bool1 1 def
+ } repeat
+0 -.5 translate %%%%%%% translatie voor onderste plaatje
+/bool2 1 def
+} repeat
+
+showpage
+

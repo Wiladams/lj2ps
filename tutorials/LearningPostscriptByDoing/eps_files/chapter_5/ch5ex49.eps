@@ -1,0 +1,100 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 270 150
+%%BeginProlog
+/u 28.34645 def % unit: 1 cm
+/lw1 {1 u div} def
+/lw2 {1.5 u div} def
+/f { % the function f(x)
+  1 dict begin 
+  /x exch def
+  4 x dup mul sub % 4 - x^2
+end } bind def
+/n 100 def
+/xmin -2.1 def /xmax 2.1 def 
+/ymin -0.5 def /ymax 4.5 def
+/dx xmax xmin sub n div def
+/nr 12 def % number of rectangles
+/x0 -2 def /x1 2 def % left and right bound
+/inc x1 x0 sub nr div def
+/min { 2 copy gt { exch } if pop } bind def
+/max { 2 copy lt { exch } if pop } bind def
+%%EndProlog
+u dup scale
+lw1 setlinewidth
+% translate origin for left picture
+2.4 0.6 translate
+% draw axes
+lw1 setlinewidth 
+newpath
+xmin 0 moveto xmax 0 lineto
+0 ymin moveto 0 ymax lineto
+stroke
+% draw reactangles
+lw1 setlinewidth 2 setlinejoin
+0 setgray
+newpath
+/x x0 def
+/fxprev x f def 
+x 0 moveto
+nr {
+  /x x inc add def
+  inc 0 rlineto
+  0 x f fxprev max rlineto 
+  inc neg 0 rlineto
+  closepath
+  gsave 1 1 0.6 setrgbcolor fill grestore 
+  x 0 moveto
+  /fxprev x f def 
+} repeat
+stroke  
+% draw graph
+lw2 setlinewidth 2 setlinecap
+/x xmin def
+newpath
+x x f moveto % 
+n {
+  /x x dx add def
+  x x f 
+  lineto
+} repeat
+stroke
+%
+% translate origin for right picture
+4.8 0 translate
+% draw axes
+lw1 setlinewidth 
+newpath
+xmin 0 moveto xmax 0 lineto
+0 ymin moveto 0 ymax lineto
+stroke
+% draw reactangles
+lw1 setlinewidth 2 setlinejoin
+0 setgray
+newpath
+/x x0 def
+/fxprev x f def 
+x 0 moveto
+nr {
+  /x x inc add def
+  inc 0 rlineto
+  0 x f fxprev min rlineto 
+  inc neg 0 rlineto
+  closepath
+  gsave 1 1 0.6 setrgbcolor fill grestore 
+  x 0 moveto
+  /fxprev x f def 
+} repeat
+stroke  
+% draw graph
+lw2 setlinewidth 2 setlinecap
+/x xmin def
+newpath
+x x f moveto % 
+n {
+  /x x dx add def
+  x x f 
+  lineto
+} repeat
+stroke
+showpage
+%%EOF

@@ -1,0 +1,81 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 280 270
+
+2 setlinejoin
+115 115 translate
+%%%%%%%% schaling (eenheid ca. 5cm)
+/sc 150 def      
+sc sc scale      
+%%%%%%% lijndiktes
+/lw1 1.5 sc div def  % dik
+/lw2 .7 sc div def   % dun 
+%%%%%%% grijstinten
+/g1 .7 def 
+/g2 .8 def
+/g3 .9 def
+%%%%%%% projectiehoeken
+/alpha -33 def
+/beta -32 def
+%%%%%%% projecties van de eenheidsvectoren
+/x1 alpha sin def
+/y1 alpha cos beta sin mul def
+
+/x2 alpha cos def
+/y2 alpha sin beta sin neg mul def
+
+/x3 0 def
+/y3 beta cos def
+
+lw1 setlinewidth   
+%%%%%%%%%% zichtbare kubusvlakken
+gsave
+newpath
+  x1 y1 moveto
+  x2 y2 rlineto
+  x3 y3 rlineto
+  x2 neg y2 neg rlineto
+  closepath
+gsave g2 setgray fill grestore stroke
+newpath
+  x3 y3 moveto
+  x1 y1 rlineto
+  x2 y2 rlineto
+  x1 neg y1 neg rlineto
+  closepath
+gsave g3 setgray fill grestore stroke
+newpath
+  x2 x3 add y2 y3 add moveto
+  x1 y1 rlineto
+  x3 neg y3 neg rlineto
+  x1 neg y1 neg rlineto
+  closepath
+gsave g1 setgray fill grestore stroke
+grestore
+%%%%%%%%%%% coordinaatassen met onderbrekingen 
+lw2 setlinewidth
+%%%%%%% onderbrekingsfactoren
+/f1 .45 def
+/f2 .31 def
+/f3 .21 def
+/d .08 def
+newpath
+  0 0 moveto
+  x1 1.2 mul y1 1.2 mul lineto
+stroke
+newpath
+  0 0 moveto
+  x2 f2 mul y2 f2 mul lineto
+  stroke
+  x2 f2 d add mul y2 f2 d add mul moveto
+  x2 1.2 mul y2 1.2 mul lineto
+stroke
+newpath
+  0 0 moveto
+  x3 f3 mul y3 f3 mul lineto
+  stroke
+  x3 f3 d add mul y3 f3 d add mul moveto
+  x3 1.2 mul y3 1.2 mul lineto
+stroke
+showpage
+
+

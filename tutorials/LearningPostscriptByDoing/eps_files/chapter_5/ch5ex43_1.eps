@@ -1,0 +1,43 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 72 72
+%%BeginProlog
+/u 28.34645 def    % unit: 1 cm
+/concat { % stack: (a) (b) -> (ab)  
+  exch dup length    
+  2 index length add string    
+  dup dup 4 2 roll copy length
+  4 -1 roll putinterval
+} bind def
+/xoff 3 def /yoff 2 def % absolute value of offset of label
+/dotlabel-rt {% stack: s x y
+  moveto currentpoint 
+  gsave newpath 2 u div 0 360 arc fill grestore 
+  xoff u div yoff neg u div rmoveto show
+} def
+/dotlabel-lft {% stack: s x y
+  moveto currentpoint 
+  gsave newpath 2 u div 0 360 arc fill grestore 
+  dup stringwidth pop xoff neg u div exch sub yoff neg u div rmoveto show
+} def
+/K {3 dict begin % stack: n 
+  /n exch def % 
+  newpath
+  1 1 n {/i exch def
+    1 1 n {/j exch def
+      0 i 1 sub moveto n 2 div j 1 sub lineto
+      0 i 1 sub moveto (a) i 2 string cvs concat currentpoint dotlabel-lft
+      n 2 div i 1 sub moveto (b) i 2 string cvs concat currentpoint dotlabel-rt
+    } for
+  } for
+  stroke
+end} def  
+      
+%%EndProlog
+u dup scale 
+0.5 0.25 translate
+1 u div setlinewidth
+2 setlinejoin
+/Times-Roman findfont 10 u div scalefont setfont
+3 K 
+showpage
+%%EOF

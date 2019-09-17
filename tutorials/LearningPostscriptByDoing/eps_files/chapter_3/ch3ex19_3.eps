@@ -1,0 +1,28 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 86 54 
+%%BeginProlog
+/s 28.34645 def % 1 cm
+/lw1 0.7 s div def %
+/lw2 1.4 s div def %
+/r 3 def % radius (in cm)
+%%EndProlog
+4 2 translate
+s s scale
+lw1 setlinewidth
+newpath
+0 0 moveto  
+0 0 r 20 0.3 sub 35 0.3 add arc 
+closepath
+stroke
+lw2 setlinewidth
+newpath  
+0 0 r 20 35 arc 
+0 0 r 2 mul 3 div 35 20 arcn
+closepath
+gsave
+1 1 0 setrgbcolor
+fill
+grestore
+stroke
+showpage
+%%EOF

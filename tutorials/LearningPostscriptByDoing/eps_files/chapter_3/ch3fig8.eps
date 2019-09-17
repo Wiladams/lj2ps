@@ -1,0 +1,47 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 150 150
+%%Pages: 1
+/ellipse {7 dict begin
+  /endangle exch def
+  /startangle exch def
+  /yradius exch def
+  /xradius exch def
+  /yC exch def
+  /xC exch def
+  % save current transformation matrix
+  /savematrix matrix currentmatrix def 
+  xC yC translate % translate to center of ellipse
+  xradius yradius scale % scale by radius values
+  0 0 1 startangle endangle arc % add arc to path
+  % restore the transformation
+  savematrix setmatrix
+end
+} def
+%%EndProlog
+%%Page: 1 1
+75 75 translate
+% draw axes
+newpath 
+-72 0 moveto 144 0 rlineto
+0 -72 moveto 0 144 rlineto
+stroke
+% draw ellipses
+newpath 
+36 -36 27 18 0 360 ellipse 
+stroke
+newpath 
+36 36 18 27 30 270 ellipse 
+stroke
+newpath 
+-36 36 18 27 0 360 ellipse 
+fill
+%
+newpath
+gsave
+  -36 -36 translate
+  6 1 scale
+  0 0 4 0 360 arc 
+  stroke
+grestore
+showpage
+%%EOF

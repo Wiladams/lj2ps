@@ -1,0 +1,29 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 120 112
+%%BeginProlog
+/u 54 def % unit: 0.5 inch
+/lw 1 u div def
+/point {2.5 lw mul 0 360 arc 
+  gsave 0 setgray fill grestore stroke
+} bind def
+/makepolygon {2 dict begin
+  /vertices exch def
+  /n vertices length def
+  n 1 gt {
+    vertices 0 get aload pop moveto % move to first vertex
+    vertices 1 n 1 sub getinterval % get subarray
+    { aload pop lineto} forall % make lines
+  } if
+end} bind def
+/drawvertices {   
+  {aload pop point newpath} forall % make vertices
+} bind def
+/vertices [ [0 1] [234 cos 234 sin] [18 cos 18 sin] 
+  [162 cos 162 sin] [306 cos 306 sin] ] def    
+%%EndProlog
+u dup scale 1.1 0.95 translate
+lw setlinewidth 2 setlinejoin
+newpath vertices makepolygon closepath stroke
+vertices drawvertices
+showpage
+%%EOF

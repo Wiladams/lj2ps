@@ -1,0 +1,16 @@
+List of files of chapter 6
+
+file		page	description
+====		====	===========		
+ch6fig1		66	transformed coordinate frames
+ch6fig2		67	starshape
+ch6fig3		67	rotated text
+ch6fig4a	70	zscaling
+ch6fig4b	71	zscaling via a matrix
+ch6fig5		72	slanted coordinate system
+
+ch6ex53		73	pipe
+ch6ex54		74	schrinking squares
+ch6ex55		74 	Escher's impossible triangle
+ch6ex55hint	74	base element of Escher's impossible triangle
+ch6ex56		74	golden picture

@@ -1,0 +1,29 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 143 124 
+%%BeginProlog
+/u 20 def % 20 points per unit
+/r 4 def
+/phi 3 def
+/s 1 phi sin 3 sqrt mul phi cos add div def
+/triangle {
+  newpath
+  0 r moveto
+  r 210 cos mul r 210 sin mul lineto
+  r 330 cos mul r 330 sin mul lineto
+  closepath fill } def
+/b 1 def         % amount of blue
+/white false def % start with blue
+%%EndProlog
+72 42 translate
+u dup scale
+1 u div setlinewidth
+triangle
+180 phi idiv { 
+   white {0 0 1 sethsbcolor}{b 1 1 sethsbcolor} ifelse
+   triangle
+   /white white not def % change color
+   /r s r mul def % shrink triangle
+   /b s b mul def % change color
+   phi rotate } repeat
+showpage
+%%EOF

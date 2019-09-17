@@ -1,0 +1,50 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 161 76
+%%BeginProlog
+/cm {28.34645 mul} def
+/box {3 dict begin 
+% calling structure: x y w box
+% purpose: draws an open white box
+% with given width w centered around
+% the point x y and outlined in black
+  /w exch def
+  /y exch def
+  /x exch def
+  gsave
+    0 setgray
+    newpath
+    x y moveto
+    w 2 div w 2 div rmoveto
+    w neg 0 rlineto
+    0 w neg rlineto
+    w  0 rlineto
+    closepath
+    gsave
+      1 setgray
+      fill
+    grestore
+    stroke
+  grestore
+end } def
+%%EndProlog
+% draw the line segments in red
+10 10 translate
+1 0 0 setrgbcolor
+newpath 
+0     0    moveto 
+1 cm  1 cm lineto
+2 cm  0    lineto
+3 cm  0    lineto
+4 cm  1 cm lineto
+5 cm  2 cm lineto
+stroke
+% draw the open white boxes outlined in black
+0 cm 0    0.2 cm box
+1 cm 1 cm 0.2 cm box
+2 cm 0    0.2 cm box
+3 cm 0    0.2 cm box
+4 cm 1 cm 0.2 cm box
+5 cm 2 cm 0.2 cm box
+showpage
+showpage
+%%EOF

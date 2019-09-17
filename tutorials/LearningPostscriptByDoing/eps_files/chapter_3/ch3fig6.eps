@@ -1,0 +1,52 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 180 70
+%%BeginProlog
+/closedpoint {1.5 0 360 arc gsave 0 setgray fill grestore stroke} def
+/openpoint {1.5 0 360 arc gsave 1 setgray fill grestore stroke} def
+/f1 {/Times-Italic findfont 10 scalefont setfont} bind def
+/f2 {/Times-Italic findfont 9 scalefont setfont} bind def
+/f3 {/Times-Roman findfont 10 scalefont setfont} bind def
+/f4 {/Times-Roman findfont 7 scalefont setfont} bind def
+/fs {/Symbol findfont 10 scalefont setfont} bind def
+/P0 {-72 0} def
+/P1 {-54 54} def
+/P2 {36 36} def
+/P3 {72 0} def
+%%EndProlog
+90 5 translate
+% draw gray lines
+newpath
+0.6 setgray
+P0 moveto
+P1 lineto
+P3 moveto
+P2 lineto
+stroke
+% draw curve
+0 setgray
+newpath 
+P0 moveto
+P1 P2 P3 curveto
+stroke
+% draw points
+0 setgray
+newpath
+P0 closedpoint
+P3 closedpoint
+P1 openpoint
+P2 openpoint
+%
+% draw text
+P0 moveto 5 0 rmoveto f1 (current point) show
+P0 moveto -12 0 rmoveto f1 (P) show
+P0 moveto -8 -2 rmoveto f4 (0) show 
+P1 moveto 5 0 rmoveto f1 (P) show
+P1 moveto 9 -2 rmoveto f4 (1) show
+P2 moveto 5 0 rmoveto f1 (P) show
+P2 moveto 9 -2 rmoveto f4 (2) show
+P3 moveto 5 0 rmoveto f1 (P) show
+P3 moveto 9 -2 rmoveto f4 (3) show
+
+
+showpage
+%%EOF

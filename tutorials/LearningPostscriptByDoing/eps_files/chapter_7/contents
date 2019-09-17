@@ -1,0 +1,16 @@
+List of files of chapter 7
+
+file		page	description
+====		====	===========		
+ch7fig1		75	random, colored points
+ch7fig2		79	Pythagorean tree
+ch7fig3_1	81	base figure of Koch snowflake
+ch7fig3_2	81	Koch snowflake after 1 iteration
+ch7fig3_3	81	Koch snowflake after 2 iterations
+ch7fig4_1	81	Hilbert curve H1
+ch7fig4_2	81	Hilbert curve H2
+
+ch7ex57a	81	Koch snowflake after 3 iterations
+ch7ex57a	81	Koch snowflake after 4 iterations
+ch7ex58_1	82	Hilbert curve H3
+ch7ex58_2	82	scaled Hilbert curve H6

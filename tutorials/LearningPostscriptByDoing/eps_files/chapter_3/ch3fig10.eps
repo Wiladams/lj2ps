@@ -1,0 +1,29 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 145 85
+%%BeginProlog
+/vpos 77 def % vertical position
+/newline {
+  /vpos vpos 25 sub def
+  2 vpos moveto} def
+/temp 2 string def
+/showtext {% stack: x, y, size
+  /Times-Roman findfont % x, y, size, font
+  exch dup 3 1 roll     % x, y, size, font, size
+  scalefont setfont     % x, y, size
+  3 1 roll              % size, x, y
+  moveto (Times-Roman) show % size
+  dup % size size
+  3 div 0 rmoveto temp cvs show
+} def
+%%EndProlog
+% draw texts
+newpath 
+2 vpos 5 showtext
+newline
+2 vpos 10 showtext
+newline
+2 vpos 15 showtext
+newline
+2 vpos 20 showtext
+showpage
+%%EOF

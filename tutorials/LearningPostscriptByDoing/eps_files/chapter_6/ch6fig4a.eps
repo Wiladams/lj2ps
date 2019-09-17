@@ -1,0 +1,49 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 95 170
+%%BeginProlog
+/u 30 def % 30 points per unit
+/lw1 {1 u div} def
+/lw2 {0.6 u div} def
+/fh {/Times-Roman findfont 10 u div scalefont setfont} bind def
+/fi {/Times-Italic findfont 10 u div scalefont setfont} bind def
+/zscale {%  stack: x y a b
+         % output: a*x-b*y  b*x+a*y
+  4 dict begin
+  /b exch def
+  /a exch def
+  /y exch def
+  /x exch def
+  a x mul b y mul sub b x mul a y mul add
+end} def
+/z {2 1} def
+/w {1.75 1.5} def
+/zw {z w zscale } def
+%%EndProlog
+17 17 translate
+u dup scale
+lw1 setlinewidth
+newpath 
+% draw lines
+-0.5 0 moveto 2.5 0 lineto
+0 -0.5 moveto 0 5 lineto
+0 0 moveto 1 0 lineto z lineto closepath
+0 0 moveto w lineto zw lineto closepath
+-0.3 -0.35 moveto  fh (0) show
+0.9 -0.35 moveto  fh (1) show
+z exch 0.15 add exch moveto  fi (z) show
+w exch 0.15 add exch moveto  fi (w) show
+zw exch 0.15 add exch moveto  fi (zw) show
+stroke
+% draw arcs
+lw2 setlinewidth
+/argz z exch atan def
+/argw w exch atan def
+newpath 0 0 0.4 0 argz arc stroke
+newpath 0 0 0.4 argw argw argz add arc stroke
+/angle z exch 1 sub atan def
+newpath 1 0 0.2 angle 180 arc stroke
+newpath 1 0 0.15 angle 180 arc stroke
+newpath w 0.2 argw angle add argw 180 add arc stroke
+newpath w 0.15 argw angle add argw 180 add arc stroke
+showpage
+%%EOF

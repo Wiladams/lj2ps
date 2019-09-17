@@ -1,0 +1,39 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 180 180
+%%BeginProlog
+/u 72 def % unit: 1 inch
+/lw1 1 u div def 
+/lw2 0.7 u div def  
+/n 180 def % number of line segments
+/pi 3.1415062 def
+/deg {180 pi div mul} bind def
+/r {dup deg cos exch 
+    deg sin dup mul 4 mul 1 sub mul} bind def
+/X {dup r exch deg cos mul} bind def
+/Y {dup r exch deg sin mul} bind def
+%%EndProlog
+90 90 translate
+u dup scale
+lw2 setlinewidth
+2 setlinejoin
+%%%%% draw axes
+newpath
+-1.2 0 moveto
+1.2 0 lineto
+0 -1.2 moveto
+0 1.2 lineto
+stroke
+%%%%% polygon approximation of curve
+newpath 
+lw1 setlinewidth
+1 0 0 setrgbcolor
+/dphi 2 pi mul n div def % step size
+/phi 0 def
+phi X phi Y moveto 
+n {
+  /phi phi dphi add def
+  phi X phi Y lineto 
+} repeat
+stroke
+showpage
+%%EOF

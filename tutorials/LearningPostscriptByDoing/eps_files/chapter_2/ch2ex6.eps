@@ -1,0 +1,33 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 360 72
+%%BeginProlog
+/s 72 def 
+%%EndProlog
+s s scale
+1 s div setlinewidth
+
+% the gray rectangle
+newpath
+0 0 moveto
+5 0 rlineto
+0 1 rlineto
+-5 0 rlineto
+closepath
+0.8 setgray
+fill
+
+% the red arrow
+newpath
+ 0.5 0.5  moveto
+ 0   0.15 rlineto
+ 3   0    rlineto
+ 0   0.25 rlineto
+ 1  -0.4  rlineto
+-1  -0.4  rlineto
+ 0   0.25 rlineto 
+-3   0    rlineto
+closepath
+1 0 0 setrgbcolor
+fill
+showpage
+%%EOF

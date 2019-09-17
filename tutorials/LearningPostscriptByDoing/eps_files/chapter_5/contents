@@ -1,0 +1,27 @@
+List of files of chapter 5
+
+file		page	description
+====		====	===========		
+ch5fig1		51	random walk
+ch5fig2		51	hexagon
+ch5fig3		52	graph of a function
+ch5fig4		55	polygon and Bezier approximation
+ch5fig5	     55,56,57    annotated, scaled graph of a function
+ch5fig6		58	starshape
+
+ch5ex36		50	(impossible) triangle
+ch5ex38		59	graph
+ch5ex39		60	coordinate system
+ch5ex40		61	millimeter paper
+ch5ex41		61	logarithmic paper
+ch5ex42		62	double logarithmic paper
+ch5ex43		63	bipartite graph
+ch5ex44_1	63	graph of sqrt
+ch5ex44_2	64	annotated graph of sqrt
+ch5ex45		64	sine graph
+ch5ex46		64	graph of tangens
+ch5ex47		65	graph of a function in logarithmic scaling
+ch5ex48		65	area under graph of function
+ch5ex49		65	upper and lower Riemann sum
+
+

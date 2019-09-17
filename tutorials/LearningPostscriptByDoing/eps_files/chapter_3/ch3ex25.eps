@@ -1,0 +1,69 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 130 105
+%%BeginProlog
+/angle {exch atan} def
+/dir {dup cos exch sin} def
+/addvec {    % a b c d on stack
+  3 -1 roll  % a c d b
+  add        % a c b+d
+  3  1 roll  % b+d a c
+  add        % b+d a+c
+  exch       % a+c b+d
+} def
+/subvec {% a b c d on stack
+  3 -1 roll    % a c d b
+  sub neg      % a c b-d
+  3  1 roll    % b-d a c
+  sub          % b-d a-c
+  exch         % a-c b-d
+} def
+/scalarvec{  % c a b on stack
+  3 -1 roll  % a b c 
+  dup        % a b c c 
+  3 1 roll   % a c b c
+  mul        % a c bc
+  3 1 roll   % bc a c
+  mul        % bc ac
+  exch       % ac bc
+} def
+/s 28.34645 def
+/A {0 0} def /B {3.75 -0.75} def /C {1.5 2.25} def
+/trianglepath {newpath A moveto B lineto 
+  C lineto closepath} def 
+/closedpoint {1.5 s div 0 360 arc gsave 0 setgray fill grestore stroke} def
+/openpoint {1.5 s div0 360 arc gsave 1 setgray fill grestore stroke} def
+%%EndProlog
+s s scale
+1 s div setlinewidth
+12 s div 5 s div translate
+0 0.75 translate
+% draw the triangle with vertices A, B, C
+trianglepath stroke
+gsave
+trianglepath clip
+newpath 
+% gamma is the bisector angle at C
+/gamma {A C subvec angle 2 div 
+        B C subvec angle 2 div add} def
+C moveto 10 gamma dir scalarvec rlineto
+% beta is the bisector angle at C
+/beta {A B subvec angle 2 div 
+        C B subvec angle 2 div add} def
+B moveto 10 beta dir scalarvec rlineto
+% alpha is the bisector angle at C
+/alpha {B A subvec angle 360 sub 2 div 
+        C A subvec angle 2 div add} def
+A moveto 10 alpha dir scalarvec rlineto
+stroke
+grestore
+% draw labels and dots
+newpath
+A closedpoint
+B closedpoint
+C closedpoint
+/Times-Roman findfont 12 s div scalefont setfont
+A 0.425 0 subvec moveto (A) show
+B 0.125 0 addvec moveto (B) show
+C -0.15 0.15 addvec moveto (C) show
+showpage
+%%EOF

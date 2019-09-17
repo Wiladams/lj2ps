@@ -1,0 +1,40 @@
+List of files of chapter 3
+
+file		page	description
+====		====	===========		
+ch3fig1		18	two lines
+ch3fig2a	18	triangle without closepath
+ch3fig2b	18	triangle with closepath
+ch3fig3		21	arcs
+ch3fig4		22	arc operator
+ch3fig5		23	arct operator
+ch3fig6		23	curveto operator
+ch3fig7		24	examples of curveto
+ch3fig8		30	ellipses 
+ch3fig9		30	rectangles
+ch3fig10	35	scaled text
+ch3fig11	36	mathematical formula
+ch3fig12 	36	annotated triangles
+ch3fig13	37	outlined text
+formula		40	latex formula
+tex		40	text with embedded latex formula
+
+ch3ex13		15	dots
+ch3ex15_1	17	triangle with medians	
+ch3ex15_2	17	triangle with medians and dots
+ch3ex16		17	pentagon
+ch3ex17_1	19	square with hole	
+ch3ex17_2	19	filled square without hole
+ch3ex18		21	lines connecting squares
+ch3ex19_1	22	circular band	
+ch3ex19_2	22	part of a circular band
+ch3ex19_3	22	pie
+ch3ex20		23	rectangle with rounded corners
+ch3ex21		25	Yin-Yang symbol
+ch3ex23		26	triangle with a bisector
+ch3ex24		27	annotated triangle with a bisector
+ch3ex25		27	triangle with bisectors
+ch3ex26		28	arrows		
+ch3ex27		31	rectangles
+ch3ex28		37	outlined yellow text
+ch3ex29		38	vector

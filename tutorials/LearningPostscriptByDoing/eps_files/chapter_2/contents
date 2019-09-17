@@ -1,0 +1,16 @@
+List of files of chapter 2:
+
+eps file	page	description
+========	====	===========		
+ch2fig1		8	triangle
+
+ch2ex1		4	square
+ch2ex2		5	square with thick border	
+ch2ex3		6	square without closepath
+ch2ex4		6	filled square with thick borders
+ch2ex6		9	red arrow
+ch2ex7_1	10	triangle with altitudes
+ch2ex7_2	10	squares
+ch2ex12		13	file with an error
+sample.tex	7	Latex file of exercise 5
+sample.ps	7	output of LaTex File

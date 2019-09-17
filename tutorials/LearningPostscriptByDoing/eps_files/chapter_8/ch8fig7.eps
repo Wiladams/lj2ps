@@ -1,0 +1,79 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 300 250
+%%BeginProlog
+/u 28.34645 def % unit: 1cm
+/pi 3.1415927 def
+/cosine {pi div 180 mul cos} bind def
+/f {mul cosine} bind def % f(x,y) = cos(x*y)   
+%
+/xp 3 def  /yp 3 def  /zp 10 def  /bf 100 def
+/Xr [-0.7 -0.7] def  /Yr [1 0] def  /Zr [0 1] def
+%
+/project { 3 dict begin % stack x y z
+  /z exch def /y exch def /x exch def
+  x Xr 0 get mul y Yr 0 get mul add z Zr 0 get mul add
+  x Xr 1 get mul y Yr 1 get mul add z Zr 1 get mul add
+end } bind def
+%
+% numerical derivatives by central differences
+/xderiv {3 dict begin % stack: x y
+   /y exch def  /x exch def  /h 0.01 def
+   x h add y f x h sub y f sub 2 div h div
+end } bind def
+/yderiv {3 dict begin % stack: x y
+   /y exch def  /x exch def  /h 0.01 def
+   x y h add f x y h sub f sub 2 div h div
+end } bind def
+%
+% compute brightness factor at a point
+/brightnessfactor {8 dict begin % stack: x y z
+   /z exch def  /y exch def /x exch def
+   /dfdx x y xderiv def  /dfdy x y yderiv def
+   /ca zp z sub dfdy yp y sub mul sub dfdx xp x sub mul sub def
+   /cb 1 dfdx dup mul add dfdy dup mul add sqrt def
+   /cc z zp sub dup mul y yp sub dup mul add x xp sub dup mul add sqrt def
+   bf ca mul cb div cc div cc div cc div
+end } bind def
+%
+/nx 100 def  /ny 100 def % grid size
+/xmin -3 def /xmax 3 def /ymin -3 def /ymax 3 def
+%%EndProlog
+150 105 translate
+u dup scale
+% compute colors and draw patches
+0 setlinewidth 1 0 0 setrgbcolor
+/dx xmax xmin sub nx div def
+/dy ymax ymin sub ny div def
+0 1 nx 1 sub {/i exch def
+  /xt xmin i dx mul add def
+  0 1 ny 1 sub {/j exch def
+    /yt ymin j dy mul add def
+    /zt xt yt f def
+    newpath
+    xt yt zt brightnessfactor dup 0 setrgbcolor
+    xt yt zt project moveto
+    xt yt dy add 2 copy f project lineto
+    xt dx add yt dy add 2 copy f project lineto
+    xt dx add yt 2 copy f project lineto
+    closepath
+    fill
+  } for    
+} for
+stroke
+1 u div setlinewidth
+% draw reference frame
+gsave
+  newpath
+  5 5 scale 1 u div 5 div setlinewidth
+  0 0 moveto Xr aload pop lineto
+  0 0 moveto Yr aload pop lineto
+  0 0 moveto Zr aload pop lineto
+  stroke
+grestore  
+% labels
+/Times-Roman findfont 12 u div scalefont setfont
+-3 -3.5 moveto (X) show
+4.5 -0.5 moveto (Y) show
+0.25 4.5 moveto (Z) show
+showpage
+%%EOF

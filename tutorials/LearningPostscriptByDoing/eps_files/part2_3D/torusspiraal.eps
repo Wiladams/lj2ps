@@ -1,0 +1,70 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 100 100 400 400
+2 setlinejoin
+255 250 translate
+%%%%%%%%% eenheid
+/eh 100 def
+eh eh scale
+%%%%%%%%%% projectie
+/alpha -25 def
+/beta -23 def
+/xa alpha sin def
+/ya alpha cos beta sin mul def
+/xb alpha cos def
+/yb alpha sin beta sin neg mul def
+/xc 0 def
+/yc beta cos def
+/coord {
+  /z exch def /y exch def /x exch def 
+  x xa mul y xb mul add z xc mul add 
+  x ya mul y yb mul add z yc mul add} bind def 
+%%%%%%%%% lijndiktes
+/lw2 1 eh div def
+/lw3 1.5 eh div def
+%%%%%%%%% grijstinten
+/grijs1 0.9 def
+%%%%%%%%% constanten en factoren
+/pi 3.1415962 def
+/N 40 def
+%%%%%%%%% parametrisatie
+%%%%%%%%% (1/5)((4 + sin N t) cos t, (4 + sin N t) sin t, cos N t) 
+/X {/tx exch def tx N mul sin 4 add tx cos mul 5 div} bind def
+/Y {/ty exch def ty N mul sin 4 add tx sin mul 5 div} bind def
+/Z {/tz exch def tz N mul cos 5 div} bind def
+%%%%%%%%%% kubusachterkant
+lw2 setlinewidth
+newpath
+-1 -1 -1 coord moveto
+-1 1 -1 coord lineto
+-1 1 1 coord lineto
+-1 -1 1 coord lineto
+-1 -1 -1 coord lineto
+-1 -1 1 coord lineto
+1 -1 1 coord lineto
+1 -1 -1 coord lineto
+-1 -1 -1 coord lineto
+-1 1 -1 coord lineto
+1 1 -1 coord lineto
+1 -1 -1 coord lineto
+gsave grijs1 setgray fill grestore stroke
+%%%%%%%% spiraal 
+lw3 setlinewidth
+newpath
+/t -180 def
+t X t Y t Z coord moveto
+1800 {
+/t t .2 add def
+t X t Y t Z coord lineto
+} repeat
+stroke
+%%%%%%%%%% kubusvoorkant
+lw2 setlinewidth
+newpath
+1 -1 1 coord moveto
+1 1 1 coord lineto
+1 1 -1 coord lineto
+1 1 1 coord lineto
+-1 1 1 coord lineto
+stroke
+showpage
+

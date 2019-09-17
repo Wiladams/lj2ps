@@ -1,0 +1,108 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 100 100 400 400
+2 setlinejoin
+/punt {2 eh div 0 360 arc gsave 1 setgray fill grestore stroke} def
+252 250 translate
+%%%%%%%%%%%%% eenheid
+/eh 90 def
+eh eh scale
+%%%%%%%%%%%%% projectiehoeken
+/alpha -29 def
+/beta -27 def
+%%%%%%%%%%%%% projectieformules
+/xa alpha sin def
+/ya alpha cos beta sin mul def
+/xb alpha cos def
+/yb alpha sin beta sin neg mul def
+/xc 0 def
+/yc beta cos def
+%%%%%%%%%%%%% coordinatenomzetting
+/coord {
+  /z exch def /y exch def /x exch def 
+  x xa mul y xb mul add z xc mul add 
+  x ya mul y yb mul add z yc mul add} bind def 
+%%%%%%%%%%%%% lettertypes
+/f1 {/Palatino-Italic findfont 18 eh div scalefont setfont} bind def
+/f3 {/Palatino findfont 16 eh div scalefont setfont} bind def
+/fs {/Symbol findfont 16 eh div scalefont setfont} bind def
+%%%%%%%%%%%%% lijndiktes
+/lw1 1.4 eh div def
+/lw2 1 eh div def
+/lw3 2 eh div def
+%%%%%%%%%%%%% grijstinten
+/grijs1 0.9 def
+/grijs2 0.8 def
+/grijs3 0.7 def
+%%%%%%%%%% kubusribben tekenen
+lw2 setlinewidth
+newpath
+-1 -1 -1 coord moveto
+-1 1 -1 coord lineto
+-1 1 1 coord lineto
+-1 -1 1 coord lineto
+-1 -1 -1 coord lineto
+-1 -1 1 coord lineto
+1 -1 1 coord lineto
+1 -1 -1 coord lineto
+-1 -1 -1 coord lineto
+-1 1 -1 coord lineto
+1 1 -1 coord lineto
+1 -1 -1 coord lineto
+stroke
+%%%%%%%% vlak1 
+lw2 setlinewidth
+newpath
+1 1 1 coord moveto
+-1 0 1 coord lineto
+-1 -1 0 coord lineto
+1 -1 -1 coord lineto
+closepath
+gsave grijs1 setgray fill grestore stroke
+%%%%%%%%% vlak2
+newpath
+1 1 1 coord moveto
+0 1 -1 coord lineto
+1 -1 -1 coord lineto
+closepath
+gsave grijs2 setgray fill grestore stroke
+%%%%%%%%%% kubusribben nogmaals
+lw2 setlinewidth
+newpath
+1 1 1 coord moveto
+1 -1 1 coord lineto
+1 1 1 coord lineto
+1 1 -1 coord lineto
+1 1 1 coord lineto
+-1 1 1 coord lineto
+stroke
+%%%%%%%%%% snijlijn vlak1 en vlak2 dikker
+gsave
+lw3 setlinewidth
+newpath
+1 1 1 coord moveto
+1 -1 -1 coord lineto
+stroke
+grestore
+%%%%%%%%%%% punten
+1 1 1 coord punt
+1 -1 -1 coord punt
+-1 0 1 coord punt
+-1 -1 0 coord punt
+0 1 -1 coord punt
+%%%%%%%%%%%% belettering
+1 1 1 coord moveto .1 -.05 rmoveto f3 (\050) show (1, 1, 1) show (\051) show
+1 -1 -1 coord moveto -.3 -.25 rmoveto f3 (\050) show (1, ) show 
+(-1, ) show (-1) show (\051) show
+0 1 -1 coord moveto .1 -.05 rmoveto f3 (\050) show (0, 1, ) show 
+(-1) show (\051) show 
+-1 0 1 coord moveto .1 .05 rmoveto f3 (\050) show (-1, 0, 1) show (\051) show  
+-1 -1 0 coord moveto -.5 .15 rmoveto f3 (\050) show (-1, ) show  
+(-1, 0) show (\051) show  
+1 0 0 coord moveto .2 .5 rmoveto fs (\141) show
+1 0 0 coord moveto .5 -.4 rmoveto fs (\142) show
+1 0 -1 coord moveto 0 -.15 rmoveto f1 (y) show
+1 -1 0 coord moveto -.13 0 rmoveto f1 (z) show
+0 -1 1 coord moveto -.15 0 rmoveto f1 (x) show
+showpage
+
+

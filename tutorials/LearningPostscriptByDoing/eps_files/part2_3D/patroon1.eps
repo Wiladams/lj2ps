@@ -1,0 +1,161 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 300 400
+
+
+/lijn1 { 
+/v2 exch def
+/v1 exch def
+/u2 exch def
+/u1 exch def
+newpath
+v1 2 mul u1 sub v2 2 mul u2 sub moveto
+u1 2 mul v1 sub u2 2 mul v2 sub lineto
+stroke
+} bind def
+
+
+/lijn { 
+/v2 exch def
+/v1 exch def
+/u2 exch def
+/u1 exch def
+newpath
+%v1 2 mul u1 sub v2 2 mul u2 sub moveto
+v1 v2 moveto
+u1 2 mul v1 sub u2 2 mul v2 sub lineto
+stroke
+} bind def
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%/kleur1 {.96 .95 1 setrgbcolor} bind def 
+%/kleur2 {.5 .5 1 setrgbcolor} bind def 
+/kleur1 {1 1 0 setrgbcolor} bind def 
+/kleur2 {0 0 1 setrgbcolor} bind def 
+
+-12 -12 translate
+
+20 20 scale
+0.01 setlinewidth
+
+/a .875 def
+newpath
+a a moveto
+%32.5 a sub a lineto
+%32.5 a sub 42.5 a sub lineto
+%a 42.5 a sub lineto
+16.25 a sub a lineto
+16.25 a sub 21.25 a sub lineto
+a 21.25 a sub lineto
+closepath 
+gsave
+kleur2 fill
+grestore
+clip
+
+/tau 5 sqrt 1 add 2 div def
+
+/y 0.5 tau add def
+/x tau tau tau tau mul mul mul y y mul sub sqrt def
+
+/x1 x tau div def
+/x2 x x1 sub def
+
+/y1 y tau div def
+/y2 y y1 sub def
+
+/x3 x2 2 div def
+/y3 y1 3 mul y sub 2 div def
+
+
+
+/k 12 def
+/kk k 2 mul 1 sub def
+/bool 1 def
+
+
+kk {
+
+gsave
+k {
+
+newpath
+x 0 moveto
+0 y lineto
+x neg 0 lineto
+0 y neg lineto
+closepath
+gsave 
+kleur1 
+%.3 setgray fill
+grestore
+gsave
+%0 setgray stroke
+kleur2 stroke
+grestore
+gsave
+clip
+
+
+
+  2 {
+  newpath
+  x3 y3 moveto
+   5 { 
+   0 y3 2 mul neg rlineto
+   -144 rotate
+   } repeat
+   closepath
+   gsave
+   kleur1 fill 
+%   1 setgray fill
+   grestore
+
+   5 {
+   newpath
+   x3 y3 moveto
+     5 { 
+     0 y y3 sub 3 div 2 mul rlineto
+     -144 rotate
+     } repeat
+   closepath
+   gsave
+   kleur1 fill 
+%   1 setgray fill
+   grestore
+   gsave
+   kleur2 stroke
+%   0 setgray stroke
+   grestore
+   72 rotate
+   } repeat
+
+  180 rotate
+  } repeat
+
+ 5 {
+  2 {
+  newpath
+  x1 2 mul x2 add y2 2 mul y1 add moveto
+  x2 2 mul x1 add neg y1 2 mul y2 add neg lineto
+  kleur2 stroke 
+%  0 setgray stroke 
+  180 rotate
+  } repeat
+ 72 rotate
+ } repeat
+
+grestore
+x 2 mul 0 translate
+%initclip
+} repeat
+
+grestore
+x bool mul y translate
+/bool bool neg def
+/k k bool add def
+} repeat
+
+
+showpage

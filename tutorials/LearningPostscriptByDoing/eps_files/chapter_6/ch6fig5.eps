@@ -1,0 +1,42 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 161 67
+%%Pages: 1
+/u 16 def % 20 point per unit
+/lw1 {0.5 u div} def % default linewidth
+/lw2 {0.7 u div} def % default linewidth
+%
+/grid {4 dict begin % m x n grid
+   /n exch def
+   /m exch def
+   lw1 setlinewidth
+   0 1 n 1 sub {/i exch def
+     0 1 m 1 sub {/j exch def
+       newpath
+       gsave 
+         .88235 0.97647 0.97647 setrgbcolor 
+         i j 1 1 rectfill
+       grestore
+       .36040 0.97647 0.97647  setrgbcolor 
+       i j 1 1 rectstroke
+    } for
+  } for
+  newpath
+   lw2 setlinewidth
+   0 setgray 
+   1 0 moveto
+   0 m rlineto
+   0 1 moveto
+   n 0 rlineto
+   stroke
+end } bind def
+%%EndProlog
+%%Page: 1 1
+u dup scale
+lw2 setlinewidth
+0.1 0.1 translate
+4 4 grid
+5 0 translate
+[1 0 0.2 1 0 0] concat
+4 4 grid
+showpage
+%%EOF

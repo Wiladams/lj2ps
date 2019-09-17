@@ -1,0 +1,64 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 200 190
+%%BeginProlog
+/Times-Roman findfont 10 scalefont setfont 
+/vpos 180 def % vertical position
+/newexample {
+  stroke grestore /vpos vpos 13 sub def  
+  4 vpos moveto gsave} def
+/drawline {105 0 rlineto} def
+%%EndProlog
+newpath 
+4 vpos moveto 
+% draw light gray borderlines
+gsave
+  0.9 setgray
+  0 4 rmoveto 0 vpos neg rlineto
+  105 0 rmoveto 0 vpos rlineto stroke
+grestore
+% draw dashed lines
+gsave 
+[ ] 0 setdash drawline
+(   [ ] 0 setdash) show 
+newexample
+[15] 0 setdash drawline
+(   [15] 0 setdash) show 
+newexample
+[10] 0 setdash drawline
+(   [10] 0 setdash) show 
+newexample
+[5] 0 setdash drawline
+(   [5] 0 setdash) show 
+newexample
+[1] 0 setdash drawline
+(   [1] 0 setdash) show 
+stroke grestore
+% 
+/vpos vpos 26 sub def
+4 vpos moveto save 
+[10] 0 setdash drawline
+(   [10] 0 setdash) show 
+newexample
+[10] 4 setdash drawline
+(   [10] 4 setdash) show 
+newexample
+[10] 8 setdash drawline
+(   [10] 8 setdash) show 
+newexample
+[10] 12 setdash drawline
+(   [10] 12 setdash) show 
+stroke grestore
+%
+/vpos vpos 26 sub def
+4 vpos moveto gsave 
+[6 3] 0 setdash drawline
+(   [6 3] 0 setdash) show 
+newexample
+[6 3 3] 0 setdash drawline
+(   [6 3 3] 0 setdash) show 
+newexample
+[6 3 3 3] 0 setdash drawline
+(   [6 3 3 3] 0 setdash) show 
+stroke grestore
+showpage
+%%EOF

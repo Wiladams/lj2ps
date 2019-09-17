@@ -167,7 +167,7 @@ exports.sub = sub
 local function mul(vm)
     local num2 = vm.OperandStack:pop()
     local num1 = vm.OperandStack:pop()
-    print("MUL: ", num1, num2)
+    --print("MUL: ", num1, num2)
     vm.OperandStack:push(num1*num2)
 end
 exports.mul = mul

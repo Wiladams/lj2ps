@@ -1,0 +1,23 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 247 154
+%%BeginProlog
+/phi 5 sqrt 1 add 2 div def % golden ratio
+/s 150 def % size of original square
+/square {
+  newpath 0.6 setlinewidth 0 setgray
+  0 0 moveto s 0 rlineto 0 s rlineto s neg 0 rlineto
+  closepath stroke
+  newpath 1.5 setlinewidth
+  0.647 0.165 0.165 setrgbcolor
+  s 0 s 180 90 arcn stroke
+} def
+%%EndProlog
+2 2 translate
+20 { 
+  square
+  s s translate
+  -90 rotate
+  /s s phi div def
+} repeat
+showpage
+%%EOF

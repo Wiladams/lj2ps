@@ -1,0 +1,19 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 190 190
+%%BeginProlog
+/u 3 def % 3 points per unit
+realtime srand
+/lw {1 u div} def
+/oneOrZero { 2 rand 2 mod mul 1 sub } def 
+/n 60 def
+%%EndProlog
+u dup scale
+lw setlinewidth
+1 30 translate
+%
+newpath 
+0 0 moveto 
+n { 1 oneOrZero rlineto} repeat
+stroke
+showpage
+%%EOF

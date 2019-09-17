@@ -1,0 +1,28 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 102 102
+%%Pages: 1
+/triangle { 5 dict begin
+  /z exch def 
+  /y exch def 
+  /x exch def
+  x y z add le 
+  y z x add le and 
+  z x y add le and {
+     /cosalpha {x 2 exp z 2 exp add y 2 exp sub 2 div x div z div} def
+     /sinalpha {1 cosalpha 2 exp sub sqrt} def
+     newpath 
+     x 0 moveto 
+     0 0 lineto
+     z cosalpha mul z sinalpha mul lineto
+     closepath
+     stroke
+  } if
+  end } def 
+%%EndProlog
+%%Page: 1 1
+50 2 translate
+30 60 40 triangle 
+10 20 60 triangle % no triangle possible
+0 0 -1 triangle % no triangle possible
+showpage
+%%EOF

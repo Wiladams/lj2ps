@@ -1,0 +1,55 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 148 110
+%%BeginProlog
+/fr {/Times-Roman findfont 10 scalefont setfont} def
+/fs {/Symbol findfont 10 scalefont setfont} def
+/arrowhead {% stack: s x1 y1
+            % current point: x0 y0
+  gsave
+    currentpoint   % s x1 y1 x0 y0
+    4 2 roll exch  % s x0 y0 y1 x1
+    4 -1 roll exch % s y0 y1 x0 x1
+    sub 3 1 roll   % s x1-x2 y0 y1
+    sub exch       % s y0-y1 x1-x2
+  % rotate over arctan((y0-y1)/(x1-x2))
+    atan rotate    % s 
+    dup scale      % scale by s
+    -7 2 rlineto   % draw arrowhead
+    1 -2 rlineto
+    -1 -2 rlineto
+   closepath fill  % fill arrowhead
+ grestore
+ newpath
+} def
+%%EndProlog
+74 84 translate
+newpath
+2 setlinewidth 
+-54 -72 moveto  0 0 lineto 54 -72 lineto 
+stroke
+newpath
+1 setlinewidth 
+-36 -72 moveto  0  -24 lineto 36 -72 lineto 
+-72 -72 moveto  0  24 lineto 72 -72 lineto 
+33 -68 moveto 23 17.25 rlineto
+-42 -24 moveto 0 48 rlineto
+-6 -8 moveto
+0 0 10 -4 -3 atan -4 3 atan arc
+stroke
+newpath 6 -8 moveto 0.8 -2 -11 arrowhead
+newpath -42 -24 moveto 0.8 -42 0 arrowhead
+newpath -42 24 moveto 0.8 -42 0 arrowhead
+newpath 33 -68 moveto 0.8 56 -50.75 arrowhead
+newpath 56 -50.75 moveto 0.8 33 -68 arrowhead
+newpath 
+[4 4] 0 setdash
+0 -24 moveto -54 0 rlineto
+0 24  moveto -54 0 rlineto
+stroke
+-69 5 moveto fr ( miter) show
+-70 -5 moveto fr (length) show
+-2.5 -18.5 moveto fs (f) show
+33 -82 moveto fr (line width) show
+
+showpage
+%%EOF

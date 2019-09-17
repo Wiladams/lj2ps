@@ -1,0 +1,79 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 280 270
+%%%%%%%%% filenaam: kubus2.eps
+2 setlinejoin
+115 115 translate
+%%%%%%%% schaling (eenheid ca. 5cm)
+/sc 150 def      
+sc sc scale      
+%%%%%%% lijndiktes
+/lw1 1.5 sc div def  % dik
+/lw2 .7 sc div def   % dun 
+%%%%%%% grijstinten
+/g1 .7 def 
+/g2 .8 def
+/g3 .9 def
+%%%%%%% projectiehoeken
+/alpha -33 def
+/beta -32 def
+%%%%%%% projecties van de eenheidsvectoren
+/x1 alpha sin def
+/y1 alpha cos beta sin mul def
+/x2 alpha cos def
+/y2 alpha sin beta sin neg mul def
+/x3 0 def
+/y3 beta cos def
+%%%%%%%%%%%%% omzetprocedure
+/coord {
+  /z exch def /y exch def /x exch def 
+  x x1 mul y x2 mul add z x3 mul add 
+  x y1 mul y y2 mul add z y3 mul add} bind def 
+lw1 setlinewidth
+%%%%%%%%%% zichtbare kubusvlakken
+newpath
+  1 0 0 coord moveto
+  1 1 0 coord lineto
+  1 1 1 coord lineto
+  1 0 1 coord lineto
+  closepath
+gsave g2 setgray fill grestore stroke
+newpath
+  0 0 1 coord moveto
+  1 0 1 coord lineto
+  1 1 1 coord lineto
+  0 1 1 coord lineto
+  closepath
+gsave g3 setgray fill grestore stroke
+newpath
+  0 1 0 coord moveto
+  0 1 1 coord lineto
+  1 1 1 coord lineto
+  1 1 0 coord lineto
+  closepath
+gsave g1 setgray fill grestore stroke
+%%%%%%%%%%% coordinaatassen met onderbrekingen 
+lw2 setlinewidth
+%%%%%%% onderbrekingsfactoren
+/f1 .45 def
+/f2 .31 def
+/f3 .21 def
+/d .08 def
+newpath
+  0 0 0 coord moveto
+  1.2 0 0 coord lineto
+stroke
+newpath
+  0 0 0 coord moveto
+  0 f2 0 coord lineto
+  stroke
+  0 f2 d add 0 coord moveto
+  0 1.2 0 coord lineto
+stroke
+newpath
+  0 0 0 coord moveto
+  0 0 f3 coord lineto
+  stroke
+  0 0 f3 d add coord moveto
+  0 0 1.2 coord lineto
+stroke
+showpage

@@ -1,0 +1,160 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 460 610
+
+2 setlinejoin
+
+newpath
+10 10 moveto
+10 600 lineto
+450 600 lineto
+450 10 lineto
+closepath
+clip
+
+/d 30 def
+
+/a .5 sqrt def
+/b a 2 div .25 add def
+/e 2 sqrt 1 sub 4 div def
+
+/u b 36 mul 55 sub b 48 mul 68 sub div def
+/v b 36 mul 39 sub b 48 mul 68 sub div def
+/w b 12 mul 13 sub b 16 mul 20 sub div def
+
+/lw1 1 d div def
+/lw2 2 d div def
+/lw3 1.5 d div def
+
+/kl1 {.7 .7 .1} def  %%%%%%% achtergrondkleur
+/kl2 {1 1 0} def   %%%%%%% binnenkleur vijfsterren 
+/kl3 {0 0 1} def   %%%%%%% kleur contouren
+/kl4 {0 0 1} def   %%%%%%% kleur achtsterren
+/kl5 {0 1 0} def   %%%%%%% kleur achthoeken en verbindingslijnen
+
+2 {
+gsave
+d d scale
+ 
+/i 0 def
+/j 0 def
+
+11 {
+gsave
+10 {
+
+%%%%%%%%%% achtergrondkleur en clip
+gsave
+newpath
+-1 -1 moveto
+1 -1 lineto
+1 1 lineto
+-1 1 lineto
+-1 -1 lineto
+gsave kl1 setrgbcolor fill grestore
+clip
+
+4 {
+
+lw1 setlinewidth
+
+%%%%%%% achtpuntige ster
+kl4 setrgbcolor
+newpath
+.25 b .5 sub moveto
+b .25 sub 0 lineto
+b .25 lineto
+b .5 sub .25 lineto
+0 b .25 sub lineto
+.25 b lineto
+closepath
+stroke
+
+%%%%%% vijfpuntige ster
+kl3 setrgbcolor
+newpath
+1 0 moveto
+11 12 div .25 lineto
+b .25 lineto
+u v lineto
+.75 .75 lineto
+1 w lineto
+gsave kl2 setrgbcolor fill grestore
+stroke
+
+newpath
+0 1 moveto
+.25 11 12 div lineto
+.25 b lineto
+v u lineto
+.75 .75 lineto
+w 1 lineto
+gsave kl2 setrgbcolor fill grestore
+stroke
+
+%%%%%%% regelmatige achthoek
+kl5 setrgbcolor
+lw3 setlinewidth
+newpath
+1 0 moveto
+a 0 lineto
+.5 .5 lineto
+1 1 lineto
+.5 .5 lineto
+0 a lineto
+0 1 lineto
+stroke
+
+90 rotate
+} repeat
+
+%%%%%%%%%%% molentje
+gsave
+lw1 setlinewidth
+kl4 setrgbcolor
+2 {
+newpath
+e neg .25 moveto
+e neg 0 e 0 e -.25 curveto
+stroke
+90 rotate
+} repeat
+grestore
+
+grestore
+
+2 0 translate
+/i i 1 add def
+} repeat
+
+grestore
+
+0 2 translate
+/j j 1 add def
+/i 0 def
+} repeat
+
+grestore
+
+%showpage
+
+newpath
+/Times-Bold findfont 140 scalefont setfont
+209 260 translate
+-150 -130 moveto
+(U v A) true
+charpath
+clip
+-209 -260 translate
+
+/kl1 {1 1 0} def
+/kl2 {0 0 1} def
+/kl3 {1 1 0} def
+/kl4 {1 1 0} def
+/kl5 {1 1 0} def
+
+} repeat
+
+
+
+
+showpage

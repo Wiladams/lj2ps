@@ -1,0 +1,24 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 76 76
+%%BeginProlog
+/u 36 def % unit: 0.5 inch
+/lw {1 u div} def
+/n 5 def % choose an odd number
+/da {720 n div} def % angle increment
+/a0 90 def % initial angle
+%%EndProlog
+u dup scale
+lw setlinewidth
+1.05 1.05 translate
+%
+newpath
+a0 cos a0 sin moveto 
+/a a0 def
+n {a 720 a0 add gt {exit} if % test
+   /a a da add def % increase angle
+   a cos a sin lineto % draw line
+} loop
+closepath
+stroke
+showpage
+%%EOF

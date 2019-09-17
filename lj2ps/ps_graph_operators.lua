@@ -268,7 +268,7 @@ end
 exports.moveto = moveto
 
 --rmoveto
-local function rlineto(vm)
+local function rmoveto(vm)
     local dy = vm.OperandStack:pop()
     local dx = vm.OperandStack:pop()
     local curr = vm.Driver:getCurrentPosition()
@@ -276,7 +276,7 @@ local function rlineto(vm)
 
     return true
 end
-exports.rlineto = rlineto
+exports.rmoveto = rmoveto
 
 --lineto
 --rlineto
@@ -315,11 +315,58 @@ end
 exports.arc = arc
 
 --arcn
+local function arcn(vm)
+    local angle2 = vm.OperandStack:pop()
+    local angle1 = vm.OperandStack:pop()
+    local r = vm.OperandStack:pop()
+    local y = vm.OperandStack:pop()
+    local x = vm.OperandStack:pop()
+
+    local rangle1 = 360 - angle1
+    local rangle2 = 360 - angle2
+
+    vm.Driver:arc(x, y, r, rangle1, rangle2)
+
+    return true
+end
+exports.arcn = arcn
+
 --arct
 --arcto
+
 --curveto
 --rcurveto
+local function curveto(vm)
+    local y3 = vm.OperandStack:pop()
+    local x3 = vm.OperandStack:pop()
+    local y2 = vm.OperandStack:pop()
+    local x2 = vm.OperandStack:pop()
+    local y1 = vm.OperandStack:pop()
+    local x1 = vm.OperandStack:pop()
 
+    vm.Driver:curveTo(x1, y1, x2, y2, x3, y3)
+
+    return true
+end
+exports.curveto = curveto
+
+local function rcurveto(vm)
+    local dy3 = vm.OperandStack:pop()
+    local dx3 = vm.OperandStack:pop()
+    local dy2 = vm.OperandStack:pop()
+    local dx2 = vm.OperandStack:pop()
+    local dy1 = vm.OperandStack:pop()
+    local dx1 = vm.OperandStack:pop()
+
+    local curr = vm.Driver:getCurrentPosition()
+    local x = curr[1]
+    local y = curr[2]
+
+    vm.Driver:curveTo(x+dx1, y+dy1, x+dx2, y+dy2, x+dx3, y+dy3)
+
+    return true
+end
+exports.rcurveto = rcurveto
 
 local function closepath(vm)
     vm.Driver:closePath()
@@ -332,9 +379,29 @@ exports.closepath = closepath
 --ustrokepath
 --charpath
 --uappend
+
 --clippath
+local function clippath(vm)
+    return true
+end
+
 --setbbox
 --pathbbox
+local function setbbox(vm)
+    -- setclip based on specified
+    -- rectangular bounds
+    local ury = vm.OperandStack:pop()
+    local urx = vm.OperandStack:pop()
+    local lly = vm.OperandStack:pop()
+    local llx = vm.OperandStack:pop()
+    
+    local w = urx-llx
+    local h = ury-lly
+    vm.Driver:clipRectI(BLRectI(llx,lly,urx-llx, ury-lly))
+
+    return true
+end
+
 --pathforall
 --upath
 --initclip
