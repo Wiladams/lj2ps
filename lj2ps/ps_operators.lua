@@ -52,6 +52,7 @@ local function roll(vm)
 
     return true
 end
+exports.roll = roll
 
 local function top(self)
     return self.OperandStack:top()
@@ -372,7 +373,7 @@ exports.put = put
 local function def(vm)
     local value = vm.OperandStack:pop()
     local key = vm.OperandStack:pop()
-print("DEF: ", key, value)
+--print("DEF: ", key, value)
     return vm.DictionaryStack:def(key, value)
 end
 exports.def = def
@@ -382,7 +383,7 @@ exports.def = def
 local function load(vm)
     local key = vm.OperandStack:pop()
     local value = vm.DictionaryStack:load(key)
-    print("LOAD: ", key, value)
+    --print("LOAD: ", key, value)
     if not value then
         vm.OperandStack:push(ps_common.NULL)
     else

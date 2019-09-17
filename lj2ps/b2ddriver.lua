@@ -116,7 +116,7 @@ end
 -- setlinewidth
 -- currentlinewidth
 function Blend2DDriver.setLineWidth(self, value)
-    print("Blend2DDriver.setLineWidth: ", value)
+    --print("Blend2DDriver.setLineWidth: ", value)
     self.CurrentState.LineWidth = value
     self.DC:setStrokeWidth(value)
     return true
@@ -205,7 +205,7 @@ function Blend2DDriver.setRgbaColor(self, r, g, b,a)
     g = math.floor(g*255)
     b = math.floor(b*255)
 
-    print("setRgbaColor: ", r, g, b, a)
+    --print("setRgbaColor: ", r, g, b, a)
     local c = BLRgba32()
     c.r = r
     c.g = g 
@@ -260,7 +260,7 @@ end
 
 --concat
 --concatmatrix
---tranform
+--transform
 --dtransform
 --itransform
 --idtransform
@@ -285,7 +285,7 @@ end
 function Blend2DDriver.moveTo(self, x, y)
     self.CurrentState.Path:moveTo(x,y)
     self.CurrentState.Position = {x,y}
-print("Blend2DDriver.moveTo: ", x, y)
+--print("Blend2DDriver.moveTo: ", x, y)
 
     return true
 end
@@ -293,7 +293,7 @@ end
 --rmoveto
 --lineto
 function Blend2DDriver.lineTo(self, x, y)
-    print("lineTo: ", x, y)
+    --print("lineTo: ", x, y)
     self.CurrentState.Path:lineTo(x,y)
     self.CurrentState.Position = {x,y}
 

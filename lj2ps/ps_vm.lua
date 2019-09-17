@@ -181,7 +181,7 @@ end
     token objects.
 ]]
 function PSVM.execArray(self, arr)
-    print("== EXEC EXECUTABLE ARRAY: ==", #arr)
+    --print("== EXEC EXECUTABLE ARRAY: ==", #arr)
     --print("--- stack ---")
     --self:pstack()
     --print("----")
@@ -238,7 +238,7 @@ function PSVM.bindArray(self, arr)
         --print("  ARR: ", tok, type(tok))
 
         if tok.kind then
-            print("bindArray, KIND: ", TokenType[tok.kind], tok.value)
+            --print("bindArray, KIND: ", TokenType[tok.kind], tok.value)
 
             if tok.kind == TokenType.BOOLEAN or 
                 tok.kind == TokenType.NUMBER or
