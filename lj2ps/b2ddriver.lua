@@ -27,32 +27,42 @@ local Blend2DDriver_mt = {
     __index = Blend2DDriver
 }
 
-function Blend2DDriver.new(self, ...)
+function Blend2DDriver.new(self, obj)
+    obj = obj or {}
 
-    local obj = {
-        GraphicsStack = Stack();
-        ClippingPathStack = Stack();
+    obj.dpi = obj.dpi or 72
+    obj.inchesWide = obj.inchesWide or 8.5
+    obj.inchesHigh = obj.inchesHigh or 11
 
-        CurrentState = GraphicsState();
-        StateStack = Stack();
-
-        FontMonger = FontMonger:new();
-    }
+    obj.GraphicsStack = obj.GraphicsStack or Stack();
+    obj.ClippingPathStack = obj.ClippingPathStack or Stack();
+    obj.CurrentState = obj.CurrentState or GraphicsState();
+    obj.StateStack = obj.StateStack or Stack();
+    obj.FontMonger = obj.FontMonger or FontMonger:new();
     
     -- Drawing Context
-    local w = 612
-    local h = 792
-    obj.img = BLImage(w, h)   -- 8.5" x 11" @ 72 pt
+    local w = obj.inchesWide * obj.dpi
+    local h = obj.inchesHigh * obj.dpi
+
+    obj.img = BLImage(w, h)   -- 8.5" x 11" @ dpi
     obj.DC, err = BLContext(obj.img)
     
     -- set coordinate system for y at the bottom
+    -- use the dpi to scale so that in user space, when
+    -- the user specifies a number, 1 == 1/72 inches (points)
+    local scalex = obj.dpi / 72
+    local scaley = obj.dpi / 72
+    --print("SCALE: ", scalex, scaley)
+    obj.DC:scale(1, -1)
+    obj.DC:translate(0,-h)
+    obj.DC:scale(scalex,scaley)
+
+
     -- we push from userToMeta so that this becomes
     -- the baseline transform
     -- Now when we push and pop other matrices, 
     -- they can apply to user space, and not affect the
     -- base transform
-    obj.DC:translate(0,h)
-    obj.DC:scale(1,-1)
     obj.DC:userToMeta()
 
 

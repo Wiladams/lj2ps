@@ -62,7 +62,7 @@ function PSVM.new(self, obj)
         GraphicsStack = Stack();
         ClippingPathStack = Stack();
 
-        Driver = Blend2DDriver();
+        Driver = Blend2DDriver({dpi=192});
 
         -- Internal stuff
         buildProcDepth = 0;
