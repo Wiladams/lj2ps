@@ -46,19 +46,18 @@ local GraphicsState_mt = {
 }
 
 function GraphicsState.assign(self, other)
-    self.CTM = other.CTM;
-    self.Position   = deepCopy(other.Position);
-    self.Path = deepCopy(other.Path);
+    self.CTM = BLMatrix2D(other.CTM);                               -- Need a copy of the matrix object
+    self.Path:assignDeep(other.Path);                   -- Need a copy of the path object
     self.ClippingPath = deepCopy(other.ClippingPath);
     self.ColorSpace = deepCopy(other.ColorSpace);
-    self.Color = deepCopy(other.Color);
+    self.Color = other.Color;                           -- Need copy of font info
     self.Font = deepCopy(other.Font);
-    self.LineWidth = deepCopy(other.LineWidth);
-    self.LineCap = deepCopy(other.LineCap);
-    self.LineJoin = deepCopy(other.LineJoin);
-    self.MiterLimit = deepCopy(other.MiterLimit);
+    self.LineWidth = other.LineWidth;
+    self.LineCap = other.LineCap;
+    self.LineJoin = other.LineJoin;
+    self.MiterLimit = other.MiterLimit;
     self.DashPattern = deepCopy(other.DashPattern);
-    self.StrokeAdjustment = deepCopy(other.StrokeAdjustment);
+    self.StrokeAdjustment = other.StrokeAdjustment;
     self.DDParams = deepCopy(other.DDParams);
 
     return self
@@ -75,7 +74,7 @@ function GraphicsState.new(self)
     -- the various set/get calls.
     local obj = {
         -- device independent
-        CTM = {};
+        CTM = BLMatrix2D:createIdentity();
         Position = {0,0};               -- start origin (0,0)
         Path = BLPath();                -- start with default path
         ClippingPath = nil;
@@ -117,11 +116,15 @@ end
 -- setposition
 -- currentposition
 function GraphicsState.setPosition(self, x, y)
-    self.Position = {x,y};
+    self.Path:moveTo(x,y)
     return true
 end
+
 function GraphicsState.getPosition(self)
-    return self.Position
+    local vtxOut = BLPoint()
+    self.Path:getLastVertex(vtxOut)
+
+    return {vtxOut.x, vtxOut.y}
 end
 
 -- setpath

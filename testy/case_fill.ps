@@ -1,0 +1,27 @@
+%!PS
+
+4 setlinewidth
+0 0 moveto
+0 800 lineto
+0 0 moveto
+800 0 lineto
+stroke
+
+0.5 0.5 translate
+1 1 scale
+
+newpath
+/csquare {
+newpath
+0 0 moveto 
+72 0 lineto 
+72 72 lineto
+0 72 lineto
+closepath
+setrgbcolor
+fill
+} def
+
+1 0 0 csquare
+
+showpage

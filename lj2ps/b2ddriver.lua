@@ -115,7 +115,8 @@ end
 function Blend2DDriver.gSave(self)
     -- clone current graphics state
     -- store it on the statestack
-    self.StateStack:push(self.CurrentState:clone())
+    local aclone = self.CurrentState:clone()
+    self.StateStack:push(aclone)
 
     return true
 end
@@ -297,13 +298,12 @@ end
 
 --currentpoint
 function Blend2DDriver.getCurrentPosition(self)
-    return self.CurrentState.Position
+    return self.CurrentState:getPosition()
 end
 
 --moveto
 function Blend2DDriver.moveTo(self, x, y)
     self.CurrentState.Path:moveTo(x,y)
-    self.CurrentState.Position = {x,y}
 --print("Blend2DDriver.moveTo: ", x, y)
 
     return true
@@ -314,7 +314,6 @@ end
 function Blend2DDriver.lineTo(self, x, y)
     --print("lineTo: ", x, y)
     self.CurrentState.Path:lineTo(x,y)
-    self.CurrentState.Position = {x,y}
 
     return true
 end
@@ -337,7 +336,6 @@ end
 --rcurveto
 function Blend2DDriver.curveTo(self, x1,y1,x2,y2,x3,y3)
     self.CurrentState.Path:cubicTo(x1,y1,x2,y2,x3,y3)
-    self.CurrentState.Position = {x,y}
 
     return true
 end
