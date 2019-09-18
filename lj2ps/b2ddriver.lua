@@ -1,4 +1,7 @@
 
+local ffi = require("ffi")
+local C = ffi.C 
+
 local b2d = require("blend2d.blend2d")
 
 local FontMonger = require("lj2ps.fontmonger")
@@ -47,6 +50,11 @@ function Blend2DDriver.new(self, obj)
     obj.img = BLImage(w, h)   -- 8.5" x 11" @ dpi
     obj.DC, err = BLContext(obj.img)
     
+    -- must do this stroke transform order so
+    -- the stroke line thickness does not grow with the
+    -- scaling factor, but only obeys the setLineWidth
+    obj.DC:setStrokeTransformOrder(C.BL_STROKE_TRANSFORM_ORDER_BEFORE)
+
     -- set coordinate system for y at the bottom
     -- use the dpi to scale so that in user space, when
     -- the user specifies a number, 1 == 1/72 inches (points)
