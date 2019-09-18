@@ -46,7 +46,7 @@ local GraphicsState_mt = {
 }
 
 function GraphicsState.assign(self, other)
-    self.CTM = deepCopy(other.CTM);
+    self.CTM = other.CTM;
     self.Position   = deepCopy(other.Position);
     self.Path = deepCopy(other.Path);
     self.ClippingPath = deepCopy(other.ClippingPath);
