@@ -46,11 +46,12 @@ local GraphicsState_mt = {
 }
 
 function GraphicsState.assign(self, other)
-    self.CTM = BLMatrix2D(other.CTM);                               -- Need a copy of the matrix object
+    self.CTM = BLMatrix2D(other.CTM);                   -- Need a copy of the matrix object
     self.Path:assignDeep(other.Path);                   -- Need a copy of the path object
     self.ClippingPath = deepCopy(other.ClippingPath);
     self.ColorSpace = deepCopy(other.ColorSpace);
-    self.Color = other.Color;                           -- Need copy of font info
+    self.Color = BLRgba32(other.Color);                           -- Need copy of font info
+    self.Flat = other.Flat;
     self.Font = deepCopy(other.Font);
     self.LineWidth = other.LineWidth;
     self.LineCap = other.LineCap;
@@ -75,12 +76,13 @@ function GraphicsState.new(self)
     local obj = {
         -- device independent
         CTM = BLMatrix2D:createIdentity();
-        Position = {0,0};               -- start origin (0,0)
+        Position = BLPoint();               -- start origin (0,0)
         Path = BLPath();                -- start with default path
         ClippingPath = nil;
         ClippingPathStack = Stack();
         ColorSpace = nil;
         Color = BLRgba32(0xFF000000);   -- Start with black fill/stroke
+        Flat = 1;
         Font = nil;
         LineWidth = 1.0;    -- user units
         LineCap = 0;        -- square butt

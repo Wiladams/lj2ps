@@ -120,6 +120,55 @@ exports.setgraya = setgraya
 
 -- sethsbcolor
 -- currenthsbcolor
+-- hue  saturation  brightness  sethsbcolor  --
+--[[
+    HSVtoRGB
+
+    h,s,v ==> [0..1]
+--]]
+local function HSVtoRGB(h, s, v)
+    local function round(n)
+        if n >= 0 then
+            return math.floor(n+0.5)
+        else
+            return math.ceil(n-0.5)
+        end
+    end
+
+    local r, g, b, i, f, p, q, t;
+
+    i = math.floor(h * 6);
+    f = h * 6 - i;
+    p = v * (1 - s);
+    q = v * (1 - f * s);
+    t = v * (1 - (1 - f) * s);
+    local case = i % 6
+    
+    if case == 0 then r, g, b = v, t, p
+    elseif case == 1 then r, g, b = q, v, p 
+    elseif case == 2 then r,g,b = p,v,t 
+    elseif case == 3 then r,g,b = p,q,v
+    elseif case == 4 then r,g,b = t,p,v
+    elseif case == 5 then r, g, b = v, p, q;  end
+
+    return round(r * 255), round(g * 255), round(b * 255)
+end
+
+local function sethsbcolor(vm)
+    local brightness = vm.OperandStack:pop()
+    local saturation = vm.OperandStack:pop()
+    local hue = vm.OperandStack:pop()
+
+    -- create an rgb color from the hsb values
+    local r, g, b = HSVtoRGB(hue, saturation, brightness)
+    --print("sethsbcolor: ", hue, saturation, brightness, r, g, b)
+
+    vm.Driver:setRgbaColor(r,g,b,1.0)
+
+    return true
+end
+exports.sethsbcolor = sethsbcolor
+
 -- setrgbcolor
 -- currentrgbcolor
 local function setrgbcolor(vm)
@@ -228,9 +277,31 @@ exports.rotate = rotate
 
 --concat
 --concatmatrix
---tranform
+--transform
+local function transform(vm)
+    local y = vm.OperandStack:pop()
+    local x = vm.OperandStack:pop()
+
+    --print("transform: ", x, y)
+
+    vm.OperandStack:push(x)
+    vm.OperandStack:push(y)
+
+    return true
+end
+exports.transform = transform
+
 --dtransform
 --itransform
+local function itransform(vm)
+    local y = vm.OperandStack:pop()
+    local x = vm.OperandStack:pop()
+
+    vm.OperandStack:push(x)
+    vm.OperandStack:push(y)
+end
+exports.itransform = itransform
+
 --idtransform
 --invertmatrix
 
@@ -384,6 +455,7 @@ exports.closepath = closepath
 local function clippath(vm)
     return true
 end
+exports.clippath = clippath
 
 --setbbox
 --pathbbox
@@ -401,11 +473,17 @@ local function setbbox(vm)
 
     return true
 end
+exports.setbbox = setbbox
 
 --pathforall
 --upath
 --initclip
 --clip
+local function clip(vm)
+    return true
+end
+exports.clip = clip
+
 --eoclip
 --rectclip
 --ucache

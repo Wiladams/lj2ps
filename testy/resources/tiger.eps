@@ -7,11 +7,12 @@
 %%DocumentSuppliedProcSets: Adobe_Illustrator_1.2d1 0 0
 %%BoundingBox: 17 171 567 739
 %%EndComments
-/tigersave save def	% prevent residual side effects
+%/tigersave save def	% prevent residual side effects
 
 %%BeginProcSet:Adobe_Illustrator_1.2d1 0 0
 
 /Adobe_Illustrator_1.2d1 dup 100 dict def load begin
+
 % definition operators
 /bdef {bind def} bind def
 /ldef {load def} bdef
@@ -77,6 +78,11 @@ clippath fill
 10 M
 []0 d
 0 0 0 0 k
+
+%BUGBUG - debugging
+(Before Drawing)
+==
+
 
 177.696 715.715 m
 177.797 713.821 176.973 713.84 v
@@ -2733,5 +2739,5 @@ showpage
 
 %%Trailer
 end
-tigersave restore
+#tigersave restore
 %%EOF

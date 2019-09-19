@@ -71,7 +71,7 @@ function Blend2DDriver.new(self, obj)
     -- Now when we push and pop other matrices, 
     -- they can apply to user space, and not affect the
     -- base transform
-    obj.DC:userToMeta()
+    --obj.DC:userToMeta()
 
 
     -- start with full white background
@@ -115,16 +115,25 @@ end
 function Blend2DDriver.gSave(self)
     -- clone current graphics state
     -- store it on the statestack
-    local aclone = self.CurrentState:clone()
-    self.StateStack:push(aclone)
+    self.DC:save()
+    local clonedPath = BLPath()
+    clonedPath:assignDeep(self.CurrentState.Path)
+    self.StateStack:push(clonedPath)
+
+    --local aclone = self.CurrentState:clone()
+    --self.StateStack:push(aclone)
 
     return true
 end
 
 function Blend2DDriver.gRestore(self)
+    
+    self.DC:restore()
+    self.CurrentState.Path = self.StateStack:pop()
+    
     -- pop the graphics stack
     -- make it current
-    self.CurrentState = self.StateStack:pop()
+    --self:setCurrentState(self.StateStack:pop())
 
     return true
 end
@@ -132,6 +141,19 @@ end
 --[[
     Graphics State
 ]]
+function Blend2DDriver.setCurrentState(self, state)
+    self.CurrentState = state
+    local c = state.Color
+    --print("COLOR Type: ", type(c), c.r, c.g, c.b, c.a)
+    local m = state.CTM
+
+
+    -- apply things, in particular the transform matrix
+    -- color
+    self:setRgbaColor(c.r, c.g, c.b, c.a)
+    self.DC:setMatrix(m)
+end
+
 -- setlinewidth
 -- currentlinewidth
 function Blend2DDriver.setLineWidth(self, value)

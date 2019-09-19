@@ -23,6 +23,9 @@ local ops = require("lj2ps.ps_operators")
 local gops = require("lj2ps.ps_graph_operators")
 local DictionaryStack = require("lj2ps.ps_dictstack")
 local Blend2DDriver = require("lj2ps.b2ddriver")
+local Scanner = require("lj2ps.ps_scanner")
+local Interpreter = require("lj2ps.ps_interpreter")
+
 
 local PSVM = {}
 setmetatable(PSVM, {
@@ -93,24 +96,6 @@ end
 --[[
     Built-in functions, NOT operators
 ]]
---[[
--- push a value onto the operand stack
-function PSVM.push(self, value)
-    -- check the type of the value
-    -- if it's a string, then look it up
-    -- in the dictionary.  If what is found there
-    -- is executable, then execute it, otherwise
-    -- push the value onto the stack
-    local dvalue = self.DictionaryStack:load(value)
-    if dvalue then
-        self.OperandStack:push(dvalue)
-    else
-        self.OperandStack:push(value)
-    end
-
-    return true
-end
---]]
 
 function PSVM.beginProc(self)
     self.OperandStack:push(ps_common.MARK)
@@ -278,42 +263,34 @@ function PSVM.bindArray(self, arr)
             end
         end
     end
-
---[[
-    for i=1,#arr do
-        local value = arr[i]
-        --print("  BIND_ARRAY: ", value, type(value))
-
-        -- lookup the name
-        -- BUGBUG, need to distinguish between literal things
-        -- and executable things.  We can do it for tables
-        -- but not for strings.  Relying on the dictionary won't
-        -- allow for things like redefining a stored variable
-        local op = self.DictionaryStack:load(value)
---print("op: ", op)
-        if op then
-            if type(op) == "table" then
-                if op.isExecutable then
-                    -- recursive binding
-                    bindArray(op)
-                else
-                    -- just a regular array or dictionary
-                    self.OperandStack:push(op)
-                end
-            else
-                self.OperandStack:push(op)
-            end
-        else
-            -- lookup unsuccessfu, just put it back on the stack
-            -- it's some form of literal (bool, number, string)
-            self.OperandStack:push(value)
-        end
-
-    end
---]]
-
 end
 
+
+--[[
+    Bind is more than just a simple optimization.  It
+    allows you to lock in an implementation of an operator
+    before the user introduces their own version of it.
+
+    So, for example, when you have the following
+
+    /bdef {bind def} bind def
+
+    You are creating a procedure "bdef", and in this case, 
+    we want to lock in the implementation of the 'bind' and 'def'
+    operators within the procedure body.
+
+    bind(), will replace the names 'bind' and 'def' with pointers
+    to the actual operators.  This will do two things.
+        1) Save on the lookup of the executable name when the
+        procedure is actually executed
+        2) Ensure we are using the base implementation of the operator
+        rather than anything the user might replace it with later
+
+    Functionally, we essentially create a new procedure body by 
+    enumerating all the elements in the procedure that's on the top
+    of the stack.  Then we put that new procedure on the top of the
+    stack, ready for usage, typically a 'def' to save it in a variable.
+]]
 function PSVM.bind(self)
     --print("PSVM.BIND")
     -- pop executable array off of stack
@@ -334,5 +311,9 @@ function PSVM.bind(self)
     --print("-----")
 end
 
+function PSVM.eval(self, str)
+    local interp = Interpreter(self)
+    interp:run(str)
+end
 
 return PSVM

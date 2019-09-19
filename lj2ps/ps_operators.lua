@@ -341,7 +341,10 @@ end
 local function get(vm)
     local idx = vm.OperandStack:pop()
     local arr = vm.OperandStack:pop()
-    vm.OperandStack:push(arr[idx])
+    local value = arr[idx]
+print('GET: ', arr, idx, value)
+
+    vm.OperandStack:push(value)
 
     return true
 end
@@ -470,6 +473,7 @@ end
 exports.aload = aload
 
 local function begin(vm)
+    --print("BEGIN")
     -- pop the dictionary off the top of the 
     -- operand stack and make it the current dictionary
     -- by placing on top of dictionary stack
@@ -551,7 +555,9 @@ exports.packedarray = packedarray
 
 local function dict(vm)
     local capacity = vm.OperandStack:pop()
-    vm.OperandStack:push({})
+    local d = Dictionary(capacity)
+    vm.OperandStack:push(d)
+
     return true
 end
 exports.dict = dict
@@ -795,7 +801,7 @@ exports["for"] = function(vm)
     local increment = vm.OperandStack:pop()
     local initial = vm.OperandStack:pop()
 
-    print("for: ", initial, limit, increment, proc)
+    --print("for: ", initial, limit, increment, proc)
 
     for i=initial, limit, increment do
         vm.OperandStack:push(i)
