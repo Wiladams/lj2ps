@@ -71,6 +71,15 @@ exports.setlinejoin = setlinejoin
 
 -- setmiterlimit
 -- currentmiterlimit
+local function setmiterlimit(vm)
+    local num = vm.OperandStack:pop()
+    -- set the miter limit
+
+    return true
+end
+exports.setmiterlimit = setmiterlimit
+
+
 -- setstrokeadjust
 -- currentstrokeadjust
 -- setdash

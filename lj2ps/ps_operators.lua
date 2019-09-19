@@ -6,9 +6,9 @@ local DEGREES, RADIANS = math.deg, math.rad
 
 local ps_common = require("lj2ps.ps_common")
 local Stack = ps_common.Stack
-
 local Array = ps_common.Array
-local Dictionary = ps_common.Dictionary
+
+local Dictionary = require("lj2ps.dictionary")
 
 
 
@@ -568,15 +568,23 @@ exports.string = string
 
 --[[
 -- apply to arrays
-
-setpacking
-currentpacking
+--]]
+--setpacking
+--currentpacking
 
 -- dictionaries
-countdictstack  -- in VM
-cleardictstack  -- in VM
-dictstack       -- in VM
---]]
+--countdictstack
+--cleardictstack
+local function cleardictstack(vm)
+    vm.DictionaryStack:clearToMark();
+    
+    return true
+end
+exports.cleardictstack = cleardictstack
+
+
+--dictstack
+
 
 -- known
 -- dict key known bool

@@ -325,8 +325,10 @@ end
 
 --moveto
 function Blend2DDriver.moveTo(self, x, y)
+    --print("Blend2DDriver.moveTo: ", x, y)
+    self.CurrentState.Path = BLPath()
     self.CurrentState.Path:moveTo(x,y)
---print("Blend2DDriver.moveTo: ", x, y)
+
 
     return true
 end

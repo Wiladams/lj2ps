@@ -32,6 +32,19 @@ function DictionaryStack.new(self, ...)
     return obj;
 end
 
+function DictionaryStack.mark(self)
+    self.dicts:push(ps_common.MARK)
+end
+
+function DictionaryStack.clearToMark(self)
+    while self.dicts:length() > 0 do 
+        local item = self.dicts:pop()
+        if item == ps_common.MARK then
+            break
+        end
+    end
+end
+
 function DictionaryStack.pushDictionary(self, d)
     self.dicts:push(d)
 end
@@ -41,6 +54,10 @@ function DictionaryStack.popDictionary(self, d)
 end
 
 function DictionaryStack.currentdict(self)
+    if self.dicts:top() == ps_common.MARK then
+        return self.dicts:nth(1)
+    end
+
     return self.dicts:top()
 end
 
@@ -49,14 +66,14 @@ end
 -- Associate key and value in current dictionary
 function DictionaryStack.def(self, key, value)
     local current = self:currentdict()
-    --print("DictionaryStack.def: ", key, value)
-    rawset(current, key, value)
+    --print("DictionaryStack.def: ", key, value, current)
+    current[key] = value
 end
 
 function DictionaryStack.load(self, key)
     -- search for which dictionary has the key
     -- in stack order
-    local d = self:where(key)
+    local d, value = self:where(key)
     --print("Dictionary.load: ", key, d)
 
     -- if we didn't find the key, then return nil
@@ -64,26 +81,31 @@ function DictionaryStack.load(self, key)
         return nil 
     end
 
-    return d[key]
+    return value
 end
 
 function DictionaryStack.store(self, key, value)
-    local d = self:where(key)
+    local d, value = self:where(key)
     if not d then
         d = self:currentdict()
     end
-    rawset(d, key, value)
+
+    d[key] = value
 
     return true
 end
 
 -- where
--- return the dictionary within which key 
--- is defined
+-- Search the dictionary stack for the first definition
+-- of the specified key.
+-- return the dictionary, and value if found
 function DictionaryStack.where(self, key)
     for _, dict in self.dicts:items() do 
-        if dict[key] then
-            return dict
+        if type(dict) == "table" then
+            local value = dict[key] 
+            if value ~= nil then
+                return dict, value
+            end
         end
     end
 

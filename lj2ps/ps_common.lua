@@ -310,62 +310,7 @@ function Array.new(self, cnt)
 end
 
 
---[[
-    Dictionary
-]]
-local Dictionary = {}
-setmetatable(Dictionary, {
-    __call = function(self, ...)
-        return self:new(...)
-    end;
-})
-local Dictionary_mt = {
 
-	-- using trying to retrieve a value
-	__index = function(self, idx)
-		if type(idx) == "string" then
-			if idx == "kind" then
-				return 'dictionary'
-			end
-		end
-		
-        return self.__impl[idx]
-    end;
-
-	-- user trying to set a value
-	__newindex = function(self, idx, value)
-		-- protect against non-numeric index
-		if not idx then return false end
-
-		-- protect against index beyond capacity
-        --if idx >= self.__capacity then return false end
-        local size = rawget(self, "__size__")
-        size = size + 1;
-        rawset(self, "__size__", size)
-
-        self.__impl[idx] = value
-    end;
-
-    __len = function(self)
-        return self.__size__
-    end;
-
-}
-
-function Dictionary.new(self, cap)
-    local obj = {
-        __cap__ = cap;
-        __size__ = 0;
-        __impl = {};
-	}
-	
-    --for i=1,cnt do
-    --    obj.__impl[i]=false;
-    --end
-    setmetatable(obj, Array_mt)
-
-    return obj
-end
 
 --[[
     pure functional iterators are supposed to be
@@ -397,7 +342,6 @@ return {
     TokenType = TokenType;
 
     Array = Array;
-    Dictionary = Dictionary;
     Stack = Stack;
     
     deepCopy = deepCopy;
