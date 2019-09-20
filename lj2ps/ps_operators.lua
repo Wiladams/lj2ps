@@ -577,7 +577,7 @@ exports.string = string
 --cleardictstack
 local function cleardictstack(vm)
     vm.DictionaryStack:clearToMark();
-    
+
     return true
 end
 exports.cleardictstack = cleardictstack
@@ -842,16 +842,33 @@ end
 
 --[[
 -- Type, Attribute and Conversion Operators
-type
-xcheck
-rcheck
-wcheck
-cvlit
-cvx
-readonly
-executeonly
-noaccess
 --]]
+--type
+--xcheck
+--rcheck
+--wcheck
+--cvlit
+--cvx
+local function cvx(vm)
+    -- pop a thing from the stack 
+    -- set it as 'isExecutable = true'
+    -- put it back on the stack
+    local athing = vm.OperandStack:pop()
+    if type(athing == "table") then
+        athing.isExecutable = true
+        print("CVX: ",athing, athing.isExecutable, athing.kind)
+    end
+
+    vm.OperandStack:push(athing)
+
+    return true
+end
+exports.cvx = cvx
+
+--readonly
+--executeonly
+--noaccess
+
 
 local function cvi(vm)
     vm.OperandStack:push(tonumber(vm.OperandStack:pop()))

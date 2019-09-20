@@ -1,0 +1,136 @@
+%!PS
+% Copyright 2002 - Michel Charpentier
+
+% Branching fractal curve, one stroke per branch.
+
+/fast? true def % choice between faster or nicer
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% PARAMETERS
+
+% Paper size, in dots (letter)
+/paperx 8.5    72 mul def
+/papery 11     72 mul def
+
+% Order
+/order 5 def
+
+% Thickness of the lines
+/thick 25 def
+
+% Angle
+/angle 22.5 def
+
+% Equation: F -> F F - [ - F + F + F ] + [ + F - F - F ]
+/START { F } def
+/F {
+  dup 0 eq
+  { D }
+  { 1 sub 8 {dup} repeat  F F - B - F + F + F E + B + F - F - F E }
+  ifelse pop
+} bind def
+
+% Factor (how much segments decrease with order), no need to be changed
+/factor { pop 2 } def % for this equation
+
+% Size (the smaller, the bigger), no need to be changed, normally
+/size 4 def
+
+% Position, no need to be changed, normally
+/xx paperx 0.3 mul def
+/yy 25 def 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% COLORS
+
+% define a color procedure.  Parameter is depth.  BW used if no color defined
+/color1 { % random branches
+  pop 3 {rand 100 mod 100 div} repeat setrgbcolor
+} def 
+
+/color2 { % random subtrees
+  2 eq {3 {rand 100 mod 100 div} repeat setrgbcolor} if
+} def 
+
+/color3 { % lighter green towards leaves, linear
+  order exch sub order 2 mul div 1 3 div exch .7 exch sethsbcolor
+} def
+
+/color4 { % lighter green towards leaves, exponential
+  neg 1.5 exch exp 2 div 1 3 div exch .7 exch sethsbcolor
+} def
+
+/color { color4 } bind def 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% CODE
+
+1 setlinejoin
+1 setlinecap
+
+/line papery size div thick div def % fills the page, roughly
+
+/D { line 0 rlineto } bind def
+
+/B [ % quite dirty, but it works...
+  fast? { {currentpoint stroke moveto} aload pop } if
+  {gsave} aload pop
+  currentdict /color known { {dup color} aload pop } if
+] cvx bind def
+
+/E { stroke grestore } bind def
+
+/- { % rotation to the right 
+  angle neg rotate
+} bind def
+
+/+ { % rotation to the left
+  angle rotate
+} bind def
+
+
+% drawing
+gsave
+  newpath
+  xx yy moveto % centers in page, roughly
+  90 rotate
+  thick 1 1 order { factor div } for dup scale
+  order START
+  stroke
+grestore
+
+% Equation
+gsave
+  /Tahoma findfont 10 scalefont setfont
+  (Angle: 22.5) 300 45 moveto show 
+  (Axiom: F) 300 35 moveto show
+  (F -> FF-[-F+F+F]+[+F-F-F]) 300 25 moveto show
+grestore
+
+% Signature
+gsave
+  paperx 60 sub 20 translate
+  1 setlinejoin
+  1 setlinecap
+  1 setgray
+  newpath
+  20 20 20 0 360 arc fill
+  0 setgray
+  newpath
+  10 5 moveto
+  0 20 rlineto
+  10 -8 rlineto
+  10 8 rlineto
+  0 -20 rlineto
+  10 25 moveto
+  4 12 rlineto
+  14 5 moveto
+  6 12 rlineto
+  stroke
+  22 21 1 0 360 arc fill
+grestore
+
+showpage

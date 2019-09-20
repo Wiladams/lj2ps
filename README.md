@@ -80,5 +80,29 @@ http://www.math.ubc.ca/~cass/graphics/manual/
 
 https://www.tinaja.com/post01.shtml
 
+https://subversion.american.edu/aisaac/wp/psdraw.html
 
 
+
+
+Notes
+
+Implementing Loops
+
+https://stackoverflow.com/questions/6949434/how-to-implement-loop-in-a-forth-like-language-interpreter-written-in-c/6951850#6951850
+
+int proc  **repeat**  -
+    if int<0 Error
+    if int==0 return //do nothing
+    push null on exec stack   <--- this marks our "frame"
+    push int-1 on exec stack
+    push proc on exec stack
+    push '@repeat-continue' on exec stack
+    push executable proc on exec stack
+
+@repeat-continue
+    peek proc from exec stack
+    peek int from exec stack
+    if int==0 clear-to-null and return
+    push '@repeat-continue' on exec stack
+    push executable proc on exec stack

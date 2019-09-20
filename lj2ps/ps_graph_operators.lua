@@ -134,33 +134,80 @@ exports.setgraya = setgraya
     HSVtoRGB
 
     h,s,v ==> [0..1]
+    https://stackoverflow.com/questions/2353211/hsl-to-rgb-color-conversion
 --]]
-local function HSVtoRGB(h, s, v)
-    local function round(n)
-        if n >= 0 then
-            return math.floor(n+0.5)
-        else
-            return math.ceil(n-0.5)
-        end
+local function round(n)
+    if n >= 0 then
+        return math.floor(n+0.5)
+    else
+        return math.ceil(n-0.5)
+    end
+end
+
+local function map255(val)
+    return math.min(math.floor(val*256),255)
+end
+
+local function mapToRange(val, range)
+    return math.min(math.floor(val*(range+1)),range)
+end
+
+--[[
+        https://en.wikipedia.org/wiki/HSL_and_HSV
+        'alternate' polynomial based implementation
+]]
+local function HSLToRGB(H,S,L)
+    -- we want H in degrees
+    H = mapToRange(H,360.0)
+
+    local function fn(n)
+        local k = math.fmod((n + H/30.0), 12)
+        local a = S * math.min(L, 1.0 - L)
+
+        return L - a * math.max(math.min(k-3.0, 9.0-k,1.0),-1.0)
     end
 
-    local r, g, b, i, f, p, q, t;
+    local R1, G1, B1 = fn(0), fn(8), fn(4)
 
-    i = math.floor(h * 6);
-    f = h * 6 - i;
-    p = v * (1 - s);
-    q = v * (1 - f * s);
-    t = v * (1 - (1 - f) * s);
-    local case = i % 6
-    
-    if case == 0 then r, g, b = v, t, p
-    elseif case == 1 then r, g, b = q, v, p 
-    elseif case == 2 then r,g,b = p,v,t 
-    elseif case == 3 then r,g,b = p,q,v
-    elseif case == 4 then r,g,b = t,p,v
-    elseif case == 5 then r, g, b = v, p, q;  end
 
-    return round(r * 255), round(g * 255), round(b * 255)
+    --print("HSL, RGB: ", H, S, L, "     ", R, G, B)
+
+    return R1, G1, B1
+end
+
+--[[
+    h,s,v => [0..1]
+    h - hue, is converted to degrees [0..360]
+    https://en.wikipedia.org/wiki/HSL_and_HSV
+]]
+local function HSVToRGB(H,S,V)
+    -- we want H in degrees
+    H = mapToRange(H,360.0)
+
+    -- figure out the chroma
+    local C = V * S
+
+    -- figure out RGB
+    local H1 = H / 60.0
+    local X = C * (1-math.abs(math.fmod(H1, 2)-1))
+
+    local R1, G1, B1
+    if H1 >= 0 and H1 <= 1 then R1,G1,B1 = C, X, 0 end
+    if H1 > 1 and H1 <= 2 then R1, G1, B1 = X, C, 0 end
+    if H1 > 2 and H1 <= 3 then R1, G1, B1 = 0, C, X end
+    if H1 > 3 and H1 <= 4 then R1, G1, B1 = 0, X, C end
+    if H1 > 4 and H1 <= 5 then R1, G1, B1 = X, 0, C end
+    if H1 > 5 and H1 <= 6 then R1, G1, B1 = C, 0, X end
+
+    local m = V - C
+
+    local R = R1 + m
+    local G = G1 + m
+    local B = B1 + m
+
+    --print("HSV, RGB: ", H, S, V, "     ", R, G, B)
+
+    return R, G, B
 end
 
 local function sethsbcolor(vm)
@@ -169,7 +216,8 @@ local function sethsbcolor(vm)
     local hue = vm.OperandStack:pop()
 
     -- create an rgb color from the hsb values
-    local r, g, b = HSVtoRGB(hue, saturation, brightness)
+    local r, g, b = HSVToRGB(hue, saturation, brightness)
+    --local r, g, b = HSLToRGB(hue, saturation, brightness)
     --print("sethsbcolor: ", hue, saturation, brightness, r, g, b)
 
     vm.Driver:setRgbaColor(r,g,b,1.0)
