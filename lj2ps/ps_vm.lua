@@ -169,7 +169,7 @@ end
     token objects.
 ]]
 function PSVM.execArray(self, arr)
-    --print("== EXEC EXECUTABLE ARRAY: ==", #arr)
+    --print("== EXEC EXECUTABLE ARRAY: ==", arr, #arr)
     --print("--- stack ---")
     --self:pstack()
     --print("----")

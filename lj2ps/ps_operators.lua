@@ -790,9 +790,13 @@ exports["ifelse"] = function(vm)
     local proc1 = vm.OperandStack:pop()
     local abool = vm.OperandStack:pop()
 
+    --print("IFELSE: ", abool, proc1, proc2)
+
     if abool then 
+        --print("IFELSE, TRUE")
         vm:execArray(proc1)
     else
+        --print("IFELSE, FALSE")
         vm:execArray(proc2)
     end
 
@@ -804,17 +808,22 @@ end
 --for
 -- initial  increment  limit  proc  for
 exports["for"] = function(vm)
-    local proc = vm.OperandStack:pop()
-    local limit = vm.OperandStack:pop()
-    local increment = vm.OperandStack:pop()
-    local initial = vm.OperandStack:pop()
+    local co = coroutine.create(function()
+        local proc = vm.OperandStack:pop()
+        local limit = vm.OperandStack:pop()
+        local increment = vm.OperandStack:pop()
+        local initial = vm.OperandStack:pop()
 
-    --print("for: ", initial, limit, increment, proc)
+        --print("for: ", initial, limit, increment, proc)
 
-    for i=initial, limit, increment do
-        vm.OperandStack:push(i)
-        vm:execArray(proc)
-    end
+        for i=initial, limit, increment do
+            vm.OperandStack:push(i)
+            vm:execArray(proc)
+        end
+    end)
+
+    local res, val = coroutine.resume(co)
+    --print("FOR, res: ", res, val)
 
     return true
 end
@@ -833,8 +842,32 @@ exports["repeat"] = function(vm)
 end
 
 --loop
+local function loop(vm)
+    local co = coroutine.create(function(vm)
+        local proc = vm.OperandStack:pop()
+
+        while true do
+            local success, status = vm:execArray(proc)
+        end
+    end)
+
+    local res, val = coroutine.resume(co, vm)
+    --print("LOOP, res: ", res, val)
+
+    return true
+end
+exports.loop = loop
+
 --forall
 --exit
+local function exit(vm)
+    --print("EXIT")
+    coroutine.yield("exit")
+
+    return true
+end
+exports.exit = exit
+
 --countexecstack
 --execstack
 --stop
