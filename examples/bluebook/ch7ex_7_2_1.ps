@@ -1,0 +1,13 @@
+%!PS
+/Arial findfont 30 scalefont setfont
+
+/printZip
+{ 0 0 moveto (Zip) show} def
+320 400 translate
+
+0.95 -0.05 0    % start incr. end
+{ setgray printZip -1 0.5 translate} for
+
+1 setgray printZip
+
+showpage

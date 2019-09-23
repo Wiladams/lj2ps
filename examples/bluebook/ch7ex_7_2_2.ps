@@ -1,0 +1,29 @@
+%!PS
+
+/pagewidth 8.5 72 mul def
+
+/doCircle 
+{ xpos ypos radius 0 360 arc stroke} def
+
+/increase-x 
+{ xpos radius add
+    /xpos exch def } def
+
+/lineofcircles {
+    /ypos exch def
+    /radius exch def
+    /xpos 0 def
+    {
+        xpos pagewidth le 
+        { doCircle increase-x }
+        { exit}  ifelse
+    } loop
+} def
+
+% ---- Begin Program ----
+10 400 lineofcircles
+30 400 lineofcircles
+90 400 lineofcircles
+
+showpage
+

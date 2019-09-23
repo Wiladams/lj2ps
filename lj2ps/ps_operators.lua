@@ -6,7 +6,7 @@ local DEGREES, RADIANS = math.deg, math.rad
 
 local ps_common = require("lj2ps.ps_common")
 local Stack = ps_common.Stack
-local Array = ps_common.Array
+local Array = require("lj2ps.array")
 
 local Dictionary = require("lj2ps.dictionary")
 
@@ -113,17 +113,9 @@ exports.count = count
 
 --counttomark
 local function counttomark(vm)
-    local ct = 0
+    local n = vm.OperandStack:countToMark()
 
-    for _, item in vm.OperandStack:items() do
-        if item == ps_common.MARK then
-            break
-        end
-
-        ct = ct + 1
-    end
-
-    vm.OperandStack:push(ct)
+    vm.OperandStack:push(n)
 
     return true
 end
@@ -504,27 +496,20 @@ exports.beginArray = beginArray
 
 -- alias for ']'
 local function endArray(vm)
-    -- pop all the objects until a mark
 
-    -- BUGBUG, do this more directly with 
-    -- array assignment
-    local tmpStack = Stack()
-    while vm.OperandStack:length() > 0 do 
-        local item = vm.OperandStack:pop()
-        if item == ps_common.MARK then
-            break;
-        end
+    local n = vm.OperandStack:countToMark()
+    local arr = Array(n)
 
-        tmpStack:push(item)
+    -- stuff the array with all the elements up until
+    -- the mark
+    for i=1,n do
+        arr[n-i] = vm.OperandStack:pop()
     end
 
-    -- put them into an array, reversing order
-    local arr = {}
-    for _, item in tmpStack:items() do 
-        table.insert(arr, item)
-    end
+    -- then pop the mark itself
+   vm.OperandStack:pop()
 
-    -- put the array on the stack
+    -- put the finished array back the stack
     vm.OperandStack:push(arr)
 end
 exports.endArray = endArray
@@ -790,9 +775,13 @@ exports["ifelse"] = function(vm)
     local proc1 = vm.OperandStack:pop()
     local abool = vm.OperandStack:pop()
 
+    --print("IFELSE: ", abool, proc1, proc2)
+
     if abool then 
+        --print("IFELSE, TRUE")
         vm:execArray(proc1)
     else
+        --print("IFELSE, FALSE")
         vm:execArray(proc2)
     end
 
@@ -804,17 +793,22 @@ end
 --for
 -- initial  increment  limit  proc  for
 exports["for"] = function(vm)
-    local proc = vm.OperandStack:pop()
-    local limit = vm.OperandStack:pop()
-    local increment = vm.OperandStack:pop()
-    local initial = vm.OperandStack:pop()
+    local co = coroutine.create(function()
+        local proc = vm.OperandStack:pop()
+        local limit = vm.OperandStack:pop()
+        local increment = vm.OperandStack:pop()
+        local initial = vm.OperandStack:pop()
 
-    --print("for: ", initial, limit, increment, proc)
+        --print("for: ", initial, limit, increment, proc)
 
-    for i=initial, limit, increment do
-        vm.OperandStack:push(i)
-        vm:execArray(proc)
-    end
+        for i=initial, limit, increment do
+            vm.OperandStack:push(i)
+            vm:execArray(proc)
+        end
+    end)
+
+    local res, val = coroutine.resume(co)
+    --print("FOR, res: ", res, val)
 
     return true
 end
@@ -833,8 +827,55 @@ exports["repeat"] = function(vm)
 end
 
 --loop
+local function loop(vm)
+    local co = coroutine.create(function(vm)
+        local proc = vm.OperandStack:pop()
+
+        while true do
+            local success, status = vm:execArray(proc)
+        end
+    end)
+
+    local res, val = coroutine.resume(co, vm)
+    --print("LOOP, res: ", res, val)
+
+    return true
+end
+exports.loop = loop
+
 --forall
+-- array proc forall -
+local function forall(vm)
+    local proc = vm.OperandStack:pop()
+    local arr = vm.OperandStack:pop()
+
+    --print("FORALL: ", proc, arr)
+    -- do as coroutine to account for a 'exit'
+    local co = coroutine.create(function(vm,proc, arr)
+        --print("  ROUTINE: ", vm, proc, arr)
+        for _, element in arr:elements() do 
+            --print(_, element)
+            vm.OperandStack:push(element)
+            vm:execArray(proc)
+        end
+    end)
+
+    local success, val = coroutine.resume(co, vm, proc, arr)
+    --print("SUCCESS, VAL: ", success, val)
+
+    return true
+end
+exports.forall = forall
+
 --exit
+local function exit(vm)
+    --print("EXIT")
+    coroutine.yield("exit")
+
+    return true
+end
+exports.exit = exit
+
 --countexecstack
 --execstack
 --stop
