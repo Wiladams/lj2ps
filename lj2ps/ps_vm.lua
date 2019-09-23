@@ -207,7 +207,7 @@ function PSVM.execArray(self, arr)
                 -- PROCEDURE
                 self.OperandStack:push(value.value)
             else
-                print("UNKNOWN VALUE KIND: ", value.kind, value.value)
+                print("execArray, UNKNOWN VALUE KIND: ", value.kind, value.value)
             end
         end
     end

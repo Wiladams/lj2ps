@@ -69,12 +69,9 @@ end
 lexemeMap[B']'] = function(self, bs) 
     self.Vm:endArray()
     
-    if not self.Vm:isBuildingProc() then
-        local arr = self.Vm:pop()
-        return (Token{kind = TokenType.LITERAL_ARRAY, value = arr, line=bs:tell()}); 
-    else
-        -- just keep the array on the stack
-    end
+
+    local arr = self.Vm:pop()
+    return (Token{kind = TokenType.LITERAL_ARRAY, value = arr, line=bs:tell()}); 
 end
 
 -- string literal

@@ -85,7 +85,7 @@ function DictionaryStack.load(self, key)
 end
 
 function DictionaryStack.store(self, key, value)
-    local d, value = self:where(key)
+    local d, v = self:where(key)
     if not d then
         d = self:currentdict()
     end
