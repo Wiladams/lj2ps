@@ -175,7 +175,7 @@ function PSVM.execArray(self, arr)
     --print("----")
 
     -- The array should be filled with tokens
-    for i=1,#arr do
+    for i=0,#arr-1 do
         local value = arr[i]
         --print("  ARR: ", value, type(value))
 
@@ -221,7 +221,7 @@ function PSVM.bindArray(self, arr)
     --self.Vm:pstack()
     --print("----")
 
-    for i=1,#arr do
+    for i=0,#arr-1 do
         local tok = arr[i]
         --print("  ARR: ", tok, type(tok))
 
@@ -308,10 +308,6 @@ function PSVM.bind(self)
     arr = self:endProc()
 
     self.OperandStack:push(arr)
-
-    --print("-- stack after bind --")
-    --self:pstack()
-    --print("-----")
 end
 
 function PSVM.eval(self, str)

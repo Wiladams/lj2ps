@@ -273,8 +273,18 @@ end
 --initmatrix
 --identmatix
 --defaultmatrix
+
 --currentmatrix
+function Blend2DDriver.currentMatrix(self)
+    return self.DC:userMatrix()
+end
+
 --setmatrix
+function Blend2DDriver.setMatrix(self, m)
+    self.DC:setMatrix(m)
+
+    return true
+end
 
 --translate
 function Blend2DDriver.translate(self, tx, ty)

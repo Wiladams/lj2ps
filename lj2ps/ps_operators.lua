@@ -6,7 +6,7 @@ local DEGREES, RADIANS = math.deg, math.rad
 
 local ps_common = require("lj2ps.ps_common")
 local Stack = ps_common.Stack
-local Array = ps_common.Array
+local Array = require("lj2ps.array")
 
 local Dictionary = require("lj2ps.dictionary")
 
@@ -113,17 +113,9 @@ exports.count = count
 
 --counttomark
 local function counttomark(vm)
-    local ct = 0
+    local n = vm.OperandStack:countToMark()
 
-    for _, item in vm.OperandStack:items() do
-        if item == ps_common.MARK then
-            break
-        end
-
-        ct = ct + 1
-    end
-
-    vm.OperandStack:push(ct)
+    vm.OperandStack:push(n)
 
     return true
 end
@@ -504,27 +496,20 @@ exports.beginArray = beginArray
 
 -- alias for ']'
 local function endArray(vm)
-    -- pop all the objects until a mark
 
-    -- BUGBUG, do this more directly with 
-    -- array assignment
-    local tmpStack = Stack()
-    while vm.OperandStack:length() > 0 do 
-        local item = vm.OperandStack:pop()
-        if item == ps_common.MARK then
-            break;
-        end
+    local n = vm.OperandStack:countToMark()
+    local arr = Array(n)
 
-        tmpStack:push(item)
+    -- stuff the array with all the elements up until
+    -- the mark
+    for i=1,n do
+        arr[n-i] = vm.OperandStack:pop()
     end
 
-    -- put them into an array, reversing order
-    local arr = {}
-    for _, item in tmpStack:items() do 
-        table.insert(arr, item)
-    end
+    -- then pop the mark itself
+   vm.OperandStack:pop()
 
-    -- put the array on the stack
+    -- put the finished array back the stack
     vm.OperandStack:push(arr)
 end
 exports.endArray = endArray
@@ -859,6 +844,29 @@ end
 exports.loop = loop
 
 --forall
+-- array proc forall -
+local function forall(vm)
+    local proc = vm.OperandStack:pop()
+    local arr = vm.OperandStack:pop()
+
+    --print("FORALL: ", proc, arr)
+    -- do as coroutine to account for a 'exit'
+    local co = coroutine.create(function(vm,proc, arr)
+        --print("  ROUTINE: ", vm, proc, arr)
+        for _, element in arr:elements() do 
+            --print(_, element)
+            vm.OperandStack:push(element)
+            vm:execArray(proc)
+        end
+    end)
+
+    local success, val = coroutine.resume(co, vm, proc, arr)
+    --print("SUCCESS, VAL: ", success, val)
+
+    return true
+end
+exports.forall = forall
+
 --exit
 local function exit(vm)
     --print("EXIT")

@@ -298,16 +298,55 @@ exports.currentflat = currentflat
 
 -- Coordinate System and Matrix Operators
 --matrix
+local function matrix(vm)
+
+    -- push an identity matrix onto the stack
+    local m = BLMatrix2D:createIdentity()
+    vm.OperandStack:push(m)
+
+    return true
+end
+exports.matrix = matrix
+
 --initmatrix
 --identmatix
+
 --defaultmatrix
 --currentmatrix
+local function currentmatrix(vm)
+    local m = vm.Driver:currentMatrix()
+    vm.OperandStack:push(m)
+
+    return true
+end
+exports.currentmatrix = currentmatrix
+
 --setmatrix
+local function setmatrix(vm)
+    local m = vm.OperandStack:pop()
+    vm.Driver:setMatrix(m)
+
+    return true
+end
+exports.setmatrix = setmatrix
+
 --translate
 local function translate(vm)
-    local ty = vm.OperandStack:pop()
-    local tx = vm.OperandStack:pop()
-    vm.Driver:translate(tx, ty)
+    local tx, ty
+    local arg1 = vm.OperandStack:pop()
+    if type(arg1) == "number" then
+        -- change user coordinate space
+        ty = arg1
+        tx = vm.OperandStack:pop()
+        vm.Driver:translate(tx, ty)
+    else
+        -- create a translation matrix and
+        -- put it back on the stack
+        ty = vm.OperandStack:pop()
+        tx = vm.OperandStack:pop()
+        local m = BLMatrix2D:createTranslation(tx, ty)
+        vm.OperandStack:push(m)
+    end
 
     return true
 end
@@ -315,9 +354,19 @@ exports.translate = translate
 
 --scale
 local function scale(vm)
-    local sy = vm.OperandStack:pop()
-    local sx = vm.OperandStack:pop()
-    vm.Driver:scale(sx, sy)
+    local m = vm.OperandStack:pop()
+
+    if type(m) == "number" then
+        local sy = m
+        local sx = vm.OperandStack:pop()
+        vm.Driver:scale(sx, sy)
+    else
+        local sy = vm.OperandStack:pop()
+        local sx = vm.OperandStack:pop()
+        local m1 = BLMatrix2D:createScaling(sx, sy)
+
+        vm.OperandStack:push(m1)
+    end
 
     return true
 end
@@ -334,15 +383,48 @@ exports.rotate = rotate
 
 --concat
 --concatmatrix
+local function concatmatrix(vm)
+    local m3 = vm.OperandStack:pop()
+    local m2 = vm.OperandStack:pop()
+    local m1 = vm.OperandStack:pop()
+
+    m3 = m1;
+    m3:concat(m2);
+    vm.OperandStack:push(m3)
+
+    return true
+end
+exports.concatmatrix = concatmatrix
+
 --transform
+-- transform a single point
+--        x y transform x1 y1
+-- x y matrix transform x1 y1
 local function transform(vm)
-    local y = vm.OperandStack:pop()
-    local x = vm.OperandStack:pop()
+    local m = vm.OperandStack:pop()
+    local x, y
 
-    --print("transform: ", x, y)
+    if type(m) == "number" then
+        local y = m
+        local x = vm.OperandStack:pop()
 
-    vm.OperandStack:push(x)
-    vm.OperandStack:push(y)
+        local m1 = vm.Driver:currentMatrix();
+
+        local dst = m1:transformSinglePoint(BLPoint(x, y))
+
+        vm.OperandStack:push(dst.x)
+        vm.OperandStack:push(dst.y)
+    else
+        -- the matrix was given as a parameter
+        -- get the inverse of it
+        local y = vm.OperandStack:pop()
+        local x = vm.OperandStack:pop()
+
+        local dst = m:transformSinglePoint(BLPoint(x, y))
+
+        vm.OperandStack:push(dst.x)
+        vm.OperandStack:push(dst.y)
+    end
 
     return true
 end
@@ -351,11 +433,34 @@ exports.transform = transform
 --dtransform
 --itransform
 local function itransform(vm)
-    local y = vm.OperandStack:pop()
-    local x = vm.OperandStack:pop()
+    local arg1 = vm.OperandStack:pop()
+    local x, y
 
-    vm.OperandStack:push(x)
-    vm.OperandStack:push(y)
+    if type(arg1) == "number" then
+        local y = arg1
+        local x = vm.OperandStack:pop()
+
+        local m = vm.Driver:currentMatrix();
+        local m1 = m:createInverse();
+
+        local dst = m1:transformSinglePoint(BLPoint(x, y))
+
+        vm.OperandStack:push(dst.x)
+        vm.OperandStack:push(dst.y)
+    else
+        -- the matrix was given as a parameter
+        -- get the inverse of it
+        local m1 = arg1:createInverse();
+        local y = vm.OperandStack:pop()
+        local x = xm.OperandStack:pop()
+
+        local dst = m1:transformSinglePoint(BLPoint(x, y))
+
+        vm.OperandStack:push(dst.x)
+        vm.OperandStack:push(dst.y)
+    end
+
+    return true
 end
 exports.itransform = itransform
 
@@ -668,7 +773,27 @@ exports.setfont = setfont
 
 --rootfont
 --currentfont
---selectfont
+
+--setfont
+local function selectfont(vm)
+    -- findfont
+    -- scalefont
+    -- setfont
+    local scale = vm.OperandStack:pop()
+    local key = vm.OperandStack:pop()
+
+    -- findfont
+    local face = vm.Driver:findFontFace(key)
+    
+    -- scalefont
+    local font = face:createFont(size)
+    
+    -- setfont
+    vm.Driver:setFont(font)
+
+    return true
+end
+exports.selectfont = selectfont
 
 --show
 local function show(vm)

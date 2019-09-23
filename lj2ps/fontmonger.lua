@@ -211,7 +211,7 @@ end
 
 -- Get a specific font object at a specific size
 function FontMonger.getFont(self, family, subfamily, size)
-    --print("FontMonger.getFont, size: ", family, subfamily, size)
+    print("FontMonger.getFont, size: ", family, subfamily, size)
     
     subfamily = subfamily or "regular"
     local fontSize = size / self.unitsPerInch * self.dpi
