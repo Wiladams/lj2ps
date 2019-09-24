@@ -138,6 +138,7 @@ function Blend2DDriver.gRestore(self)
     return true
 end
 
+
 --[[
     Graphics State
 ]]
@@ -450,6 +451,17 @@ end
 --[[
     Font Operators
 ]]
+function Blend2DDriver.stringWidth(self, str)
+
+    local font = self.CurrentState.Font
+    --print("Blend2DDriver.stringwidth: ", str, font)
+    local dx, dy = font:measureText(str)
+
+    --print("dx, dy: ", dx, dy)
+
+    return dx, dy
+end
+
 function Blend2DDriver.show(self, pos, txt)
     local dst = BLPoint(pos[1],pos[2])
     local font = self.CurrentState.Font

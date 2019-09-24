@@ -815,7 +815,20 @@ exports.show = show
 --xyshow
 --yshow
 --glyphshow
+
 --stringwidth
+--string  stringwidth  wx  wy
+local function stringwidth(vm)
+    local str = vm.OperandStack:pop()
+    local wx, wy = vm.Driver:stringWidth(str)
+
+    vm.OperandStack:push(wx)
+    vm.OperandStack:push(wy)
+
+    return true
+end
+exports.stringwidth = stringwidth
+
 --cshow
 --kshow
 
