@@ -334,7 +334,7 @@ local function get(vm)
     local idx = vm.OperandStack:pop()
     local arr = vm.OperandStack:pop()
     local value = arr[idx]
-print('GET: ', arr, idx, value)
+--print('GET: ', arr, idx, value)
 
     vm.OperandStack:push(value)
 
@@ -359,7 +359,6 @@ exports.put = put
 -- getinterval
 -- putinterval
 
--- forall
 
 -- Dictionary Operations
 

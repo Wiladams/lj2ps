@@ -323,6 +323,7 @@ end
 --]]
 --newpath
 function Blend2DDriver.newPath(self)
+    --print("Blend2DDriver.newPath()")
     self.CurrentState.Path = BLPath()
     
     return true
@@ -335,8 +336,7 @@ end
 
 --moveto
 function Blend2DDriver.moveTo(self, x, y)
-    --print("Blend2DDriver.moveTo: ", x, y)
-    self.CurrentState.Path = BLPath()
+    --self:newPath();
     self.CurrentState.Path:moveTo(x,y)
 
 
