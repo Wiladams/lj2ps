@@ -565,6 +565,19 @@ end
 exports.arcn = arcn
 
 --arct
+local function arct(vm)
+    local r = vm.OperandStack:pop()
+    local y2 = vm.OperandStack:pop()
+    local x2 = vm.OperandStack:pop()
+    local y1 = vm.OperandStack:pop()
+    local x1 = vm.OperandStack:pop()
+
+    vm.Driver:arct(x1, y1, x2,y2, r)
+
+    return true
+end
+exports.arct = arct
+
 --arcto
 
 --curveto

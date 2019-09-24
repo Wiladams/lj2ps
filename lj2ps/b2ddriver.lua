@@ -364,7 +364,21 @@ function Blend2DDriver.arc(self, x, y, r, angle1, angle2)
 end
 
 --arcn
+function Blend2DDriver.arn(self, x, y, r, angle1, angle2)
+    -- blPathArcTo(BLPathCore* self, double x, double y, double rx, double ry, double start, double sweep, _Bool forceMoveTo)
+    local sweep = math.rad(angle2 - angle1)
+    self.CurrentState.Path:arcTo(x, y, r, r, math.rad(angle1), sweep, true)
+    
+    return true
+end
+
 --arct
+function Blend2DDriver.arc(self, x1, y1, x2, y2, r)
+    self.CurrentState.Path:arcTo(x, y, r, r, math.rad(angle1), sweep, true)
+    
+    return true
+end
+
 --arcto
 
 --curveto
