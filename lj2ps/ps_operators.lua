@@ -357,8 +357,32 @@ exports.put = put
 
 
 -- getinterval
--- putinterval
+-- array  index  count getinterval  subarray
+local function getinterval(vm)
+    local count = vm.OperandStack:pop()
+    local index = vm.OperandStack:pop()
+    local array1 = vm.OperandStack:pop()
 
+    local subarray = array1:getInterval(index, count)
+
+    vm.OperandStack:push(subarray)
+    
+    return true
+end
+exports.getinterval = getinterval
+
+-- putinterval
+-- array1  index  array2 putinterval
+local function putinterval(vm)
+    local array2 = vm.OperandStack:pop()
+    local index = vm.OperandStack:pop()
+    local array1 = vm.OperandStack:pop()
+
+    array1:putInterval(index, array2)
+
+    return true
+end
+exports.putinterval = putinterval
 
 -- Dictionary Operations
 
@@ -897,6 +921,7 @@ local function cvx(vm)
     if type(athing == "table") then
         athing.isExecutable = true
         print("CVX: ",athing, athing.isExecutable, athing.kind)
+        -- need to create a token that is executable?
     end
 
     vm.OperandStack:push(athing)
