@@ -70,15 +70,17 @@ local Array_mt = {
                 return arr
             end
         elseif idx == "putInterval" then
-            return function(self, idx, other)
-                local count = math.min(#other, self.capacity-idx)
-                --print("putinterval, #: ", idx, count)
+            return function(self, offset, other)
+                local count = math.min(#other, self.capacity-offset)
+                --print("Array.putInterval, #: ", self:length(), offset, count)
                 if count < 1 then
                     return self
                 end
 
                 for i=0,count-1 do
-                    self[idx+i] = other[i];
+                    local value = other[i]
+                    --print("  ", value)
+                    self[offset+i] = value;
                 end
 
                 return self
@@ -86,7 +88,7 @@ local Array_mt = {
         elseif idx == "elements" then
             -- iterator over elements in array
             local function gen(param, state)
-                --print("gen: ", param, state, param:length())
+                --print("array.elements.gen: ", param, state, param:length())
                 if state >= param:length() then
                     return nil
                 end

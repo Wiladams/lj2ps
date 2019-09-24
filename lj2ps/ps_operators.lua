@@ -377,7 +377,7 @@ local function putinterval(vm)
     local array2 = vm.OperandStack:pop()
     local index = vm.OperandStack:pop()
     local array1 = vm.OperandStack:pop()
-
+--print("putinterval, array2:length(): ", index, array2:length())
     array1:putInterval(index, array2)
 
     return true
@@ -843,6 +843,7 @@ exports["repeat"] = function(vm)
     local n = vm.OperandStack:pop()
     
     for i=1,n do 
+        --print("REPEAT: ", i, n)
         vm:execArray(proc)
     end
 
@@ -872,7 +873,7 @@ local function forall(vm)
     local proc = vm.OperandStack:pop()
     local arr = vm.OperandStack:pop()
 
-    --print("FORALL: ", proc, arr)
+    --print("FORALL: ", proc, arr, arr.kind)
     -- do as coroutine to account for a 'exit'
     local co = coroutine.create(function(vm,proc, arr)
         --print("  ROUTINE: ", vm, proc, arr)

@@ -1,0 +1,7 @@
+%!PS
+% Create Reed-Solomon table
+/rstable 64 64 mul array def
+rstable 0 [64 {0} repeat]   putinterval      % fill row with 64 zeroes
+rstable 64 [0 1 63 {} for] putinterval
+
+rstable { == } forall

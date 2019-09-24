@@ -786,7 +786,7 @@ local function selectfont(vm)
     local face = vm.Driver:findFontFace(key)
     
     -- scalefont
-    local font = face:createFont(size)
+    local font = face:createFont(scale)
     
     -- setfont
     vm.Driver:setFont(font)
