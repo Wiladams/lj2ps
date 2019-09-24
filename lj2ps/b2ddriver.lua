@@ -336,7 +336,7 @@ end
 
 --moveto
 function Blend2DDriver.moveTo(self, x, y)
-    --self:newPath();
+    self:newPath();
     self.CurrentState.Path:moveTo(x,y)
 
 
