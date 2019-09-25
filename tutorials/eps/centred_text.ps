@@ -1,0 +1,13 @@
+%!PS
+
+/show-ctr {
+    dup stringwidth pop
+    -2 div 0
+    rmoveto show
+} def
+
+/Times-Roman 12 selectfont
+200 200 moveto (These lines) show-ctr
+200 170 moveto (are both precisely centred) show-ctr
+
+showpage

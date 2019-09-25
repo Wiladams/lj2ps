@@ -374,9 +374,14 @@ exports.scale = scale
 
 --rotate
 local function rotate(vm)
-    local angle = vm.OperandStack:pop()
-    vm.Driver:rotate(angle)
+    local m = vm.OperandStack:pop()
 
+    if type(m) == "number" then
+        local angle = m
+
+        vm.Driver:rotateBy(angle)
+    end
+    
     return true
 end
 exports.rotate = rotate

@@ -1,0 +1,12 @@
+%!PS
+
+% [a11 a12  a21 a22  tx ty]
+
+% x y scale
+[x 0 0 y 0 0] concat
+
+% x rotate
+[x cos x sin x sin neg x cos 0 0] concat
+
+% x y translate 
+[1 0 0 1 x y] concat

@@ -125,7 +125,7 @@ function Blend2DDriver.findFontFace(self, name)
     --print("Blend2DDriver.findFontFace, name, alias: ", name, alias)
     local fontinfo = self.FontMonger:getFace(alias, subfamily, true)
 
-    --print("Blend2DDriver.findFontFace, fontinfo: ", fontinfo)
+    print("Blend2DDriver.findFontFace, fontinfo: ", alias, fontinfo)
 
     if fontinfo then
         --print("fontinfo.face: ", fontinfo.face)
@@ -157,9 +157,6 @@ function Blend2DDriver.gRestore(self)
     self.DC:restore()
     self.CurrentState.Path = self.StateStack:pop()
     
-    -- pop the graphics stack
-    -- make it current
-    --self:setCurrentState(self.StateStack:pop())
 
     return true
 end
@@ -168,18 +165,6 @@ end
 --[[
     Graphics State
 ]]
-function Blend2DDriver.setCurrentState(self, state)
-    self.CurrentState = state
-    local c = state.Color
-    --print("COLOR Type: ", type(c), c.r, c.g, c.b, c.a)
-    local m = state.CTM
-
-
-    -- apply things, in particular the transform matrix
-    -- color
-    self:setRgbaColor(c.r, c.g, c.b, c.a)
-    self.DC:setMatrix(m)
-end
 
 function Blend2DDriver.clipPath(self)
     return self.ClippingPath
@@ -334,8 +319,15 @@ end
 
 
 --rotate
-function Blend2DDriver.rotate(self, angle)
-    self.DC:rotate(math.rad(angle))
+function Blend2DDriver.rotateBy(self, angle)
+    local rads = math.rad(angle)
+    --local m2 = BLMatrix2D:createRotation(rads, 0,0)
+    --local m1 = self.DC:userMatrix()
+
+    --m2:concat(m1)
+    --m1:concat(m2)
+    --self.DC:setMatrix(m2)
+    self.DC:rotate(rads)
 
     return true
 end

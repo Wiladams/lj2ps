@@ -1,0 +1,13 @@
+%!PS
+% This might demonstrate whether the currentpoint moves
+% with the 'show' operator
+
+100 100 moveto
+/Symbol 36 selectfont (p ) show
+/Times-Roman 36 selectfont (is less than 4) show
+currentpoint pop 100 sub 2 add
+99 99 moveto
+0 rlineto 0 12 rlineto 99 111 lineto
+closepath stroke
+
+showpage
