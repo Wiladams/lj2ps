@@ -20,14 +20,8 @@
 %
 % UUCP {sun,pyramid,cae780,apple}!weitek!wallis
 
-/eschersave save def		% prevent left over side effects
-
-%statusdict begin waittimeout 6000 lt	% if you have a slow printer, you
-%   {0 60 6000 setdefaulttimeouts}	% might need to uncomment this
-%if end
-
 /nlayers 1 def		% 1 takes about 10 minutes on a LW+; 2 takes 4x longer
-/warp 1 def		% 1 -> ellipsoidal distortion; 0 -> flat Euclidean
+/warp 0 def		% 1 -> ellipsoidal distortion; 0 -> flat Euclidean
 /inch {72 mul} def 
 
 /x4 152 def /y4 205.6 def		% 6 fold rotation center of bfly
@@ -233,7 +227,7 @@ def					% = |dx,dy| * sqrt(3)
 	236.5034 373.7279 226.3726 368.0293 226.3726 361 c
 	226.3726 353.9707 236.5034 348.2721 249 348.2721 c
 	FillStroke
-} def				
+} def	
 
 /ncolor 6 def
 /cidx 0 def
@@ -305,7 +299,6 @@ warp 1 eq {				% redefine commands to use Xform
 	} def
 }if
 
-
 /bfly {				% paint 1 butterfly
 	next_color body
 	1 setgray eyes
@@ -351,33 +344,13 @@ def
 	} for
 } def
 
-
 %320 x4 sub 240 y4 sub translate 
 4.25 inch x4 sub 5.5 inch y4 sub translate
 
+bfly
 
-0 setlinewidth
-/N 2 def
-N neg 1 N {
-	/i exch def					% translate to
-	N neg 1 N {					% i*D1 + j*D2
-		/j exch def				% and draw HexCell
-		gsave
-		/dx i D1x mul j D2x mul add def		% translate HexCell by
-		/dy i D1y mul j D2y mul add def		% [dx,dy]
-		/r2 dx dup mul dy dup mul add def	% r^2 = |dx,dy|^2
-		r2 max_r2 lt				% inside radius?
-		{ 					% yes
-		1 r2 max_r2 div sub sqrt 2 div 
-		setlinewidth				% make skinnier lines
-		HexCell					% 6 butterflies
-		}
-		if
-		grestore
-	} for
-} for
+
+
+
 
 showpage
-
-clear cleardictstack
-eschersave restore

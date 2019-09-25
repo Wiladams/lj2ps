@@ -65,6 +65,13 @@ function Blend2DDriver.new(self, obj)
     obj.DC:translate(0,-h)
     obj.DC:scale(scalex,scaley)
 
+    local cpath = BLPath()
+    cpath:moveTo(0,0)
+    cpath:lineTo(obj.inchesWide*72, 0)
+    cpath:lineTo(obj.inchesWide*72, obj.inchesHigh*72)
+    cpath:lineTo(0, obj.inchesHigh*72)
+    cpath:close()
+    obj.ClippingPath = cpath;
 
     -- we push from userToMeta so that this becomes
     -- the baseline transform
@@ -95,9 +102,29 @@ function Blend2DDriver.applyState(self, state)
     self.CurrentState.Font = state.Font;
 end
 
+local fontAliases = {
+    ["times-roman"] = "times new roman";
+    ["helvetica"] = "arial";
+    ["helvetica-boldoblique"] = "arial";
+    ["palatino-italic"] = "palatino linotype";
+}
+
+local function substituteFontName(name)
+
+    local newName = fontAliases[name:lower()]
+    if newName then
+        return newName
+    end
+
+    return name
+end
+
+
 function Blend2DDriver.findFontFace(self, name)
-    --print("Blend2DDriver.findFontFace, name: ", name)
-    local fontinfo = self.FontMonger:getFace(name, subfamily, true)
+    local alias = substituteFontName(name)
+    --print("Blend2DDriver.findFontFace, name, alias: ", name, alias)
+    local fontinfo = self.FontMonger:getFace(alias, subfamily, true)
+
     --print("Blend2DDriver.findFontFace, fontinfo: ", fontinfo)
 
     if fontinfo then
@@ -113,15 +140,14 @@ function Blend2DDriver.setFont(self, font)
 end
 
 function Blend2DDriver.gSave(self)
+    -- use the DrawingContext to store most graphics state
+    -- and save a copy of current path on stack
     -- clone current graphics state
     -- store it on the statestack
     self.DC:save()
     local clonedPath = BLPath()
     clonedPath:assignDeep(self.CurrentState.Path)
     self.StateStack:push(clonedPath)
-
-    --local aclone = self.CurrentState:clone()
-    --self.StateStack:push(aclone)
 
     return true
 end
@@ -153,6 +179,10 @@ function Blend2DDriver.setCurrentState(self, state)
     -- color
     self:setRgbaColor(c.r, c.g, c.b, c.a)
     self.DC:setMatrix(m)
+end
+
+function Blend2DDriver.clipPath(self)
+    return self.ClippingPath
 end
 
 -- setlinewidth
@@ -322,12 +352,27 @@ end
 --[[
 -- Path construction
 --]]
+
+function Blend2DDriver.setPath(self, apath)
+    self.CurrentState.Path = apath
+    
+    return true
+end
+
 --newpath
 function Blend2DDriver.newPath(self)
     --print("Blend2DDriver.newPath()")
     self.CurrentState.Path = BLPath()
     
     return true
+end
+
+-- pathbox
+function Blend2DDriver.pathBox(self)
+    local abox = BLBox()
+    local bResult = self.CurrentState.Path:getBoundingBox(abox)
+    
+    return abox.x0, abox.y0, abox.x1, abox.y1
 end
 
 --currentpoint

@@ -65,9 +65,6 @@ function Interpreter.runStream(self, bs)
             --self.Vm.OperandStack:push(token.value)
         end
 
-        --print("--- stack ---")
-        --self.Vm:pstack()
-        --print("-----")
     end
 end
 
