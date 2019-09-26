@@ -136,6 +136,8 @@ function PSVM.execName(self, name)
             otype == "number" or
             otype == "string" then
             self.OperandStack:push(op)
+        elseif otype == "cdata" then
+            self.OperandStack:push(op)
         elseif otype == "function" then
             -- it's a function operator, so execute it
             op(self)

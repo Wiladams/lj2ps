@@ -105,6 +105,8 @@ end
 local fontAliases = {
     ["times-roman"] = "times new roman";
     ["helvetica"] = "arial";
+    ["helvetica-bold"] = "arial";
+    ["helvetica-oblique"] = "arial";
     ["helvetica-boldoblique"] = "arial";
     ["palatino-italic"] = "palatino linotype";
 }
@@ -352,7 +354,7 @@ end
 
 --newpath
 function Blend2DDriver.newPath(self)
-    print("Blend2DDriver.newPath()")
+    --print("Blend2DDriver.newPath()")
     self.CurrentState.Path = BLPath()
     
     return true
@@ -372,7 +374,12 @@ function Blend2DDriver.getCurrentPosition(self)
 end
 
 --moveto
+-- BUGBUG
+-- doing a newPath here because if we don't the contour won't show up
+-- need to resolve when a new path needs to be created vs a new contour
+-- on an existing path.
 function Blend2DDriver.moveTo(self, x, y)
+    self:newPath()
     self.CurrentState.Path:moveTo(x,y)
 
     return true
@@ -480,15 +487,15 @@ function Blend2DDriver.fill(self)
 end
 
 function Blend2DDriver.rectStroke(self, x, y, width, height)
-    print("rectStroke: ", x, y, width, height)
+    --print("rectStroke: ", x, y, width, height)
     self.DC:strokeRectD(BLRect(x, y, width, height))
 
     return true
 end
 
 function Blend2DDriver.stroke(self)
-    print("Blend2DDriver.stroke(), path size: ", self.CurrentState.Path:getSize())
-
+    --print("Blend2DDriver.stroke(), path size: ", self.CurrentState.Path:getSize())
+--[[
     -- DEBUG --
     local boxOut = BLBox()
     self.CurrentState.Path:getBoundingBox(boxOut)
@@ -499,7 +506,7 @@ function Blend2DDriver.stroke(self)
 
     self:rectStroke(boxOut.x0, boxOut.y0, w, h)
     -- --------
-
+--]]
     self.DC:strokePathD(self.CurrentState.Path);
     
     --self:newPath();

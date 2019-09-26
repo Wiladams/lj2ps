@@ -1,0 +1,70 @@
+%!PS
+
+%---- Variables
+/MainFont /Helvetica-Bold findfont 15 scalefont def
+/SloganFont /Helvetica-Oblique findfont 7 scalefont def
+/OwnerFont /Helvetica findfont 10 scalefont def
+
+%---- Procedures
+/rightshow
+{
+    dup stringwidth pop
+    120 exch sub
+    0 rmoveto
+    show
+} def
+
+/CardOutline
+{
+    newpath
+    90 90 moveto
+    0 144 rlineto
+    252 0 rlineto
+    0 -144 rlineto
+    closepath
+    0.5 setlinewidth
+    stroke
+} def
+
+/doBorder {
+    99 99 moveto
+    0 126 rlineto
+    234 0 rlineto
+    0 -125 rlineto 
+    closepath 
+    2 setlinewidth 
+    stroke 
+} def
+
+/Diamond {
+newpath
+207 216 moveto 
+36 -54 rlineto 
+-36 -54 rlineto 
+-36 54 rlineto 
+closepath
+.8 setgray fill
+} def
+
+/doText {
+0 setgray
+90 180 moveto 
+MainFont setfont
+(Diamond Cafe) rightshow 
+90 168 moveto 
+SloganFont setfont 
+("The Club of Lonely Hearts") rightshow 
+216 126 moveto
+OwnerFont setfont
+(Sam Spade) show
+216 111 moveto 
+(Owner) show
+} def
+
+%---- Main Program
+CardOutline
+doBorder
+Diamond
+doText
+
+showpage
