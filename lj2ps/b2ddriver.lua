@@ -156,7 +156,6 @@ function Blend2DDriver.gRestore(self)
     
     self.DC:restore()
     self.CurrentState.Path = self.StateStack:pop()
-    
 
     return true
 end
@@ -353,7 +352,7 @@ end
 
 --newpath
 function Blend2DDriver.newPath(self)
-    --print("Blend2DDriver.newPath()")
+    print("Blend2DDriver.newPath()")
     self.CurrentState.Path = BLPath()
     
     return true
@@ -374,9 +373,7 @@ end
 
 --moveto
 function Blend2DDriver.moveTo(self, x, y)
-    self:newPath();
     self.CurrentState.Path:moveTo(x,y)
-
 
     return true
 end
@@ -476,17 +473,36 @@ end
 
 function Blend2DDriver.fill(self)
     self.DC:fillPathD(self.CurrentState.Path)
+
+    --self:newPath();
+
     return true
 end
 
 function Blend2DDriver.rectStroke(self, x, y, width, height)
+    print("rectStroke: ", x, y, width, height)
     self.DC:strokeRectD(BLRect(x, y, width, height))
 
     return true
 end
 
 function Blend2DDriver.stroke(self)
+    print("Blend2DDriver.stroke(), path size: ", self.CurrentState.Path:getSize())
+
+    -- DEBUG --
+    local boxOut = BLBox()
+    self.CurrentState.Path:getBoundingBox(boxOut)
+    local x = boxOut.x0
+    local y = boxOut.y0
+    local w = boxOut.x1 - boxOut.x0
+    local h = boxOut.y1 - boxOut.y0
+
+    self:rectStroke(boxOut.x0, boxOut.y0, w, h)
+    -- --------
+
     self.DC:strokePathD(self.CurrentState.Path);
+    
+    --self:newPath();
 
     return true
 end
