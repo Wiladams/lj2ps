@@ -310,6 +310,20 @@ exports.matrix = matrix
 
 --initmatrix
 --identmatix
+local function identmatrix(vm)
+    local m = vm.OperandStack:pop()
+    m[0]=1
+    m[1]=0
+    m[2]=0
+    m[3]=1
+    m[4]=0
+    m[5]=0
+
+    vm.OperandStack:push(m)
+
+    return true
+end
+exports.identmatrix  =identmatrix
 
 --defaultmatrix
 --currentmatrix
