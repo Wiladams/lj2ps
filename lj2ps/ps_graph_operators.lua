@@ -388,9 +388,14 @@ exports.scale = scale
 
 --rotate
 local function rotate(vm)
-    local angle = vm.OperandStack:pop()
-    vm.Driver:rotate(angle)
+    local m = vm.OperandStack:pop()
 
+    if type(m) == "number" then
+        local angle = m
+
+        vm.Driver:rotateBy(angle)
+    end
+    
     return true
 end
 exports.rotate = rotate
@@ -642,12 +647,15 @@ exports.closepath = closepath
 
 --clippath
 local function clippath(vm)
+    local cpath = vm.Driver:clipPath()
+    vm.Driver:setPath(cpath)
+    
     return true
 end
 exports.clippath = clippath
 
 --setbbox
---pathbbox
+
 local function setbbox(vm)
     -- setclip based on specified
     -- rectangular bounds
@@ -658,11 +666,24 @@ local function setbbox(vm)
     
     local w = urx-llx
     local h = ury-lly
-    vm.Driver:clipRectI(BLRectI(llx,lly,urx-llx, ury-lly))
+    vm.Driver.DC:clipRectI(BLRectI(llx,lly,urx-llx, ury-lly))
 
     return true
 end
 exports.setbbox = setbbox
+
+--pathbbox
+-- pathbbox  llx  lly  urx  ury
+local function pathbbox(vm)
+    local x1,y1,x2,y2 = vm.Driver:pathBox()
+    vm.OperandStack:push(x1)
+    vm.OperandStack:push(y1)
+    vm.OperandStack:push(x2)
+    vm.OperandStack:push(y2)
+
+    return true
+end
+exports.pathbbox = pathbbox
 
 --pathforall
 --upath
@@ -701,6 +722,13 @@ end
 exports.fill = fill
 
 --eofill
+-- use even odd rule
+local function eofill(vm)
+    vm.Driver:fill()
+    return true;
+end
+exports.eofill = eofill
+
 --rectstroke
 local function rectstroke(vm)
     local height = vm.OperandStack:pop()
@@ -757,7 +785,7 @@ local function findfont(vm)
     -- find font based on family name
     local face = vm.Driver:findFontFace(key)
     
-    print("findfont, face: ", key, face)
+    --print("findfont, face: ", key, face)
 
     -- put that object on the stack
     if face then

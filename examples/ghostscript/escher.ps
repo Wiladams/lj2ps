@@ -289,11 +289,10 @@ def
 	y Scale mul y0 add 				% [x0+x*s, y0+y*s]
 } def
 
-%/Helvetica findfont 8 scalefont setfont 
-%/Arial findfont 8 scalefont setfont 
-%4.25 inch 0.5 inch moveto 
-%(RHW) stringwidth pop -0.5 mul 0 rmoveto
-%(RHW) show				% autograph
+/Helvetica findfont 8 scalefont setfont 
+4.25 inch 0.5 inch moveto 
+(RHW) stringwidth pop -0.5 mul 0 rmoveto
+(RHW) show				% autograph
 
 warp 1 eq {				% redefine commands to use Xform
 	/moveto { Xform //moveto} def

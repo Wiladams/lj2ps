@@ -65,6 +65,13 @@ function Blend2DDriver.new(self, obj)
     obj.DC:translate(0,-h)
     obj.DC:scale(scalex,scaley)
 
+    local cpath = BLPath()
+    cpath:moveTo(0,0)
+    cpath:lineTo(obj.inchesWide*72, 0)
+    cpath:lineTo(obj.inchesWide*72, obj.inchesHigh*72)
+    cpath:lineTo(0, obj.inchesHigh*72)
+    cpath:close()
+    obj.ClippingPath = cpath;
 
     -- we push from userToMeta so that this becomes
     -- the baseline transform
@@ -95,10 +102,32 @@ function Blend2DDriver.applyState(self, state)
     self.CurrentState.Font = state.Font;
 end
 
+local fontAliases = {
+    ["times-roman"] = "times new roman";
+    ["helvetica"] = "arial";
+    ["helvetica-bold"] = "arial";
+    ["helvetica-oblique"] = "arial";
+    ["helvetica-boldoblique"] = "arial";
+    ["palatino-italic"] = "palatino linotype";
+}
+
+local function substituteFontName(name)
+
+    local newName = fontAliases[name:lower()]
+    if newName then
+        return newName
+    end
+
+    return name
+end
+
+
 function Blend2DDriver.findFontFace(self, name)
-    --print("Blend2DDriver.findFontFace, name: ", name)
-    local fontinfo = self.FontMonger:getFace(name, subfamily, true)
-    --print("Blend2DDriver.findFontFace, fontinfo: ", fontinfo)
+    local alias = substituteFontName(name)
+    --print("Blend2DDriver.findFontFace, name, alias: ", name, alias)
+    local fontinfo = self.FontMonger:getFace(alias, subfamily, true)
+
+    print("Blend2DDriver.findFontFace, fontinfo: ", alias, fontinfo)
 
     if fontinfo then
         --print("fontinfo.face: ", fontinfo.face)
@@ -113,15 +142,14 @@ function Blend2DDriver.setFont(self, font)
 end
 
 function Blend2DDriver.gSave(self)
+    -- use the DrawingContext to store most graphics state
+    -- and save a copy of current path on stack
     -- clone current graphics state
     -- store it on the statestack
     self.DC:save()
     local clonedPath = BLPath()
     clonedPath:assignDeep(self.CurrentState.Path)
     self.StateStack:push(clonedPath)
-
-    --local aclone = self.CurrentState:clone()
-    --self.StateStack:push(aclone)
 
     return true
 end
@@ -130,10 +158,6 @@ function Blend2DDriver.gRestore(self)
     
     self.DC:restore()
     self.CurrentState.Path = self.StateStack:pop()
-    
-    -- pop the graphics stack
-    -- make it current
-    --self:setCurrentState(self.StateStack:pop())
 
     return true
 end
@@ -142,17 +166,9 @@ end
 --[[
     Graphics State
 ]]
-function Blend2DDriver.setCurrentState(self, state)
-    self.CurrentState = state
-    local c = state.Color
-    --print("COLOR Type: ", type(c), c.r, c.g, c.b, c.a)
-    local m = state.CTM
 
-
-    -- apply things, in particular the transform matrix
-    -- color
-    self:setRgbaColor(c.r, c.g, c.b, c.a)
-    self.DC:setMatrix(m)
+function Blend2DDriver.clipPath(self)
+    return self.ClippingPath
 end
 
 -- setlinewidth
@@ -304,8 +320,15 @@ end
 
 
 --rotate
-function Blend2DDriver.rotate(self, angle)
-    self.DC:rotate(math.rad(angle))
+function Blend2DDriver.rotateBy(self, angle)
+    local rads = math.rad(angle)
+    --local m2 = BLMatrix2D:createRotation(rads, 0,0)
+    --local m1 = self.DC:userMatrix()
+
+    --m2:concat(m1)
+    --m1:concat(m2)
+    --self.DC:setMatrix(m2)
+    self.DC:rotate(rads)
 
     return true
 end
@@ -322,6 +345,13 @@ end
 --[[
 -- Path construction
 --]]
+
+function Blend2DDriver.setPath(self, apath)
+    self.CurrentState.Path = apath
+    
+    return true
+end
+
 --newpath
 function Blend2DDriver.newPath(self)
     --print("Blend2DDriver.newPath()")
@@ -330,16 +360,27 @@ function Blend2DDriver.newPath(self)
     return true
 end
 
+-- pathbox
+function Blend2DDriver.pathBox(self)
+    local abox = BLBox()
+    local bResult = self.CurrentState.Path:getBoundingBox(abox)
+    
+    return abox.x0, abox.y0, abox.x1, abox.y1
+end
+
 --currentpoint
 function Blend2DDriver.getCurrentPosition(self)
     return self.CurrentState:getPosition()
 end
 
 --moveto
+-- BUGBUG
+-- doing a newPath here because if we don't the contour won't show up
+-- need to resolve when a new path needs to be created vs a new contour
+-- on an existing path.
 function Blend2DDriver.moveTo(self, x, y)
-    self:newPath();
+    self:newPath()
     self.CurrentState.Path:moveTo(x,y)
-
 
     return true
 end
@@ -439,17 +480,36 @@ end
 
 function Blend2DDriver.fill(self)
     self.DC:fillPathD(self.CurrentState.Path)
+
+    --self:newPath();
+
     return true
 end
 
 function Blend2DDriver.rectStroke(self, x, y, width, height)
+    --print("rectStroke: ", x, y, width, height)
     self.DC:strokeRectD(BLRect(x, y, width, height))
 
     return true
 end
 
 function Blend2DDriver.stroke(self)
+    --print("Blend2DDriver.stroke(), path size: ", self.CurrentState.Path:getSize())
+--[[
+    -- DEBUG --
+    local boxOut = BLBox()
+    self.CurrentState.Path:getBoundingBox(boxOut)
+    local x = boxOut.x0
+    local y = boxOut.y0
+    local w = boxOut.x1 - boxOut.x0
+    local h = boxOut.y1 - boxOut.y0
+
+    self:rectStroke(boxOut.x0, boxOut.y0, w, h)
+    -- --------
+--]]
     self.DC:strokePathD(self.CurrentState.Path);
+    
+    --self:newPath();
 
     return true
 end

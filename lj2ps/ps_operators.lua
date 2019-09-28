@@ -167,7 +167,9 @@ exports.mul = mul
 local function div(vm)
     local num2 = vm.OperandStack:pop()
     local num1 = vm.OperandStack:pop()
-    vm.OperandStack:push(num1/num2)
+    local value = num1/num2
+
+    vm.OperandStack:push(value)
     
     return true
 end
@@ -674,7 +676,11 @@ exports.ne = ne
 local function gt(vm)
     local any2 = vm.OperandStack:pop()
     local any1 = vm.OperandStack:pop()
-    vm.OperandStack:push(any1 > any2)
+
+    local value = any1 > any2
+--print("GT: ", any1, any2, value)
+
+    vm.OperandStack:push(value)
 
     return true
 end

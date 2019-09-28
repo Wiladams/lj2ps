@@ -174,46 +174,7 @@ lexemeMap[B'%'] = function(self, bs)
     end
 end
 
--- scan a number
--- something got us here, it was either
--- a digit, a '-'
-local function lex_number(self, bs)
-    local starting = bs:tell();
-    local startPtr = bs:getPositionPointer();
 
-    -- get through all digits
-    -- -, digit, ., E, digits
-    if bs:peekOctet() == B'+' or bs:peekOctet() == B'-' then
-        bs:skip(1)
-    end
-
-    -- next, MUST be 0 or [1..9]
-    while digitChars[bs:peekOctet()] do
-        bs:skip(1);
-    end
-
-    -- look for fraction part
-    --print("lex_number: ", string.char(bs:peekOctet()), string.char(bs:peekOctet(1)))
-    if (bs:peekOctet() == B'.') then
-        if digitChars[bs:peekOctet(1)] then
-            bs:skip(1);
-
-            while digitChars[bs:peekOctet()] do
-                bs:skip(1);
-            end
-        elseif whitespaceChars[bs:peekOctet(1)] then
-            bs:skip(1)
-        end
-    end
-
-    local ending = bs:tell();
-    local len = ending - starting;
-
-    local value = tonumber(ffi.string(startPtr, len))
-    
-    return value;
-
-end
 
 
 
@@ -251,6 +212,51 @@ local function lex_name(self, bs)
 
     return tok
 end
+
+-- scan a number
+-- something got us here, it was either
+-- a digit, a '-'
+local function lex_number(self, bs)
+    local starting = bs:tell();
+    local startPtr = bs:getPositionPointer();
+
+    -- get through all digits
+    -- -, digit, ., E, digits
+    if bs:peekOctet() == B'+' or bs:peekOctet() == B'-' then
+        bs:skip(1)
+    end
+
+    -- next, MUST be 0 or [1..9]
+    while digitChars[bs:peekOctet()] do
+        bs:skip(1);
+    end
+
+    -- look for fraction part
+    --print("lex_number: ", string.char(bs:peekOctet()), string.char(bs:peekOctet(1)))
+    if (bs:peekOctet() == B'.') then
+        if digitChars[bs:peekOctet(1)] then
+            bs:skip(1);
+
+            while digitChars[bs:peekOctet()] do
+                bs:skip(1);
+            end
+        else
+            return lex_name(self, bs)
+        end
+    end
+
+    local ending = bs:tell();
+    local len = ending - starting;
+
+    local str = ffi.string(startPtr, len)
+    local value = tonumber(str)
+
+    --print("LEX_NUMBER: ", starting, len, str, value)
+    
+    return value;
+
+end
+
 
 lexemeMap[B'/'] = function(self, bs) 
     --print("LITERAL")

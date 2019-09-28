@@ -84,7 +84,8 @@ function PSVM.new(self, obj)
     -- setup system dictionary
     ops["true"] = true
     ops["false"] = false
-
+    ops[".max"] = 72*11
+    
     obj.DictionaryStack:pushDictionary(ops)     -- systemdict, should contain system operators
     obj.DictionaryStack:pushDictionary(gops)     -- graphics operators
     
@@ -134,6 +135,8 @@ function PSVM.execName(self, name)
         if otype == "boolean" or
             otype == "number" or
             otype == "string" then
+            self.OperandStack:push(op)
+        elseif otype == "cdata" then
             self.OperandStack:push(op)
         elseif otype == "function" then
             -- it's a function operator, so execute it
