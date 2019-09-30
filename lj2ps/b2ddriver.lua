@@ -591,6 +591,23 @@ function Blend2DDriver.stringWidth(self, str)
     return dx, dy
 end
 
+function Blend2DDriver.charPath(self, str)
+    local pos = self:getCurrentPosition()
+    local dst = BLPoint(pos[1],pos[2])
+    local font = self.CurrentState.Font
+
+    -- blFontShape(const BLFontCore* self, BLGlyphBufferCore* gb)
+    -- blFontGetGlyphOutlines(const BLFontCore* self, uint32_t glyphId, const BLMatrix2D* userMatrix, BLPathCore* out, BLPathSinkFunc sink, void* closure) ;
+    -- blFontGetGlyphRunOutlines(const BLFontCore* self, const BLGlyphRun* glyphRun, const BLMatrix2D* userMatrix, BLPathCore* out, BLPathSinkFunc sink, void* closure) ;
+    
+    local gb = BLGlyphBuffer()
+    gb:setText(str)
+    C.blFontShape(font, gb)
+    local glyphRun = gb.glyphRun;
+    local out = BLPath()
+    C.blFontGetGlyphRunOutlines(font, glyphRun, userMatrix, out, sink, closure)
+end
+
 function Blend2DDriver.show(self, pos, txt)
     local dst = BLPoint(pos[1],pos[2])
     local font = self.CurrentState.Font
@@ -598,6 +615,7 @@ function Blend2DDriver.show(self, pos, txt)
     --print("Blend2DDriver.show: ", dst, font, txt, #txt)
 
     -- need to unflip temporarirly
+    -- or the text will be upside down
     self.DC:save()
     self.DC:translate(pos[1], pos[2])
     self.DC:scale(1,-1)

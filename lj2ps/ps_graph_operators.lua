@@ -643,6 +643,16 @@ exports.closepath = closepath
 --strokepath
 --ustrokepath
 --charpath
+-- string  bool  charpath -
+local function charpath(vm)
+    local abool = vm.OperandStack:pop()
+    local str = vm.OperandStack:pop()
+    -- use current font to get outline of string
+    
+    return true
+end
+exports.charpath = charpath
+
 --uappend
 
 --clippath
