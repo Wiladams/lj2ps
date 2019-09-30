@@ -2,7 +2,12 @@
 
 2 setlinewidth
 
-19 { 0 0 moveto 100 0 lineto 10 rotate } repeat
+% the problem here is with transformation
+% blend2d only applies transformation at time of stroke
+% Postscript need transformation to occur at time
+% of path construction
+%19 { 0 0 moveto 100 0 lineto 10 rotate } repeat
+10 10 100 { dup moveto 200 0 rlineto } for
 stroke
 
 showpage
