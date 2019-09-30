@@ -57,6 +57,35 @@ local function test_concat()
     print(x1,y1)
 end
 
+local function test_userspace()
+    local w = 8.5 * 192
+    local h = 11 * 192
+
+
+    local scalex = 192 / 72
+    local scaley = 192 / 72
+    --print("SCALE: ", scalex, scaley)
+    local m = Matrix:createIdentity()
+    m:scale(1,-1)
+    m:translate(0,-h)
+    m:scale(scalex, scaley)
+
+    local ox, oy = m:transformPoint(0,0)
+    print("Origin: (0,0)", ox, oy)
+    local x, y = m:transformPoint(72,72)
+    print("1in square (72,72) ", x, y)
+end
+
+local function test_clone()
+    local m1 = Matrix:createScaling(3.2, 5)
+    local m2 = m1:clone()
+
+    print("m1")
+    print(m1)
+    print("m2")
+    print(m2)
+end
+
 local function test_map()
     print("==== test_map ====")
     print("map: 0,13")
@@ -64,9 +93,11 @@ local function test_map()
     print("y: ", y)
 end
 
-test_map()
+--test_clone()
+--test_map()
 --test_identity()
 --test_translation()
 --test_rotation()
 --test_scale()
 --test_concat()
+test_userspace()

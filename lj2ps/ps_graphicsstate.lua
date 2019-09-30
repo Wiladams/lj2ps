@@ -3,6 +3,8 @@
 local ps_common = require("lj2ps.ps_common")
 local deepCopy = ps_common.deepCopy
 local Stack = ps_common.Stack
+local Matrix = require("lj2ps.ps_matrix")
+
 local b2d = require("blend2d.blend2d")
 
 --[[
@@ -46,11 +48,11 @@ local GraphicsState_mt = {
 }
 
 function GraphicsState.assign(self, other)
-    self.CTM = BLMatrix2D(other.CTM);                   -- Need a copy of the matrix object
-    self.Path:assignDeep(other.Path);                   -- Need a copy of the path object
+    self.CTM = Matrix(other.CTM);                       -- Need a copy of the matrix object
+    self.CurrentFigure:assignDeep(other.CurrentFigure)
     self.ClippingPath = deepCopy(other.ClippingPath);
     self.ColorSpace = deepCopy(other.ColorSpace);
-    self.Color = BLRgba32(other.Color);                           -- Need copy of font info
+    self.Color = BLRgba32(other.Color);                 -- Need copy of font info
     self.Flat = other.Flat;
     self.Font = deepCopy(other.Font);
     self.LineWidth = other.LineWidth;
@@ -70,14 +72,16 @@ function GraphicsState.new(self)
     -- BUGBUG, show there be fields like this, or should
     -- it just implement something more specific to the drawing
     -- driver it will connect to?
+    -- The drawing driver should be able to hydrate/dehydrate this structure
     -- These attributes will need to be reflected in the driver anyway
     -- so it might be easier to simply translate going in and out through
     -- the various set/get calls.
     local obj = {
         -- device independent
-        CTM = BLMatrix2D:createIdentity();
-        Position = BLPoint();               -- start origin (0,0)
-        Path = BLPath();                -- start with default path
+        CTM = Matrix:createIdentity();
+        Position = BLPoint();           -- start origin (0,0)
+        --Path = BLPath();                -- start with default path
+        CurrentFigure = BLPath();       -- start with an empty figure
         ClippingPath = nil;
         ClippingPathStack = Stack();
         ColorSpace = nil;
@@ -112,19 +116,20 @@ end
 function GraphicsState.clone(self)
     local newstate = GraphicsState()
     newstate:assign(self)
+    
     return newstate
 end
 
 -- setposition
 -- currentposition
 function GraphicsState.setPosition(self, x, y)
-    self.Path:moveTo(x,y)
+    self.CurrentContour:moveTo(x,y)
     return true
 end
 
 function GraphicsState.getPosition(self)
     local vtxOut = BLPoint()
-    self.Path:getLastVertex(vtxOut)
+    self.CurrentContour:getLastVertex(vtxOut)
 
     return {vtxOut.x, vtxOut.y}
 end
@@ -132,7 +137,9 @@ end
 -- setpath
 -- currentpath
 function GraphicsState.setPath(self, path)
-    self.Path = path
+    print("GraphicsState.setPath - BEGIN")
+    self.CurrentContour = path
+
     return true
 end
 

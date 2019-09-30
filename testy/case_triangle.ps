@@ -1,0 +1,40 @@
+%!PS
+
+/CardOutline
+{
+    newpath
+    90 90 moveto
+    0 144 rlineto
+    252 0 rlineto
+    0 -144 rlineto
+    closepath
+    0.5 setlinewidth
+    stroke
+} def
+
+/doBorder {
+    99 99 moveto
+    0 126 rlineto
+    234 0 rlineto
+    0 -125 rlineto 
+    closepath 
+    2 setlinewidth 
+    stroke 
+} def
+
+
+/Diamond {
+newpath
+207 216 moveto 
+36 -54 rlineto 
+-36 -54 rlineto 
+-36 54 rlineto 
+closepath
+.8 setgray fill
+} def
+
+CardOutline
+doBorder
+Diamond
+
+showpage

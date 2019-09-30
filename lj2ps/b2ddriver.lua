@@ -1,4 +1,7 @@
-
+--[[
+    this driver is the connection between the postscript interpreter
+    and the blend2d environment.
+]]
 local ffi = require("ffi")
 local C = ffi.C 
 
@@ -7,18 +10,13 @@ local b2d = require("blend2d.blend2d")
 local FontMonger = require("lj2ps.fontmonger")
 local ps_common = require("lj2ps.ps_common")
 local Stack = ps_common.Stack
-
+local Matrix = require("lj2ps.ps_matrix")
 
 local ops = require("lj2ps.ps_operators")
 local DictionaryStack = require("lj2ps.ps_dictstack")
 local GraphicsState = require("lj2ps.ps_graphicsstate")
 
 
---[[
-    This rendering context assumes it is being run within 
-    the bestwin application.  As such, a DrawingContext
-    object is available globally.
-]]
 
 local Blend2DDriver = {}
 setmetatable(Blend2DDriver, {
@@ -43,10 +41,11 @@ function Blend2DDriver.new(self, obj)
     obj.StateStack = obj.StateStack or Stack();
     obj.FontMonger = obj.FontMonger or FontMonger:new();
     
-    -- Drawing Context
+
     local w = obj.inchesWide * obj.dpi
     local h = obj.inchesHigh * obj.dpi
-
+    
+    -- Create the actual Drawing Context
     obj.img = BLImage(w, h)   -- 8.5" x 11" @ dpi
     obj.DC, err = BLContext(obj.img)
     
@@ -55,16 +54,29 @@ function Blend2DDriver.new(self, obj)
     -- scaling factor, but only obeys the setLineWidth
     obj.DC:setStrokeTransformOrder(C.BL_STROKE_TRANSFORM_ORDER_BEFORE)
 
-    -- set coordinate system for y at the bottom
-    -- use the dpi to scale so that in user space, when
-    -- the user specifies a number, 1 == 1/72 inches (points)
+
+    -- the postscript user space uses units that are 72/inch (practically, printer 'points')
+    -- we want to create scaling factors that take into account the intended dots per inch
+    -- of the device we're rendering to, whether for display on screen, or a printer
+    -- so, the scale makes it such that if the user specified '72' as a number, it should 
+    -- map to whatever was specified as the dpi
     local scalex = obj.dpi / 72
     local scaley = obj.dpi / 72
+
+    -- The Postscript user space coordinate system is like cartesian
+    -- with (0,0) being in the lower left, and y-axis increasing as 
+    -- you go 'up'.  This is opposite if the blend2d native coordinate system
+    -- which has (0,0) at the top left, and y-axis increasing as you go down
+    -- We setup a transform matrix that takes into account the flip of the y-axis
+    -- as well as the scaling to match the dpi.
+    -- We will want to apply this to the coordinates as they are specified
+    -- for path building.
     --print("SCALE: ", scalex, scaley)
     obj.DC:scale(1, -1)
     obj.DC:translate(0,-h)
     obj.DC:scale(scalex,scaley)
 
+    -- We want to keep around a clipping path
     local cpath = BLPath()
     cpath:moveTo(0,0)
     cpath:lineTo(obj.inchesWide*72, 0)
@@ -127,7 +139,7 @@ function Blend2DDriver.findFontFace(self, name)
     --print("Blend2DDriver.findFontFace, name, alias: ", name, alias)
     local fontinfo = self.FontMonger:getFace(alias, subfamily, true)
 
-    print("Blend2DDriver.findFontFace, fontinfo: ", alias, fontinfo)
+    --print("Blend2DDriver.findFontFace, fontinfo: ", alias, fontinfo)
 
     if fontinfo then
         --print("fontinfo.face: ", fontinfo.face)
@@ -148,7 +160,7 @@ function Blend2DDriver.gSave(self)
     -- store it on the statestack
     self.DC:save()
     local clonedPath = BLPath()
-    clonedPath:assignDeep(self.CurrentState.Path)
+    clonedPath:assignDeep(self.CurrentState.CurrentFigure)
     self.StateStack:push(clonedPath)
 
     return true
@@ -157,7 +169,7 @@ end
 function Blend2DDriver.gRestore(self)
     
     self.DC:restore()
-    self.CurrentState.Path = self.StateStack:pop()
+    self.CurrentState.CurrentFigure = self.StateStack:pop()
 
     return true
 end
@@ -346,24 +358,72 @@ end
 -- Path construction
 --]]
 
+--newpath
 function Blend2DDriver.setPath(self, apath)
-    self.CurrentState.Path = apath
-    
+    self.CurrentState.CurrentFigure = apath
+
     return true
 end
 
---newpath
-function Blend2DDriver.newPath(self)
-    --print("Blend2DDriver.newPath()")
-    self.CurrentState.Path = BLPath()
-    
+
+
+
+
+
+--[[
+-- A contour is a sub-assembly of a figure.  
+    Several contours can be added to a figure, and then
+    the entire figure can be stroked or filled.
+    Initiation of a contour is implied with a moveTo
+
+--]]
+function Blend2DDriver.attachCurrentContour(self)
+    if self.CurrentState.CurrentContour ~= nil then
+        self.CurrentState.CurrentFigure:addPath(self.CurrentState.CurrentContour, nil)
+        self.CurrentState.CurrentContour = nil
+    end
+
     return true
 end
+
+function Blend2DDriver.newContour(self)
+    --print("newContour - BEGIN, contour: ", self.CurrentState.CurrentContour)
+    -- take existing contour and add it to the 
+    -- current figure
+
+    self:attachCurrentContour()
+
+    -- create a new countour for future contouring commands
+    self.CurrentState.CurrentContour = BLPath()
+
+
+    return true
+end
+
+function Blend2DDriver.closeContour(self)
+    self.CurrentState.CurrentContour:close()
+    self:attachCurrentContour()
+end
+
+function Blend2DDriver.newFigure(self)
+    self.CurrentState.CurrentFigure = BLPath()
+
+    return true
+end
+
+function Blend2DDriver.newPath(self)
+    --print("Blend2DDriver.newPath()")
+    self:newFigure()
+    self.CurrentState.CurrentContour = BLPath()
+
+    return true
+end
+
 
 -- pathbox
 function Blend2DDriver.pathBox(self)
     local abox = BLBox()
-    local bResult = self.CurrentState.Path:getBoundingBox(abox)
+    local bResult = self.CurrentState.CurrentFigure:getBoundingBox(abox)
     
     return abox.x0, abox.y0, abox.x1, abox.y1
 end
@@ -373,14 +433,16 @@ function Blend2DDriver.getCurrentPosition(self)
     return self.CurrentState:getPosition()
 end
 
+--[[
 --moveto
--- BUGBUG
--- doing a newPath here because if we don't the contour won't show up
--- need to resolve when a new path needs to be created vs a new contour
--- on an existing path.
+    moveTo will initiate a new contour on the existing figure.
+    BUGBUG - need to apply CTM to coordinates
+--]]
 function Blend2DDriver.moveTo(self, x, y)
-    self:newPath()
-    self.CurrentState.Path:moveTo(x,y)
+    --print("Blend2DDriver.moveTo: ", x, y)
+    
+    self:newContour()
+    self.CurrentState.CurrentContour:moveTo(x,y)
 
     return true
 end
@@ -388,8 +450,8 @@ end
 --rmoveto
 --lineto
 function Blend2DDriver.lineTo(self, x, y)
-    --print("lineTo: ", x, y)
-    self.CurrentState.Path:lineTo(x,y)
+    --print("Blend2DDriver.lineTo: ", x, y)
+    self.CurrentState.CurrentContour:lineTo(x,y)
 
     return true
 end
@@ -399,7 +461,7 @@ end
 function Blend2DDriver.arc(self, x, y, r, angle1, angle2)
     -- blPathArcTo(BLPathCore* self, double x, double y, double rx, double ry, double start, double sweep, _Bool forceMoveTo)
     local sweep = math.rad(angle2 - angle1)
-    self.CurrentState.Path:arcTo(x, y, r, r, math.rad(angle1), sweep, true)
+    self.CurrentState.CurrentContour:arcTo(x, y, r, r, math.rad(angle1), sweep, true)
     
     return true
 end
@@ -408,15 +470,15 @@ end
 function Blend2DDriver.arn(self, x, y, r, angle1, angle2)
     -- blPathArcTo(BLPathCore* self, double x, double y, double rx, double ry, double start, double sweep, _Bool forceMoveTo)
     local sweep = math.rad(angle2 - angle1)
-    self.CurrentState.Path:arcTo(x, y, r, r, math.rad(angle1), sweep, true)
-    
+    self.CurrentState.CurrentContour:arcTo(x, y, r, r, math.rad(angle1), sweep, true)
+
     return true
 end
 
 --arct
-function Blend2DDriver.arc(self, x1, y1, x2, y2, r)
-    self.CurrentState.Path:arcTo(x, y, r, r, math.rad(angle1), sweep, true)
-    
+function Blend2DDriver.arct(self, x1, y1, x2, y2, r)
+    self.CurrentState.CurrentContour:arcTo(x, y, r, r, math.rad(angle1), sweep, true)
+
     return true
 end
 
@@ -425,14 +487,15 @@ end
 --curveto
 --rcurveto
 function Blend2DDriver.curveTo(self, x1,y1,x2,y2,x3,y3)
-    self.CurrentState.Path:cubicTo(x1,y1,x2,y2,x3,y3)
+    self.CurrentState.CurrentContour:cubicTo(x1,y1,x2,y2,x3,y3)
 
     return true
 end
 
 --closepath
 function Blend2DDriver.closePath(self)
-    self.CurrentState.Path:close()
+    self:closeContour()
+
     return true
 end
 
@@ -477,39 +540,33 @@ end
 
 
 
-
+--[[
+    doing a fill implies a reset of the current figure
+    at the very least, there should not be a current figure
+    after a fill, unless the user saved the state
+]]
 function Blend2DDriver.fill(self)
-    self.DC:fillPathD(self.CurrentState.Path)
+    self:attachCurrentContour()
 
-    --self:newPath();
+    self.DC:fillPathD(self.CurrentState.CurrentFigure)
+--print("FILL - END")
+    self:newFigure()
 
     return true
 end
 
 function Blend2DDriver.rectStroke(self, x, y, width, height)
-    --print("rectStroke: ", x, y, width, height)
     self.DC:strokeRectD(BLRect(x, y, width, height))
 
     return true
 end
 
 function Blend2DDriver.stroke(self)
-    --print("Blend2DDriver.stroke(), path size: ", self.CurrentState.Path:getSize())
---[[
-    -- DEBUG --
-    local boxOut = BLBox()
-    self.CurrentState.Path:getBoundingBox(boxOut)
-    local x = boxOut.x0
-    local y = boxOut.y0
-    local w = boxOut.x1 - boxOut.x0
-    local h = boxOut.y1 - boxOut.y0
+    -- need to add current path to the figure before stroking
+    self:attachCurrentContour()
 
-    self:rectStroke(boxOut.x0, boxOut.y0, w, h)
-    -- --------
---]]
-    self.DC:strokePathD(self.CurrentState.Path);
-    
-    --self:newPath();
+    self.DC:strokePathD(self.CurrentState.CurrentFigure);
+    self:newFigure()
 
     return true
 end
@@ -530,8 +587,6 @@ function Blend2DDriver.stringWidth(self, str)
     local font = self.CurrentState.Font
     --print("Blend2DDriver.stringwidth: ", str, font)
     local dx, dy = font:measureText(str)
-
-    --print("dx, dy: ", dx, dy)
 
     return dx, dy
 end
