@@ -647,7 +647,9 @@ exports.closepath = closepath
 local function charpath(vm)
     local abool = vm.OperandStack:pop()
     local str = vm.OperandStack:pop()
+    
     -- use current font to get outline of string
+    vm.Driver:charPath(str)
     
     return true
 end

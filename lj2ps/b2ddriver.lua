@@ -593,19 +593,23 @@ end
 
 function Blend2DDriver.charPath(self, str)
     local pos = self:getCurrentPosition()
-    local dst = BLPoint(pos[1],pos[2])
     local font = self.CurrentState.Font
 
-    -- blFontShape(const BLFontCore* self, BLGlyphBufferCore* gb)
-    -- blFontGetGlyphOutlines(const BLFontCore* self, uint32_t glyphId, const BLMatrix2D* userMatrix, BLPathCore* out, BLPathSinkFunc sink, void* closure) ;
-    -- blFontGetGlyphRunOutlines(const BLFontCore* self, const BLGlyphRun* glyphRun, const BLMatrix2D* userMatrix, BLPathCore* out, BLPathSinkFunc sink, void* closure) ;
-    
     local gb = BLGlyphBuffer()
     gb:setText(str)
-    C.blFontShape(font, gb)
-    local glyphRun = gb.glyphRun;
+    b2d.blFontShape(font, gb)
+    local glyphRun = gb.impl.glyphRun;
     local out = BLPath()
-    C.blFontGetGlyphRunOutlines(font, glyphRun, userMatrix, out, sink, closure)
+    b2d.blFontGetGlyphRunOutlines(font, glyphRun, userMatrix, out, sink, closure)
+
+
+    -- add the text path to the current contour
+    local m = BLMatrix2D:createIdentity()
+    m:translate(pos[1], pos[2])
+    m:scale(1,-1)
+    self.CurrentState.CurrentFigure:addTransformedPath(out, nil, m)
+
+    return true
 end
 
 function Blend2DDriver.show(self, pos, txt)
