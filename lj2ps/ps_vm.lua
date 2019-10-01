@@ -65,8 +65,6 @@ function PSVM.new(self, obj)
         GraphicsStack = Stack();
         ClippingPathStack = Stack();
 
-        Driver = Blend2DDriver({dpi=192});
-
         -- Internal stuff
         buildProcDepth = 0;
     }
@@ -77,7 +75,7 @@ function PSVM.new(self, obj)
     obj.DictionaryStack = obj.DictionaryStack or DictionaryStack()
     obj.GraphicsStack = obj.GraphicsStack or Stack()
     obj.ClippingPathStack = obj.ClippingPathStack or Stack()
-    obj.Driver = obj.Driver or Blend2DDriver()
+    obj.Driver = obj.Driver or Blend2DDriver({dpi=192, VM = obj})
     
     setmetatable(obj, PSVM_mt)
 
@@ -93,7 +91,7 @@ function PSVM.new(self, obj)
     obj.DictionaryStack:pushDictionary({})      -- userdict
     obj.DictionaryStack:mark()
 
-    
+
     return obj
 end
 

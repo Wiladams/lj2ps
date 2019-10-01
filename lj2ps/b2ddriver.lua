@@ -15,7 +15,7 @@ local Matrix = require("lj2ps.ps_matrix")
 local ops = require("lj2ps.ps_operators")
 local DictionaryStack = require("lj2ps.ps_dictstack")
 local GraphicsState = require("lj2ps.ps_graphicsstate")
-
+local Figure = require("lj2ps.b2dfigure")
 
 
 local Blend2DDriver = {}
@@ -102,6 +102,7 @@ function Blend2DDriver.new(self, obj)
 
     -- setup various state things
     obj:applyState(obj.CurrentState)
+    obj:newPath()
 
     return obj
 end
@@ -174,6 +175,9 @@ function Blend2DDriver.gRestore(self)
     return true
 end
 
+function Blend2DDriver.getCTM(self)
+    return self.CurrentState.CTM
+end
 
 --[[
     Graphics State
@@ -186,6 +190,8 @@ end
 -- setlinewidth
 -- currentlinewidth
 function Blend2DDriver.setLineWidth(self, value)
+    -- BUGBUG - need to scale the width the match
+    -- the current transform
     --print("Blend2DDriver.setLineWidth: ", value)
     self.CurrentState.LineWidth = value
     self.DC:setStrokeWidth(value)
@@ -298,6 +304,16 @@ end
 
 
 -- Coordinate System and Matrix Operators
+-- concat
+function Blend2DDriver.concat(self, m)
+    self.CurrentState.CTM:preMultiplyBy(m)
+    return true
+end
+
+function Blend2DDriver.transformPoint(self, x, y)
+    return self.CurrentState.CTM:transformPoint(x, y)
+end
+
 --matrix
 --initmatrix
 --identmatix
@@ -305,19 +321,24 @@ end
 
 --currentmatrix
 function Blend2DDriver.currentMatrix(self)
-    return self.DC:userMatrix()
+    return self.CurrentState.CTM
+    --return self.DC:userMatrix()
 end
 
 --setmatrix
 function Blend2DDriver.setMatrix(self, m)
-    self.DC:setMatrix(m)
+    self.CurrentState.CTM = m
+    --self.DC:setMatrix(m)
 
     return true
 end
 
 --translate
 function Blend2DDriver.translate(self, tx, ty)
-    self.DC:translate(tx, ty)
+    local m = Matrix:createTranslation(tx, ty)
+    self:concat(m)
+
+    --self.DC:translate(tx, ty)
     
     return true
 end
@@ -325,28 +346,25 @@ end
 
 --scale
 function Blend2DDriver.scale(self, sx, sy)
-    self.DC:scale(sx, sy)
+    local m = Matrix:createScaling(sx, sy)
+    self:concat(m)
+
+    --self.DC:scale(sx, sy)
 
     return true
 end
-
 
 --rotate
 function Blend2DDriver.rotateBy(self, angle)
-    local rads = math.rad(angle)
-    --local m2 = BLMatrix2D:createRotation(rads, 0,0)
-    --local m1 = self.DC:userMatrix()
+    local m = Matrix:createRotation(angle,0,0)
+    self:concat(m)
 
-    --m2:concat(m1)
-    --m1:concat(m2)
-    --self.DC:setMatrix(m2)
-    self.DC:rotate(rads)
+    --self.DC:rotate(rads)
 
     return true
 end
 
 
---concat
 --concatmatrix
 --transform
 --dtransform
@@ -365,56 +383,9 @@ function Blend2DDriver.setPath(self, apath)
     return true
 end
 
-
-
-
-
-
---[[
--- A contour is a sub-assembly of a figure.  
-    Several contours can be added to a figure, and then
-    the entire figure can be stroked or filled.
-    Initiation of a contour is implied with a moveTo
-
---]]
-function Blend2DDriver.attachCurrentContour(self)
-    if self.CurrentState.CurrentContour ~= nil then
-        self.CurrentState.CurrentFigure:addPath(self.CurrentState.CurrentContour, nil)
-        self.CurrentState.CurrentContour = nil
-    end
-
-    return true
-end
-
-function Blend2DDriver.newContour(self)
-    --print("newContour - BEGIN, contour: ", self.CurrentState.CurrentContour)
-    -- take existing contour and add it to the 
-    -- current figure
-
-    self:attachCurrentContour()
-
-    -- create a new countour for future contouring commands
-    self.CurrentState.CurrentContour = BLPath()
-
-
-    return true
-end
-
-function Blend2DDriver.closeContour(self)
-    self.CurrentState.CurrentContour:close()
-    self:attachCurrentContour()
-end
-
-function Blend2DDriver.newFigure(self)
-    self.CurrentState.CurrentFigure = BLPath()
-
-    return true
-end
-
 function Blend2DDriver.newPath(self)
     --print("Blend2DDriver.newPath()")
-    self:newFigure()
-    self.CurrentState.CurrentContour = BLPath()
+    self.CurrentState.CurrentFigure = Figure(self.VM)
 
     return true
 end
@@ -422,41 +393,39 @@ end
 
 -- pathbox
 function Blend2DDriver.pathBox(self)
-    local abox = BLBox()
-    local bResult = self.CurrentState.CurrentFigure:getBoundingBox(abox)
-    
-    return abox.x0, abox.y0, abox.x1, abox.y1
+    return self.CurrentState.CurrentFigure:boundingBox()
 end
 
 --currentpoint
 function Blend2DDriver.getCurrentPosition(self)
-    return self.CurrentState:getPosition()
+    return self.CurrentState.CurrentFigure:currentPosition()
 end
 
 --[[
 --moveto
+--rmoveto
     moveTo will initiate a new contour on the existing figure.
     BUGBUG - need to apply CTM to coordinates
 --]]
 function Blend2DDriver.moveTo(self, x, y)
-    --print("Blend2DDriver.moveTo: ", x, y)
-    
-    self:newContour()
-    self.CurrentState.CurrentContour:moveTo(x,y)
+    self.CurrentState.CurrentFigure:moveTo(x, y)
 
     return true
 end
 
---rmoveto
+
+
 --lineto
+--rlineto
 function Blend2DDriver.lineTo(self, x, y)
-    --print("Blend2DDriver.lineTo: ", x, y)
-    self.CurrentState.CurrentContour:lineTo(x,y)
+
+    self.CurrentState.CurrentFigure:lineTo(x,y)
 
     return true
 end
 
---rlineto
+
+
 --arc
 function Blend2DDriver.arc(self, x, y, r, angle1, angle2)
     -- blPathArcTo(BLPathCore* self, double x, double y, double rx, double ry, double start, double sweep, _Bool forceMoveTo)
@@ -494,7 +463,8 @@ end
 
 --closepath
 function Blend2DDriver.closePath(self)
-    self:closeContour()
+    --print("Blend2DDriver.closePath - BEGIN: ", self.CurrentState.CurrentFigure.BasePath)
+    self.CurrentState.CurrentFigure:closeContour()
 
     return true
 end
@@ -539,6 +509,9 @@ function Blend2DDriver.erasepage(self)
 end
 
 
+function Blend2DDriver.newFigure(self)
+    self.CurrentState.CurrentFigure = Figure(self.VM)
+end
 
 --[[
     doing a fill implies a reset of the current figure
@@ -546,10 +519,9 @@ end
     after a fill, unless the user saved the state
 ]]
 function Blend2DDriver.fill(self)
-    self:attachCurrentContour()
 
-    self.DC:fillPathD(self.CurrentState.CurrentFigure)
---print("FILL - END")
+    self.CurrentState.CurrentFigure:fill(self.DC)
+
     self:newFigure()
 
     return true
@@ -563,9 +535,7 @@ end
 
 function Blend2DDriver.stroke(self)
     -- need to add current path to the figure before stroking
-    self:attachCurrentContour()
-
-    self.DC:strokePathD(self.CurrentState.CurrentFigure);
+    self.CurrentState.CurrentFigure:stroke(self.DC)
     self:newFigure()
 
     return true

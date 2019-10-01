@@ -148,6 +148,12 @@ local PSMatrix_mt = {
 
             return x1, y1
         end;
+
+        -- Take the matrix, and only apply the scaling portion
+        scalePoint = function(self, x, y)
+            local m1 = PSMatrix:createScaling(self.m00, self.m11)
+            return m1:transformPoint(x,y)
+        end;
     };
 }
 

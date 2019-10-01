@@ -1,5 +1,6 @@
 
 local ps_common = require("lj2ps.ps_common")
+local Matrix = require("lj2ps.ps_matrix")
 
 local GraphicState = require("lj2ps.ps_graphicsstate")
 
@@ -10,12 +11,14 @@ local exports = {}
 -- grestore
 local function gsave(vm)
     vm.Driver:gSave()
+
     return true
 end
 exports.gsave = gsave
 
 local function grestore(vm)
     vm.Driver:gRestore()
+
     return true
 end
 exports.grestore = grestore
@@ -26,6 +29,7 @@ exports.grestore = grestore
 local function gstate(vm)
     local gs = GraphicState();
     vm.OperandStack:push(gs)
+
     return true
 end
 exports.gstate = gstate
@@ -298,10 +302,10 @@ exports.currentflat = currentflat
 
 -- Coordinate System and Matrix Operators
 --matrix
+-- by default, create identity matrix and push 
+-- it on the operand stack
 local function matrix(vm)
-
-    -- push an identity matrix onto the stack
-    local m = BLMatrix2D:createIdentity()
+    local m = Matrix:createIdentity()
     vm.OperandStack:push(m)
 
     return true
@@ -309,7 +313,10 @@ end
 exports.matrix = matrix
 
 --initmatrix
+
 --identmatix
+-- take whatever thing that's on the top
+-- of the stack and give it identity matrix values
 local function identmatrix(vm)
     local m = vm.OperandStack:pop()
     m[0]=1
@@ -329,6 +336,9 @@ exports.identmatrix  =identmatrix
 --currentmatrix
 local function currentmatrix(vm)
     local m = vm.Driver:currentMatrix()
+    -- BUGBUG
+    -- need to turn a blend2d matrix into a
+    -- 6 element array
     vm.OperandStack:push(m)
 
     return true
@@ -338,28 +348,34 @@ exports.currentmatrix = currentmatrix
 --setmatrix
 local function setmatrix(vm)
     local m = vm.OperandStack:pop()
+
     vm.Driver:setMatrix(m)
 
     return true
 end
 exports.setmatrix = setmatrix
 
---translate
+-- translate
+--         tx ty translate -
+--  tx ty matrix translate matrix
+--
 local function translate(vm)
     local tx, ty
-    local arg1 = vm.OperandStack:pop()
-    if type(arg1) == "number" then
+    local m = vm.OperandStack:pop()
+
+    if type(m) == "number" then
         -- change user coordinate space
-        ty = arg1
-        tx = vm.OperandStack:pop()
+        local ty = m
+        local tx = vm.OperandStack:pop()
         vm.Driver:translate(tx, ty)
     else
         -- create a translation matrix and
         -- put it back on the stack
-        ty = vm.OperandStack:pop()
-        tx = vm.OperandStack:pop()
-        local m = BLMatrix2D:createTranslation(tx, ty)
-        vm.OperandStack:push(m)
+        local ty = vm.OperandStack:pop()
+        local tx = vm.OperandStack:pop()
+        local m1 = Matrix:createTranslation(tx, ty)
+
+        vm.OperandStack:push(m1)
     end
 
     return true
@@ -367,6 +383,8 @@ end
 exports.translate = translate
 
 --scale
+--        sx sy scale -
+-- sx sy matrix scale matrix
 local function scale(vm)
     local m = vm.OperandStack:pop()
 
@@ -377,7 +395,7 @@ local function scale(vm)
     else
         local sy = vm.OperandStack:pop()
         local sx = vm.OperandStack:pop()
-        local m1 = BLMatrix2D:createScaling(sx, sy)
+        local m1 = Matrix:createScaling(sx, sy)
 
         vm.OperandStack:push(m1)
     end
@@ -387,6 +405,8 @@ end
 exports.scale = scale
 
 --rotate
+--           angle rotate -
+--    angle matrix rotate matrix
 local function rotate(vm)
     local m = vm.OperandStack:pop()
 
@@ -394,21 +414,35 @@ local function rotate(vm)
         local angle = m
 
         vm.Driver:rotateBy(angle)
+    else
+        local angle = vm.OperandStack:pop()
+        local m1 = Matrix:createRotation(angle)
+        vm.OperandStack:push(m1)
     end
     
     return true
 end
 exports.rotate = rotate
 
---concat
+-- concat
+-- matrix concat
+local function concat(vm)
+    local m = vm.OperandStack:pop()
+    vm.Driver:concat(m)
+
+    return true
+end
+exports.concat = concat
+
 --concatmatrix
+-- matrix1 matrix2 matrix3 concatmatrix matrix3
 local function concatmatrix(vm)
     local m3 = vm.OperandStack:pop()
     local m2 = vm.OperandStack:pop()
     local m1 = vm.OperandStack:pop()
 
     m3 = m1;
-    m3:concat(m2);
+    m3:preMultiplyBy(m2);
     vm.OperandStack:push(m3)
 
     return true
@@ -531,7 +565,7 @@ end
 exports.rmoveto = rmoveto
 
 --lineto
---rlineto
+
 local function lineto(vm)
     local y = vm.OperandStack:pop()
     local x = vm.OperandStack:pop()
@@ -541,7 +575,7 @@ local function lineto(vm)
 end
 exports.lineto = lineto
 
-
+--rlineto
 local function rlineto(vm)
     local dy = vm.OperandStack:pop()
     local dx = vm.OperandStack:pop()
@@ -650,7 +684,7 @@ local function charpath(vm)
     
     -- use current font to get outline of string
     vm.Driver:charPath(str)
-    
+
     return true
 end
 exports.charpath = charpath

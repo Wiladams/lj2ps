@@ -120,6 +120,7 @@ function GraphicsState.clone(self)
     return newstate
 end
 
+
 -- setposition
 -- currentposition
 function GraphicsState.setPosition(self, x, y)
