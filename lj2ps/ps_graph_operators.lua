@@ -504,6 +504,9 @@ local function itransform(vm)
         -- the matrix was given as a parameter
         -- get the inverse of it
         local m1 = arg1:createInverse();
+
+        assert(m1 ~= nil)
+        
         local y = vm.OperandStack:pop()
         local x = xm.OperandStack:pop()
 
@@ -519,7 +522,17 @@ exports.itransform = itransform
 
 --idtransform
 --invertmatrix
+local function invertmatrix(vm)
+    local m = vm.OperandStack:pop()
+    local m1 = m:createInverse()
+    
+    assert(m1 ~= nil)
 
+    vm.OperandStack:push(m1)
+    
+    return true
+end
+exports.invertmatrix = invertmatrix
 
 --[[
 -- Path construction

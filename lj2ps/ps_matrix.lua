@@ -81,6 +81,37 @@ local PSMatrix_mt = {
             return self.m00*self.m11 - self.m01*self.m10
         end;
 
+        createInverse = function(self)
+            local d = self:determinant()
+            
+            -- if determinant is 0 there is no inverse
+            if d == 0 then
+                return nil
+            end
+
+            --print("matrix.inverse, d: ", d)
+            -- create some temporaries
+            local t00 = self.m11
+            local t01 = -self.m01
+            local t10 = -self.m10
+            local t11 = self.m00
+            
+            --print(t00,t01,t10,t11)
+            
+            t00 = t00 / d
+            t01 = t01 / d
+            t10 = t10 / d
+            t11 = t11 / d
+
+            local t20 = -(self.m20*t00 + self.m21*t10)
+            local t21 = -(self.m20*t01 + self.m21*t11)
+
+            local m1 = PSMatrix(t00,t01,t10,t11,t20,t21)
+--print("inverse, m1")
+--print(m1)
+            return m1
+        end;
+
         -- rotate
         -- apply rotation to current transform
         -- maintain scaling and translation
