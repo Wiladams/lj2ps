@@ -130,6 +130,17 @@ function PSFigure.lineTo(self, x, y)
     return true
 end
 
+function PSFigure.arc(self, x, y, r, angle1, angle2)
+    local sweep = math.rad(angle2 - angle1)
+    return self.CurrentContour:arcTo(x, y, r, r, math.rad(angle1), sweep, true)
+end
+
+function PSFigure.curveTo(self, x1,y1,x2,y2,x3,y3)
+    self.lastX = x3
+    self.lastY = y3
+
+    return self.CurrentContour:cubicTo(x1,y1,x2,y2,x3,y3)
+end
 
 --[[
     Rendering

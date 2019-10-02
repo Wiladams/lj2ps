@@ -428,6 +428,7 @@ exports.rotate = rotate
 -- matrix concat
 local function concat(vm)
     local m = vm.OperandStack:pop()
+    m = Matrix:createFromArray(m)
     vm.Driver:concat(m)
 
     return true
@@ -463,20 +464,21 @@ local function transform(vm)
 
         local m1 = vm.Driver:currentMatrix();
 
-        local dst = m1:transformSinglePoint(BLPoint(x, y))
+        local x1, y1 = m1:transformPoint(x, y)
 
-        vm.OperandStack:push(dst.x)
-        vm.OperandStack:push(dst.y)
+        vm.OperandStack:push(x1)
+        vm.OperandStack:push(y1)
     else
         -- the matrix was given as a parameter
         -- get the inverse of it
+        m = Matrix:createFromArray(m)
         local y = vm.OperandStack:pop()
         local x = vm.OperandStack:pop()
 
-        local dst = m:transformSinglePoint(BLPoint(x, y))
+        local x1, y1 = m:transformPoint(x, y)
 
-        vm.OperandStack:push(dst.x)
-        vm.OperandStack:push(dst.y)
+        vm.OperandStack:push(x1)
+        vm.OperandStack:push(y1)
     end
 
     return true
@@ -496,24 +498,25 @@ local function itransform(vm)
         local m = vm.Driver:currentMatrix();
         local m1 = m:createInverse();
 
-        local dst = m1:transformSinglePoint(BLPoint(x, y))
+        local x1, y1 = m1:transformPoint(x, y)
 
-        vm.OperandStack:push(dst.x)
-        vm.OperandStack:push(dst.y)
+        vm.OperandStack:push(x1)
+        vm.OperandStack:push(y1)
     else
         -- the matrix was given as a parameter
         -- get the inverse of it
-        local m1 = arg1:createInverse();
+        local m1 = Matrix:createFromArray(arg1)
+        m1 = m1:createInverse();
 
         assert(m1 ~= nil)
         
         local y = vm.OperandStack:pop()
         local x = xm.OperandStack:pop()
 
-        local dst = m1:transformSinglePoint(BLPoint(x, y))
+        local x1, y1 = m1:transformPoint(x, y)
 
-        vm.OperandStack:push(dst.x)
-        vm.OperandStack:push(dst.y)
+        vm.OperandStack:push(x1)
+        vm.OperandStack:push(y1)
     end
 
     return true
@@ -522,13 +525,23 @@ exports.itransform = itransform
 
 --idtransform
 --invertmatrix
+-- matrix1 matrix2 invertmatrix matrix2
 local function invertmatrix(vm)
-    local m = vm.OperandStack:pop()
-    local m1 = m:createInverse()
-    
-    assert(m1 ~= nil)
+    local m2 = vm.OperandStack:pop()
+    local m1 = vm.OperandStack:pop()
 
-    vm.OperandStack:push(m1)
+    -- make sure we have an actual matrix 
+    -- and not just an array
+    local matrix1 = Matrix:createFromArray(m1)
+    
+    --print("invertmatrix - matrix1")
+    --print(matrix1)
+
+    local m1inv = matrix1:createInverse()
+    
+    assert(m1inv ~= nil)
+
+    vm.OperandStack:push(m1inv)
     
     return true
 end

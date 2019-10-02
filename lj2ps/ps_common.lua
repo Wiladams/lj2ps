@@ -151,6 +151,17 @@ function Stack.push(self, value)
 	return self
 end
 
+-- push multiple elements onto the stack at once
+function Stack.pushn(self, ...)
+    local n = select('#',...)
+    for i=1,n do
+        self:push(select(i,...))
+    end
+    
+    return self
+end
+
+
 function Stack.pop(self)
 	local last = self.last
 	if self.first > last then
@@ -161,6 +172,15 @@ function Stack.pop(self)
 	self.last = last - 1
 
 	return value
+end
+
+function Stack.popn(self, n)
+    local tmp = {}
+    for i=1,n do
+        tmp[n-i+1] = self:pop()
+    end
+
+    return unpack(tmp)
 end
 
 function Stack.copy(self, n)

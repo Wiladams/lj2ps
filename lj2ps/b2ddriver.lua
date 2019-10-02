@@ -161,7 +161,7 @@ function Blend2DDriver.gSave(self)
     -- store it on the statestack
     self.DC:save()
     local clonedPath = BLPath()
-    clonedPath:assignDeep(self.CurrentState.CurrentFigure)
+    clonedPath:assignDeep(self.CurrentState.CurrentFigure.BasePath)
     self.StateStack:push(clonedPath)
 
     return true
@@ -428,15 +428,12 @@ end
 
 --arc
 function Blend2DDriver.arc(self, x, y, r, angle1, angle2)
-    -- blPathArcTo(BLPathCore* self, double x, double y, double rx, double ry, double start, double sweep, _Bool forceMoveTo)
-    local sweep = math.rad(angle2 - angle1)
-    self.CurrentState.CurrentContour:arcTo(x, y, r, r, math.rad(angle1), sweep, true)
-    
-    return true
+    return self.CurrentState.CurrentFigure:arc(x,y,r,angle1,angle2)
 end
 
 --arcn
 function Blend2DDriver.arn(self, x, y, r, angle1, angle2)
+    print("ARCN")
     -- blPathArcTo(BLPathCore* self, double x, double y, double rx, double ry, double start, double sweep, _Bool forceMoveTo)
     local sweep = math.rad(angle2 - angle1)
     self.CurrentState.CurrentContour:arcTo(x, y, r, r, math.rad(angle1), sweep, true)
@@ -446,6 +443,7 @@ end
 
 --arct
 function Blend2DDriver.arct(self, x1, y1, x2, y2, r)
+    print("ARCT")
     self.CurrentState.CurrentContour:arcTo(x, y, r, r, math.rad(angle1), sweep, true)
 
     return true
@@ -456,7 +454,7 @@ end
 --curveto
 --rcurveto
 function Blend2DDriver.curveTo(self, x1,y1,x2,y2,x3,y3)
-    self.CurrentState.CurrentContour:cubicTo(x1,y1,x2,y2,x3,y3)
+    self.CurrentState.CurrentFigure:curveTo(x1,y1,x2,y2,x3,y3)
 
     return true
 end

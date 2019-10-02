@@ -93,6 +93,15 @@ local function test_map()
     print("y: ", y)
 end
 
+local function test_from_array()
+    local m1 = Matrix:createScaling(20,30)
+    local m2 = m1:createFromArray(m1)
+
+    print(m1)
+    print("----")
+    print(m2)
+end
+
 --test_clone()
 --test_map()
 --test_identity()
@@ -100,4 +109,5 @@ end
 --test_rotation()
 --test_scale()
 --test_concat()
-test_userspace()
+--test_userspace()
+test_from_array()
