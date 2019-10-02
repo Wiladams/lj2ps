@@ -173,6 +173,13 @@ local PSMatrix_ops = {
         return self
     end;
 
+    dtransform = function(self, x, y)
+        local x1 = self.m00*x + self.m10*y
+        local y1 = self.m01*x + self.m11*y
+
+        return x1, y1
+    end;
+
     transformPoint = function(self, x, y)
         local x1 = self.m00*x + self.m10*y + self.m20
         local y1 = self.m01*x + self.m11*y + self.m21

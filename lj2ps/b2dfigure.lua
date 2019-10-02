@@ -157,6 +157,10 @@ function PSFigure.curveTo(self, x1,y1,x2,y2,x3,y3)
     return self.CurrentContour:cubicTo(x1,y1,x2,y2,x3,y3)
 end
 
+function PSFigure.addTransformedPath(self, path, m)
+    self.CurrentContour:addTransformedPath(path, nil, m)
+end
+
 --[[
     Rendering
 ]]

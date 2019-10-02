@@ -122,6 +122,7 @@ local fontAliases = {
     ["helvetica-oblique"] = "arial";
     ["helvetica-boldoblique"] = "arial";
     ["palatino-italic"] = "palatino linotype";
+    ["palatino-roman"] = "palatino linotype";
 }
 
 local function substituteFontName(name)
@@ -393,6 +394,7 @@ end
 
 -- pathbox
 function Blend2DDriver.pathBox(self)
+    --print("pathBox: ", self.CurrentState.CurrentFigure)
     return self.CurrentState.CurrentFigure:boundingBox()
 end
 
@@ -565,12 +567,14 @@ function Blend2DDriver.charPath(self, str)
     local out = BLPath()
     b2d.blFontGetGlyphRunOutlines(font, glyphRun, userMatrix, out, sink, closure)
 
+    --print("Blend2DDriver.charPath, font: ", font,out)
+
 
     -- add the text path to the current contour
     local m = BLMatrix2D:createIdentity()
     m:translate(pos[1], pos[2])
     m:scale(1,-1)
-    self.CurrentState.CurrentFigure:addTransformedPath(out, nil, m)
+    self.CurrentState.CurrentFigure:addTransformedPath(out, m)
 
     return true
 end

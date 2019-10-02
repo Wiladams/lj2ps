@@ -317,6 +317,7 @@ local function srand(vm)
 
     return true
 end
+exports.srand = srand
 
 -- put random number seed on stack
 local function rrand(vm)
@@ -325,7 +326,7 @@ local function rrand(vm)
 
     return true
 end
-
+exports.rrand = rrand
 
 --[[
 -- Array, Packed Array, Dictionary, and String Operators
@@ -946,7 +947,17 @@ exports.cvx = cvx
 
 
 local function cvi(vm)
-    vm.OperandStack:push(tonumber(vm.OperandStack:pop()))
+    local value = vm.OperandStack:pop()
+    local num = tonumber(value)
+
+    assert(num ~= nil)
+    
+    if num >= 0 then
+        vm.OperandStack:push(math.floor(num))
+    else
+        vm.OperandStack:push(math.ceil(num))
+    end
+
     return true
 end
 exports.cvi = cvi

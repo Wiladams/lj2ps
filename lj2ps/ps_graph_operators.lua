@@ -263,7 +263,18 @@ exports.setrgbacolor = setrgbacolor
 --]]
 --sethalftone
 --currenthalftone
+
 --setscreen
+-- frequency  angle  proc setscreen  –
+local function setscreen(vm)
+    local proc = vm.OperandStack:pop()
+    local angle = vm.OperandStack:pop()
+    local frequency = vm.OperandStack:pop()
+
+    -- do some stuff with setscreen
+end
+exports.setscreen = setscreen
+
 --currentscreen
 --setcolorscreen
 --currentcolorscreen
@@ -486,6 +497,37 @@ end
 exports.transform = transform
 
 --dtransform
+local function dtransform(vm)
+    local m = vm.OperandStack:pop()
+    local x, y
+
+    if type(m) == "number" then
+        local y = m
+        local x = vm.OperandStack:pop()
+
+        local m1 = vm.Driver:currentMatrix();
+
+        local x1, y1 = m1:dtransform(x, y)
+
+        vm.OperandStack:push(x1)
+        vm.OperandStack:push(y1)
+    else
+        -- the matrix was given as a parameter
+        -- get the inverse of it
+        m = Matrix:createFromArray(m)
+        local y = vm.OperandStack:pop()
+        local x = vm.OperandStack:pop()
+
+        local x1, y1 = m:dtransform(x, y)
+
+        vm.OperandStack:push(x1)
+        vm.OperandStack:push(y1)
+    end
+
+    return true
+end
+exports.dtransform = dtransform
+
 --itransform
 local function itransform(vm)
     local arg1 = vm.OperandStack:pop()
@@ -699,6 +741,11 @@ end
 exports.closepath = closepath
 
 --flattenpath
+local function flattenpath(vm)
+    return true
+end
+exports.flattenpath = flattenpath
+
 --reversepath
 --strokepath
 --ustrokepath
@@ -900,6 +947,12 @@ exports.setfont = setfont
 
 --rootfont
 --currentfont
+local function currentfont(vm)
+    vm.OperandStack:push(vm.Driver.CurrentState.Font)
+
+    return true
+end
+
 
 --setfont
 local function selectfont(vm)
