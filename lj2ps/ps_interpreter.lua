@@ -40,7 +40,7 @@ function Interpreter.runStream(self, bs)
 
     -- Iterate through tokens
     for _, token in scnr:tokens(bs) do
-        --print("INTERP: ", token)
+        --print("INTERP: ", token.kind, token.value)
         if token.kind == TokenType.BOOLEAN or 
             token.kind == TokenType.NUMBER or
             token.kind == TokenType.STRING or

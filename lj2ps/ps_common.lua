@@ -55,7 +55,7 @@ local TokenType = enum {
 
 local Token_mt = {
     __tostring = function(self)
-        --print("__tostring, Kind: ", self.Kind, TokenType[self.Kind])
+        print("__tostring, Kind: ", self.kind, self.value)
         --return string.format("'%s' %s %s", TokenType[self.kind], self.lexeme, self.literal or self.value or '')
         return string.format("'%s' %s", TokenType[self.kind], tostring(self.value))
     end;

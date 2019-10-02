@@ -1,0 +1,28 @@
+%!PS
+
+/maxdepth 7 def
+0.9 dup scale
+/depth 0 def
+
+/down {
+    /depth depth 1 add def
+} def
+
+/up {
+    /depth depth 1 sub def
+} def
+
+/Curl {
+    down depth maxdepth ge {0 1 rlineto}
+    {
+        Curl 60 rotate Curl -120 rotate
+        Curl 60 rotate Curl
+    } ifelse 
+    up
+} def
+
+220 220 moveto
+Curl -120 rotate Curl -120 rotate Curl
+fill
+
+showpage

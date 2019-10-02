@@ -130,6 +130,7 @@ local Array_mt = {
     end;
 
     __tostring = function(self)
+        print("Array.__tostring")
         local tmp = {}
         for i=1,#self do
             table.insert(tmp, self[i-1])

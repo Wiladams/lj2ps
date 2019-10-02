@@ -1,0 +1,98 @@
+%!PS-Adobe-2.0
+%%BoundingBox: 0 0 200 190
+(../../ps/colours.inc) run
+
+/cx 100 def
+/cy 100 def
+
+(bsp.inc) run
+
+/w 0.25 def
+/z 0.25 def
+
+% ------------------------------------------------
+
+/p [
+
+% bottom inside 
+[
+  [ -1 -1 0 ][  1 -1 0 ][  1 -1 -1 ][ -1 -1 -1 ]
+]
+% left inside 
+[
+  [ -1 -1 0 ][ -1 -1 -1 ][ -1  1 -1 ][ -1  1 0 ]
+]
+% right inside
+[
+  [  1 -1 0 ][  1  1 0 ][  1  1 -1 ][  1 -1 -1 ]
+]
+% top inside
+[
+  [  1  1 0 ][ -1  1 0 ][ -1  1 -1 ][  1  1 -1 ]
+]
+% end
+[
+  [-1 -1 -1][1 -1 -1][1 1 -1][-1 1 -1]
+]
+
+] def
+
+/p [
+ p {
+  /face exch def
+  /n face normal-function def
+  [ face n 1 ]
+  [ face n -1 ]
+ } forall
+] def
+
+% --------------------------------------------------------
+
+/page-begin {
+  gsave
+  cx cy translate
+  14 -20 translate
+  72 dup scale
+  1 72 div setlinewidth
+  1 setlinecap
+  1 setlinejoin
+} def
+
+/page-end {
+  grestore
+  showpage
+} def
+
+[0 0 10 1] set-eye
+
+/f {
+  /face exch def
+  /P face 0 get def
+  /N face 1 get def
+  /mu face 2 get def
+  /n P length def
+  N E dot-product mu mul 0 ge {
+    newpath 
+    P n 1 sub get aload pop moveto3d
+    P {
+      aload pop lineto3d
+    } forall
+	closepath
+    gsave
+    /s N light dot-product mu mul 1 add 2 div def
+    s 0 0 setrgbcolor 
+    fill
+    grestore
+    stroke 
+  } if
+} def
+
+/b p /polygon-interp bsp-tree def
+
+page-begin
+[1 1 0] 40 rotate3d
+/E get-eye cim3d transform3d def
+/light [-0.25 1 0.25 0 ] normalized cim3d transform3d def
+b /f traverse
+page-end
+

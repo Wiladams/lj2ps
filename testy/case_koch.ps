@@ -1,0 +1,18 @@
+/maxdepth 6 def
+/depth 0 def
+-300 -650 translate
+3 3 scale
+/down {/depth depth 1 add def}
+def
+/up {/depth depth 1 sub def}
+def
+/Curl {down depth maxdepth ge {0 1 rlineto}
+{Curl 60 rotate Curl -120 rotate
+Curl 60 rotate Curl} ifelse up}
+def
+
+220 220 moveto
+Curl
+stroke
+
+showpage

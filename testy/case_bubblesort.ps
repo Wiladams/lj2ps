@@ -1,0 +1,28 @@
+/bubblesort { 4 dict begin
+    /a exch def
+    /n a length 1 sub def
+    n 0 gt {
+        % at this point only the n+1 items in the bottom of a remain to be sorted 
+        % the largest item in that block is to be moved up into position n 
+        n {
+            0 1 n 1 sub {
+                /i exch def
+                a i get a i 1 add get gt {
+                    % if a[i] > a[i+1] swap a[i] and a[i+1]
+                    a i 1 add
+                    a i get
+                    a i a i 1 add get
+                    % set new a[i] = old a[i+1]
+                    put
+                    % set new a[i+1] = old a[i]
+                    put
+                } if
+            } for
+            /n n 1 sub def
+        } repeat
+    } if
+    end } def
+
+[4 3 2 1 0 5] 
+%bubblesort
+==
