@@ -40,7 +40,7 @@ exports.gstate = gstate
 -- currentlinewidth
 local function setlinewidth(vm)
     local value = vm.OperandStack:pop()
-    --print("setlinewidth: ", value)
+    print("setlinewidth: ", value)
     vm.Driver:setLineWidth(value)
     return true
 end
