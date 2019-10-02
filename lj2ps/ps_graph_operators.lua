@@ -1012,6 +1012,22 @@ exports.stringwidth = stringwidth
 --cshow
 --kshow
 
+-- image
+-- width  height  bits/sample  matrix  datasrc image -
+--                                        dict image -
+local function image(vm)
+    -- based on datasrc, we can figure out which form
+    -- of the operand is being used
+    local datasrc = vm.OperandStack:pop()
+
+    local m = vm.OperandStack:pop()
+    local bps = vm.OperandStack:pop()
+    local height = vm.OperandStack:pop()
+    local width = vm.OperandStack:pop()
+
+    return true
+end
+
 --FontDirectory
 --GlobalFontDirectory
 --StandardEncoding
