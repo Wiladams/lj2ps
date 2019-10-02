@@ -438,9 +438,9 @@ exports.concat = concat
 --concatmatrix
 -- matrix1 matrix2 matrix3 concatmatrix matrix3
 local function concatmatrix(vm)
-    local m3 = vm.OperandStack:pop()
-    local m2 = vm.OperandStack:pop()
-    local m1 = vm.OperandStack:pop()
+    local m3 = Matrix:createFromArray(vm.OperandStack:pop())
+    local m2 = Matrix:createFromArray(vm.OperandStack:pop())
+    local m1 = Matrix:createFromArray(vm.OperandStack:pop())
 
     m3 = m1;
     m3:preMultiplyBy(m2);
