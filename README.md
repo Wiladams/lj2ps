@@ -55,7 +55,6 @@ local PSVM = require("lj2ps.ps_vm")
 local vm = PSVM();              -- Create postscript virtual machine
 
 vm:eval([[
-```Postscript
 %!
 %% Example 1
 
@@ -66,7 +65,7 @@ newpath
 2 setlinewidth
 stroke
 showpage
-```
+
 ]])
 ```
 
