@@ -1,0 +1,9 @@
+%!PS
+/factorial {
+    1 1 1
+    4 -1 roll
+    {mul} for
+} bind def
+
+5 factorial
+==  % should be 120
