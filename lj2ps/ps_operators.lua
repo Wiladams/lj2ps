@@ -843,15 +843,18 @@ exports["for"] = function(vm)
 end
 
 --repeat
--- n proc
+-- n proc repeat -
 exports["repeat"] = function(vm)
     local proc = vm.OperandStack:pop()
     local n = vm.OperandStack:pop()
-    
-    for i=1,n do 
-        --print("REPEAT: ", i, n)
-        vm:execArray(proc)
-    end
+
+    local co = coroutine.create(function(vm, proc, n)
+        for i=1,n do 
+            vm:execArray(proc)
+        end
+    end)
+
+    local res, val = coroutine.resume(co, vm, proc, n)
 
     return true
 end
@@ -884,7 +887,7 @@ local function forall(vm)
     local co = coroutine.create(function(vm,proc, arr)
         --print("  ROUTINE: ", vm, proc, arr)
         for _, element in arr:elements() do 
-            --print(_, element)
+            print("ELEMENT: ", _, element)
             vm.OperandStack:push(element)
             vm:execArray(proc)
         end

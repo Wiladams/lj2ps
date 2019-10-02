@@ -128,6 +128,15 @@ local Array_mt = {
     __len = function(self)
         return self.capacity
     end;
+
+    __tostring = function(self)
+        local tmp = {}
+        for i=1,#self do
+            table.insert(tmp, self[i-1])
+        end
+
+        return table.concat(tmp,' ')
+    end;
 }
 
 

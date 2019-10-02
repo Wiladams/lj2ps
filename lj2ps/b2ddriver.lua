@@ -195,6 +195,7 @@ function Blend2DDriver.setLineWidth(self, value)
     --print("Blend2DDriver.setLineWidth: ", value)
     self.CurrentState.LineWidth = value
     self.DC:setStrokeWidth(value)
+    
     return true
 end
 
@@ -405,15 +406,12 @@ end
 --moveto
 --rmoveto
     moveTo will initiate a new contour on the existing figure.
-    BUGBUG - need to apply CTM to coordinates
 --]]
 function Blend2DDriver.moveTo(self, x, y)
     self.CurrentState.CurrentFigure:moveTo(x, y)
 
     return true
 end
-
-
 
 --lineto
 --rlineto
@@ -423,8 +421,6 @@ function Blend2DDriver.lineTo(self, x, y)
 
     return true
 end
-
-
 
 --arc
 function Blend2DDriver.arc(self, x, y, r, angle1, angle2)
@@ -444,7 +440,7 @@ end
 --arct
 function Blend2DDriver.arct(self, x1, y1, x2, y2, r)
     print("ARCT")
-    self.CurrentState.CurrentContour:arcTo(x, y, r, r, math.rad(angle1), sweep, true)
+    self.CurrentState.CurrentFigure:arcTo(x, y, r, r, math.rad(angle1), sweep, true)
 
     return true
 end
