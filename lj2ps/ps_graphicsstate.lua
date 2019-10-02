@@ -47,24 +47,7 @@ local GraphicsState_mt = {
     __index = GraphicsState
 }
 
-function GraphicsState.assign(self, other)
-    self.CTM = Matrix(other.CTM);                       -- Need a copy of the matrix object
-    self.CurrentFigure:assignDeep(other.CurrentFigure)
-    self.ClippingPath = deepCopy(other.ClippingPath);
-    self.ColorSpace = deepCopy(other.ColorSpace);
-    self.Color = BLRgba32(other.Color);                 -- Need copy of font info
-    self.Flat = other.Flat;
-    self.Font = deepCopy(other.Font);
-    self.LineWidth = other.LineWidth;
-    self.LineCap = other.LineCap;
-    self.LineJoin = other.LineJoin;
-    self.MiterLimit = other.MiterLimit;
-    self.DashPattern = deepCopy(other.DashPattern);
-    self.StrokeAdjustment = other.StrokeAdjustment;
-    self.DDParams = deepCopy(other.DDParams);
 
-    return self
-end
 
 
 
@@ -113,7 +96,29 @@ function GraphicsState.new(self)
     return obj 
 end
 
+function GraphicsState.assign(self, other)
+    --print("GraphicsState.assign(self, other): ", self, other)
+
+    self.CTM = Matrix(other.CTM);                       -- Need a copy of the matrix object
+    self.CurrentFigure = other.CurrentFigure:clone();
+    self.ClippingPath = other.ClippingPath;
+    self.ColorSpace = deepCopy(other.ColorSpace);
+    self.Color = BLRgba32(other.Color);                 -- Need copy of font info
+    self.Flat = other.Flat;
+    self.Font = deepCopy(other.Font);
+    self.LineWidth = other.LineWidth;
+    self.LineCap = other.LineCap;
+    self.LineJoin = other.LineJoin;
+    self.MiterLimit = other.MiterLimit;
+    self.DashPattern = deepCopy(other.DashPattern);
+    self.StrokeAdjustment = other.StrokeAdjustment;
+    self.DDParams = deepCopy(other.DDParams);
+
+    return self
+end
+
 function GraphicsState.clone(self)
+    --print("GraphicsState.clone(): ", self)
     local newstate = GraphicsState()
     newstate:assign(self)
     
@@ -123,6 +128,7 @@ end
 
 -- setposition
 -- currentposition
+--[=[
 function GraphicsState.setPosition(self, x, y)
     self.CurrentContour:moveTo(x,y)
     return true
@@ -134,6 +140,7 @@ function GraphicsState.getPosition(self)
 
     return {vtxOut.x, vtxOut.y}
 end
+--]=]
 
 -- setpath
 -- currentpath

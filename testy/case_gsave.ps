@@ -1,0 +1,26 @@
+%!PS
+
+/square {
+0 0 moveto
+1 0 rlineto
+0 1 rlineto
+-1 0 rlineto
+closepath
+fill
+} def
+
+1 setlinewidth
+1 0 0 setrgbcolor
+
+gsave
+0 1 0 setrgbcolor
+72 72 scale
+square
+grestore
+
+16 16 translate
+36 36 scale
+square
+
+
+showpage

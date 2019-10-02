@@ -160,9 +160,8 @@ function Blend2DDriver.gSave(self)
     -- clone current graphics state
     -- store it on the statestack
     self.DC:save()
-    local clonedPath = BLPath()
-    clonedPath:assignDeep(self.CurrentState.CurrentFigure.BasePath)
-    self.StateStack:push(clonedPath)
+    local clonedState = self.CurrentState:clone();
+    self.StateStack:push(clonedState)
 
     return true
 end
@@ -170,7 +169,7 @@ end
 function Blend2DDriver.gRestore(self)
     
     self.DC:restore()
-    self.CurrentState.CurrentFigure = self.StateStack:pop()
+    self.CurrentState = self.StateStack:pop()
 
     return true
 end

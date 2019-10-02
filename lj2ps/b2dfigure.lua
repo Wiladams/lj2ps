@@ -29,6 +29,21 @@ function PSFigure.new(self, VM)
     return obj
 end
 
+function PSFigure.clone(self)
+    local clonedBase = BLPath();
+    clonedBase:assignDeep(self.BasePath)
+
+    local obj = {
+        VM = self.VM;
+        BasePath = clonedBase;
+        lastX = self.lastX;
+        lastY = self.lastY;
+    }
+    setmetatable(obj, PSFigure_mt)
+
+    return obj;
+end
+
 --[[
     Properties
 ]]
