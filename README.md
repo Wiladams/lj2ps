@@ -48,9 +48,13 @@ It will output
 
 > 3
 
-The vm itself should have facility to execute a string directly without having to create an instance of the interpreter explicitly.  That will come in next revision.
+The vm can execute a string directly without having to create an instance of the interpreter explicitly.
 
-Examples:
+```lua
+local PSVM = require("lj2ps.ps_vm")
+local vm = PSVM();              -- Create postscript virtual machine
+
+vm:eval([[
 ```Postscript
 %!
 %% Example 1
@@ -63,6 +67,9 @@ newpath
 stroke
 showpage
 ```
+]])
+```
+
 
 
 References
