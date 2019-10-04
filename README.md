@@ -1,16 +1,16 @@
 # lj2ps
-Impetuous Postscript (IMPP)
+Impetuous Postscript (IMPP) Postscript interpreter written in Lua
 
 ![Image](../blob/master/images/tigger.png?raw=true)
-![Image](https://github.com/Wiladams/lj2ps/blob/master/images/tigger.png)
 
-Postscript Virtual Machine using Lua
+
 
 This project is an exploration of trying to pull together several different kind of things.
 
   Virtual Machine
   Drawing using a Driver model
   Scanning/Parsing Language
+  blend2d binding
 
 ```Postscript
  0   0  moveto
@@ -27,7 +27,7 @@ The virtual machine is faithful to the standard Postscript model, utilizing stac
 At any rate, the Postcript language environment is very large.  It will take some time to become complete enough to do anything remotely useful.
 
 
-Here is a "Hello World" that current works:
+The "Hello World" from the Lua side:
 
 ```lua
 package.path = "../?.lua;"..package.path
@@ -42,7 +42,7 @@ local interp = Interpreter(vm)  -- create an interpreter
 
 interp:run([[
   1 2 add 
-  pstack
+  ==
 ]])
 
 ```
@@ -72,7 +72,17 @@ showpage
 ]])
 ```
 
+There is a convenient utility in the 'testy' directory 'runps.lua'
 
+Usage: luajit runps.lua case_tigger.ps
+
+This is the easiest way to generate an image from a typical postscript file.  The various test
+cases within the testy directory exercise various aspects of the interpreter from the simple stack
+commands to the execution of procedures.
+
+There are several more examples in the tutorials, examples, and resources directories.  They work to varying
+degrees depending on which unimplemented features they utilize.  The iconic tiger image exercises curveto primarily
+as well as scaling, so that works.  The more complex ghostscript examples variously work.
 
 References
 ----------
