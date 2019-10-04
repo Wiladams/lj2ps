@@ -5,26 +5,22 @@ Impetuous Postscript (IMPP) Postscript interpreter written in Lua
 ![Image](https://github.com/Wiladams/lj2ps/blob/master/images/tigger.png)
 
 
-This project is an exploration of trying to pull together several different kind of things.
+This project pulls together several different kinds of things.
 
-  Virtual Machine
-  Drawing using a Driver model
-  Scanning/Parsing Language
-  blend2d binding
+  * Virtual Machine
+  * Interpreted language
+  * binding to blend2d vector graphics library
 
-```Postscript
- 0   0  moveto
-72  72  lineto
-stroke
-```
+At present (4 Oct 2019), the interpreter is good enough to properly render the ghostscript tiger example above.  There are additional examples that exhibit various degrees of completeness of the operator set.
 
 Things are done modularly so that they can be separable.  It is possible, for example, to use the postscript vm (ps_vm.lua) as a standalone virtual machine, without using the text scanner.  In this way, you're essentially making the same calls that the interpreter would itself be making.
 
 The scanner can be used on its own if you want to do something like transpile the postscript language into something else.
 
-The virtual machine is faithful to the standard Postscript model, utilizing stacks and operators for execution.  After an initial level of completeness, an attempt will be made to optimize by using the lua language stack more directly.  This may or may not turn out to be a fruitful endeavor.
+The virtual machine is faithful to the standard Postscript model, utilizing stacks and operators for execution.  The execution of procedures deviates from what the Postscript spec implies.  It does not utilize the execution stack for tail recursion and the like.  Procedures are essentially executed as Lua coroutines.
 
-At any rate, the Postcript language environment is very large.  It will take some time to become complete enough to do anything remotely useful.
+The Postcript language environment has a large number of operators.  In general, the approach taken in this project is to implement the set of operators needed to make the various examples work.  Over time, this will mean an increasing number of examples and operators will actually work, but this will never be a full implementation of the language like ghostscript is.
+
 
 
 The "Hello World" from the Lua side:
