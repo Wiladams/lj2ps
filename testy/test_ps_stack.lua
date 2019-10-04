@@ -2,7 +2,7 @@ package.path = "../?.lua;"..package.path
 
 local ps_common = require("lj2ps.ps_common")
 
-local Stack = ps_common.Stack
+local Stack = require("lj2ps.ps_stack")
 
 local s1 = Stack()
 

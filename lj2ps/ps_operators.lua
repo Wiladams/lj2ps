@@ -5,7 +5,7 @@ local bnot, bxor = bit.bnot, bit.bxor
 local DEGREES, RADIANS = math.deg, math.rad
 
 local ps_common = require("lj2ps.ps_common")
-local Stack = ps_common.Stack
+local Stack = require("lj2ps.ps_stack")
 local Array = require("lj2ps.array")
 local Dictionary = require("lj2ps.dictionary")
 local String = require("lj2ps.ps_string")
@@ -70,10 +70,7 @@ exports.top = top
 -- depends on what's atop the stack
 -- copy any1... anyn  n copy  any1..anyn any1..anyn
 --]]
-
-
 local function copy(vm)
-    -- get the n items into temp stack
     local n = vm.OperandStack:pop()
     vm.OperandStack:copy(n)
 
@@ -197,6 +194,24 @@ local function mod(vm)
     return true
 end
 exports.mod = mod
+
+local function maximum(vm)
+    local b = vm.OperandStack:pop()
+    local a = vm.OperandStack:pop()
+
+    vm.OperandStack:push(math.max(a, b))
+end
+exports.max = maximum
+exports[".max"] = maximum
+
+local function minimum(vm)
+    local b = vm.OperandStack:pop()
+    local a = vm.OperandStack:pop()
+
+    vm.OperandStack:push(math.min(a, b))
+end
+exports.min = minimum
+exports[".min"] = minimum
 
 --[[
 -- one argument

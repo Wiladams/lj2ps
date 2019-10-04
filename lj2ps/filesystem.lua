@@ -6,6 +6,7 @@ local band, bor = bit.band, bit.bor;
 
 local win32 = require("lj2ps.win32")
 local ps_common = require("lj2ps.ps_common")
+local Stack = require("lj2ps.ps_stack")
 local unicode = require("lj2ps.unicode_util")
 
 
@@ -390,7 +391,7 @@ function FileSystemItem.items(self, pattern)
 end
 
 function FileSystemItem.itemsRecursive(self)
-	local stack = ps_common.Stack();
+	local stack = Stack();
 	local itemIter = self:items();
 
 	local closure = function()

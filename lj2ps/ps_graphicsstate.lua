@@ -2,7 +2,7 @@
 
 local ps_common = require("lj2ps.ps_common")
 local deepCopy = ps_common.deepCopy
-local Stack = ps_common.Stack
+local Stack = require("lj2ps.ps_stack")
 local Matrix = require("lj2ps.ps_matrix")
 
 local b2d = require("blend2d.blend2d")

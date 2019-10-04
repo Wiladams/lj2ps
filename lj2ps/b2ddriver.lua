@@ -9,7 +9,8 @@ local b2d = require("blend2d.blend2d")
 
 local FontMonger = require("lj2ps.fontmonger")
 local ps_common = require("lj2ps.ps_common")
-local Stack = ps_common.Stack
+
+local Stack = require("lj2ps.ps_stack")
 local Matrix = require("lj2ps.ps_matrix")
 
 local ops = require("lj2ps.ps_operators")

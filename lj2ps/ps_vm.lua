@@ -15,13 +15,15 @@
 ]]
 
 local ps_common = require("lj2ps.ps_common")
-local Stack = ps_common.Stack
 local TokenType = ps_common.TokenType
 local Token = ps_common.Token
 
 local ops = require("lj2ps.ps_operators")
 local gops = require("lj2ps.ps_graph_operators")
+
+local Stack = require("lj2ps.ps_stack")
 local DictionaryStack = require("lj2ps.ps_dictstack")
+
 local Blend2DDriver = require("lj2ps.b2ddriver")
 local Scanner = require("lj2ps.ps_scanner")
 local Interpreter = require("lj2ps.ps_interpreter")
