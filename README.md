@@ -2,7 +2,7 @@
 Impetuous Postscript (IMPP) Postscript interpreter written in Lua
 
 ![Image](../blob/master/images/tigger.png?raw=true)
-
+![Image](https://github.com/Wiladams/lj2ps/blob/master/images/tigger.png)
 
 
 This project is an exploration of trying to pull together several different kind of things.
