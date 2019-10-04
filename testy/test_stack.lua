@@ -1,12 +1,12 @@
 package.path = "../?.lua;"..package.path
 
-local ps_common = require("lj2ps.ps_common")
-local Stack = ps_common.Stack 
+
+local Stack = require("lj2ps.ps_stack") 
 
 local s = Stack()
 
 local function pstack(s)
-    for _, item in s:items() do
+    for _, item in s:elements() do
         print(item)
     end
 end
@@ -28,7 +28,7 @@ local function test_enumerate()
     s:push(3)
 
     print("-- enumerate --")
-    for idx, value in s:items() do 
+    for idx, value in s:elements() do 
         print(idx, value)
     end
 end
@@ -103,7 +103,7 @@ local function test_nth()
     print("nth(3): ", s:nth(3))
 end
 
-test_copy()
---test_nth()
+--test_copy()
+test_nth()
 --test_popn()
 --test_roll()

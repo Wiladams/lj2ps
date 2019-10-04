@@ -1003,14 +1003,14 @@ end
 exports.print = ps_print
 
 local function stack(vm)
-    for _, item in vm.OperandStack:items() do 
+    for _, item in vm.OperandStack:elements() do 
         print(item)
     end
 end
 exports.stack = stack
 
 local function pstack(vm)
-    for _, item in vm.OperandStack:items() do 
+    for _, item in vm.OperandStack:elements() do 
         print(item)
     end
 end

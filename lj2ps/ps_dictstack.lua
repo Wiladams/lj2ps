@@ -10,7 +10,7 @@
 ]]
 
 local ps_common = require("lj2ps.ps_common")
-local Stack = ps_common.Stack
+local Stack = require("lj2ps.ps_stack")
 
 
 local DictionaryStack = {}
@@ -100,7 +100,7 @@ end
 -- of the specified key.
 -- return the dictionary, and value if found
 function DictionaryStack.where(self, key)
-    for _, dict in self.dicts:items() do 
+    for _, dict in self.dicts:elements() do 
         if type(dict) == "table" then
             local value = dict[key] 
             if value ~= nil then

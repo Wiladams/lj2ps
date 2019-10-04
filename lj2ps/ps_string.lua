@@ -1,29 +1,13 @@
---[[
-	Array
+local ffi = require("ffi")
 
-    The Array object represents the Postscript Array.  It
-    has a few features and functions which make it 
-    convenient.
-
-	A fixed size array, with an index starting at '0'
-	Useful when we want a more typical 'C' style array
-	of a fixed size.
-
-	The array guards against writing past its stated
-    capacity.  You must specify a capacity in the constructor
-    or you will receive a nil back.
-
-    local arr = Array(5)
-    
-
-]]
-local Array = {}
-setmetatable(Array, {
+local PSString = {}
+setmetatable(PSString, {
     __call = function(self, ...)
         return self:new(...)
     end;
 })
-local Array_mt = {
+local PSString_mt = {
+--[=[
 	-- using trying to retrieve a value
     __index = function(self, idx)
         --print("Array_mt.__index: ", idx)
@@ -111,7 +95,7 @@ local Array_mt = {
         -- of the element at the index+1
         if num then
         	-- protect against index beyond capacity
-            if num >= self.__attributes.capacity then 
+            if num >= self.capacity then 
                 return false 
             end
 
@@ -124,28 +108,20 @@ local Array_mt = {
 
         return true
     end;
-
+--]=]
     __len = function(self)
-        return self.__attributes.capacity
+        return self.attributes.length
     end;
 
     __tostring = function(self)
-        --print("Array.__tostring")
         local n = #self
-        --print("SIZE: ", n)
+        print("PSString.__tostring: ", #self)
         
         if n == 0 then
             return ""
         end
 
-        local tmp = {}
-
-        for i=1,n do
-            --print(self[i-1])
-            table.insert(tmp, tostring(self[i-1]))
-        end
-
-        return table.concat(tmp,' ')
+        return ffi.string(self.__impl, n)
     end;
 }
 
@@ -164,22 +140,22 @@ capacity is not changeable
 isExecutable is either true or false
 --]]
 
-function Array.new(self, cnt, isExecutable)
+function PSString.new(self, cnt)
     if not cnt then return nil end
     if isExecutable == nil then isExecutable = false end
 
     local obj = {
-        __impl = {};
+        __impl = ffi.new("char[?]", cnt)
         __attributes = {
             capacity = cnt;
+            length = 0;
             isExecutable = isExecutable;
         };
-
 	}
 	
-    setmetatable(obj, Array_mt)
+    setmetatable(obj, PSString_mt)
 
     return obj
 end
 
-return Array
+return PSString

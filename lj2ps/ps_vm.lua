@@ -82,7 +82,7 @@ function PSVM.new(self, obj)
     -- setup system dictionary
     ops["true"] = true
     ops["false"] = false
-    ops[".max"] = 72*11
+
     
     obj.DictionaryStack:pushDictionary(ops)     -- systemdict, should contain system operators
     obj.DictionaryStack:pushDictionary(gops)     -- graphics operators
