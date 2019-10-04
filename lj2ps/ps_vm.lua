@@ -125,6 +125,7 @@ function PSVM.execName(self, name)
     local op = self.DictionaryStack:load(name)
     local otype = type(op)
     --print("PSVM.execName: ", name, op, otype)
+    --print("PSVM.execName: ", name, op)
     --print("PSVM.execName: ", name)
 
     -- op can either be one of the literal types
@@ -132,7 +133,7 @@ function PSVM.execName(self, name)
     -- or it's a table or function
     -- if it's a table, we need to check whether it's a procedure
     -- or an array
-    if op then
+    if op ~= nil then
         if otype == "boolean" or
             otype == "number" or
             otype == "string" then

@@ -53,6 +53,7 @@ function Interpreter.runStream(self, bs)
             --print("  interp.runstream(self.Vm:execName): ", token.value)
             self.Vm:execName(token.value)
         elseif token.kind == TokenType.LITERAL_ARRAY then
+            --print("LITERAL_ARRAY, isExecutable: ", token.value, token.value.isExecutable)
             self.Vm.OperandStack:push(token.value)
         elseif token.kind == TokenType.PROCEDURE then
             -- pure procedure definition, push it on the stack

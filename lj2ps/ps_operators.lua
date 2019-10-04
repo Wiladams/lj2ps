@@ -163,7 +163,7 @@ exports.mul = mul
 local function div(vm)
     local num2 = vm.OperandStack:pop()
     local num1 = vm.OperandStack:pop()
-    print("div: ", type(num1), type(num2), num2)
+    --print("div: ", type(num1), type(num2), num2)
     
     -- BUGBUG, need to find cases where this happens
     if (type(num1) ~= "number") or (type(num2) ~= "number") then
@@ -959,12 +959,17 @@ exports.stopped = stopped
 --rcheck
 --wcheck
 --cvlit
+
 --cvx
+-- any cvx any
 local function cvx(vm)
     -- pop a thing from the stack 
     -- set it as 'isExecutable = true'
     -- put it back on the stack
+
     local athing = vm.OperandStack:pop()
+    print("cvx: ", athing)
+
     if type(athing == "table") then
         athing.isExecutable = true
         print("CVX: ",athing, athing.isExecutable, athing.kind)
@@ -1007,8 +1012,16 @@ exports.cvr = cvr
 local function cvn(vm)
 end
 
+-- cvs
+-- any string cvs substring
 local function cvs(vm)
-    vm.OperandStack:push(tostring(vm.OperandStack:pop()))
+    local str = vm.OperandStack:pop()
+    local value = vm.OperandStack:pop()
+    local str2 = String(tostring(value))
+
+    str:putInterval(0, str2)
+    vm.OperandStack:push(str)
+
     return true 
 end
 exports.cvs = cvs
@@ -1082,6 +1095,14 @@ exports.version = version
 
 --realtime
 --usertime
+local function usertime(vm)
+    -- BUGBUG, should be real system time
+    vm.OperandStack:push(5)
+
+    return true
+end
+exports.usertime = usertime
+
 --languagelevel
 --product
 --revision
