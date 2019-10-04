@@ -123,6 +123,7 @@ function PSVM.execName(self, name)
     local op = self.DictionaryStack:load(name)
     local otype = type(op)
     --print("PSVM.execName: ", name, op, otype)
+    --print("PSVM.execName: ", name)
 
     -- op can either be one of the literal types
     -- bool, number, string, null

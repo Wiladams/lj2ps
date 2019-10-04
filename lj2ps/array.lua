@@ -130,10 +130,19 @@ local Array_mt = {
     end;
 
     __tostring = function(self)
-        print("Array.__tostring")
+        --print("Array.__tostring")
+        local n = #self
+        --print("SIZE: ", n)
+        
+        if n == 0 then
+            return ""
+        end
+
         local tmp = {}
-        for i=1,#self do
-            table.insert(tmp, self[i-1])
+
+        for i=1,n do
+            --print(self[i-1])
+            table.insert(tmp, tostring(self[i-1]))
         end
 
         return table.concat(tmp,' ')

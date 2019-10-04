@@ -145,9 +145,15 @@ function PSFigure.lineTo(self, x, y)
     return true
 end
 
+-- BUGBUG, need to capture lastX, lastY
 function PSFigure.arc(self, x, y, r, angle1, angle2)
     local sweep = math.rad(angle2 - angle1)
-    return self.CurrentContour:arcTo(x, y, r, r, math.rad(angle1), sweep, true)
+    local bResult = self.CurrentContour:arcTo(x, y, r, r, math.rad(angle1), sweep, true)
+
+    local vtxOut = BLPoint()
+    self.CurrentContour:getLastVertex(vtxOut)
+    self.lastX = vtxOut.x
+    self.lastY = vtxOut.y
 end
 
 function PSFigure.curveTo(self, x1,y1,x2,y2,x3,y3)

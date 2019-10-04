@@ -308,6 +308,7 @@ end
 -- concat
 function Blend2DDriver.concat(self, m)
     self.CurrentState.CTM:preMultiplyBy(m)
+    
     return true
 end
 

@@ -40,7 +40,7 @@ exports.gstate = gstate
 -- currentlinewidth
 local function setlinewidth(vm)
     local value = vm.OperandStack:pop()
-    print("setlinewidth: ", value)
+    --print("setlinewidth: ", value)
     vm.Driver:setLineWidth(value)
     return true
 end
@@ -439,7 +439,11 @@ exports.rotate = rotate
 -- matrix concat
 local function concat(vm)
     local m = vm.OperandStack:pop()
+    --print("concat: ", m)
     m = Matrix:createFromArray(m)
+    
+    assert(m ~= nil)
+
     vm.Driver:concat(m)
 
     return true

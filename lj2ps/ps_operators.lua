@@ -914,6 +914,16 @@ exports.exit = exit
 --execstack
 --stop
 
+-- stopped
+-- any stopped bool
+-- BUGBUG, need real implementation
+local function stopped(vm)
+    local any = vm.OperandStack:pop()
+    vm.OperandStack:push(false)
+
+    return true
+end
+exports.stopped = stopped
 
 --[[
 -- Type, Attribute and Conversion Operators
