@@ -7,9 +7,8 @@ local DEGREES, RADIANS = math.deg, math.rad
 local ps_common = require("lj2ps.ps_common")
 local Stack = ps_common.Stack
 local Array = require("lj2ps.array")
-
 local Dictionary = require("lj2ps.dictionary")
-
+local String = require("lj2ps.ps_string")
 
 
 
@@ -574,6 +573,9 @@ end
 exports.dict = dict
 
 local function string(vm)
+    local n = vm.OperandStack:pop()
+    local str = String(n)
+    vm.OperandStack:push(str)
 end
 exports.string = string
 
