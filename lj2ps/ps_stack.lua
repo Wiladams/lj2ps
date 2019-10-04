@@ -1,3 +1,5 @@
+local ps_common = require("lj2ps.ps_common")
+
 --[[
 	Stack
 --]]
@@ -36,7 +38,7 @@ function Stack.countToMark(self)
     local ct = 0
 
     for _, item in self:elements() do
-        if item == exports.MARK then
+        if item == ps_common.MARK then
             break
         end
 

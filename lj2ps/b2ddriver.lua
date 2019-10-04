@@ -77,15 +77,6 @@ function Blend2DDriver.new(self, obj)
     obj.DC:translate(0,-h)
     obj.DC:scale(scalex,scaley)
 
-    -- We want to keep around a clipping path
-    local cpath = BLPath()
-    cpath:moveTo(0,0)
-    cpath:lineTo(obj.inchesWide*72, 0)
-    cpath:lineTo(obj.inchesWide*72, obj.inchesHigh*72)
-    cpath:lineTo(0, obj.inchesHigh*72)
-    cpath:close()
-    obj.ClippingPath = cpath;
-
     -- we push from userToMeta so that this becomes
     -- the baseline transform
     -- Now when we push and pop other matrices, 
@@ -185,7 +176,14 @@ end
 ]]
 
 function Blend2DDriver.clipPath(self)
-    return self.ClippingPath
+    local cpath = Figure(self.VM)
+    cpath:moveTo(0,0)
+    cpath:lineTo(self.inchesWide*72, 0)
+    cpath:lineTo(self.inchesWide*72, self.inchesHigh*72)
+    cpath:lineTo(0, self.inchesHigh*72)
+    cpath:closeContour()
+
+    return cpath
 end
 
 -- setlinewidth
@@ -396,7 +394,7 @@ end
 
 -- pathbox
 function Blend2DDriver.pathBox(self)
-    --print("pathBox: ", self.CurrentState.CurrentFigure)
+    print("pathBox: ", self.CurrentState.CurrentFigure)
     return self.CurrentState.CurrentFigure:boundingBox()
 end
 

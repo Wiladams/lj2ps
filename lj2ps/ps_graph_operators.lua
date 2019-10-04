@@ -324,6 +324,11 @@ end
 exports.matrix = matrix
 
 --initmatrix
+-- - initmatrix -
+local function initmatrix(vm)
+    return false
+end
+exports.initmatrix = initmatrix
 
 --identmatix
 -- take whatever thing that's on the top

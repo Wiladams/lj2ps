@@ -163,6 +163,14 @@ exports.mul = mul
 local function div(vm)
     local num2 = vm.OperandStack:pop()
     local num1 = vm.OperandStack:pop()
+    print("div: ", type(num1), type(num2), num2)
+    
+    -- BUGBUG, need to find cases where this happens
+    if (type(num1) ~= "number") or (type(num2) ~= "number") then
+        vm.OperandStack:push(0)
+        return false
+    end
+
     local value = num1/num2
 
     vm.OperandStack:push(value)
@@ -242,6 +250,7 @@ exports.neg = neg
 
 local function round(vm)
     local n = vm.OperandStack:pop()
+    --print("round: ", n)
     if n >= 0 then
         vm.OperandStack:push(math.floor(n+0.5))
     else
