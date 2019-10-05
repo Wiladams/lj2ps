@@ -204,12 +204,13 @@ end
 exports.mod = mod
 
 local function maximum(vm)
+    --print("MAXIMUM")
     local b = vm.OperandStack:pop()
     local a = vm.OperandStack:pop()
 
     vm.OperandStack:push(math.max(a, b))
 end
-exports.max = maximum
+--exports.max = maximum
 exports[".max"] = maximum
 
 local function minimum(vm)
@@ -218,7 +219,7 @@ local function minimum(vm)
 
     vm.OperandStack:push(math.min(a, b))
 end
-exports.min = minimum
+--exports.min = minimum
 exports[".min"] = minimum
 
 --[[
@@ -992,7 +993,7 @@ exports.cvx = cvx
 local function cvi(vm)
     local value = vm.OperandStack:pop()
     local num = tonumber(value)
-print("CVI: ", type(value), value)
+--print("CVI: ", type(value), value)
     assert(num ~= nil)
     
     if num >= 0 then

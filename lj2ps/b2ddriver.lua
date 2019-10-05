@@ -108,6 +108,7 @@ function Blend2DDriver.applyState(self, state)
 end
 
 local fontAliases = {
+    ["courier"] = "arial";
     ["times-roman"] = "times new roman";
     ["helvetica"] = "arial";
     ["helvetica-bold"] = "arial";
@@ -133,7 +134,7 @@ function Blend2DDriver.findFontFace(self, name)
     --print("Blend2DDriver.findFontFace, name, alias: ", name, alias)
     local fontinfo = self.FontMonger:getFace(alias, subfamily, true)
 
-    --print("Blend2DDriver.findFontFace, fontinfo: ", alias, fontinfo)
+    --print("Blend2DDriver.findFontFace, fontinfo: ", name, alias, fontinfo)
 
     if fontinfo then
         --print("fontinfo.face: ", fontinfo.face)

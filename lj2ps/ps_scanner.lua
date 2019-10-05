@@ -252,8 +252,9 @@ local function lex_number(self, bs)
     local value = tonumber(str)
 
     --print("LEX_NUMBER: ", starting, len, str, value)
-    
-    return value;
+    local tok = Token({kind = TokenType.NUMBER, value=value, line=bs:tell()})
+
+    return tok
 
 end
 
@@ -321,10 +322,9 @@ function Scanner.tokens(self)
             else
                 if digitChars[c] or c == B'-' or c == B'.' then
                     bs:skip(-1)
-                    local value = lex_number(self, bs)
-                    local tok = Token({kind = TokenType.NUMBER, value=value, line=bs:tell()})
+                    local tok = lex_number(self, bs)
 
-                    if value then
+                    if tok then
                         if self.Vm:isBuildingProc() then
                             self.Vm.OperandStack:push(tok)
                         else

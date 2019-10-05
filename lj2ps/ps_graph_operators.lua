@@ -941,6 +941,7 @@ local function scalefont(vm)
     local size = vm.OperandStack:pop()
     local face = vm.OperandStack:pop()
 
+    --print("scaleFont: ", face)
     local font = face:createFont(size)
 
     vm.OperandStack:push(font)
@@ -967,7 +968,7 @@ local function currentfont(vm)
 
     return true
 end
-
+exports.currentfont = currentfont
 
 --setfont
 local function selectfont(vm)
