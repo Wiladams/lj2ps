@@ -706,9 +706,10 @@ exports.ne = ne
 local function gt(vm)
     local any2 = vm.OperandStack:pop()
     local any1 = vm.OperandStack:pop()
-
+    
     local value = any1 > any2
---print("GT: ", any1, any2, value)
+
+    --print("GT: ", any1, any2, value)
 
     vm.OperandStack:push(value)
 
@@ -878,6 +879,7 @@ exports["repeat"] = function(vm)
     local proc = vm.OperandStack:pop()
     local n = vm.OperandStack:pop()
 
+    --print("REPEAT: ", n, proc)
     local co = coroutine.create(function(vm, proc, n)
         for i=1,n do 
             vm:execArray(proc)
@@ -917,7 +919,7 @@ local function forall(vm)
     local co = coroutine.create(function(vm,proc, arr)
         --print("  ROUTINE: ", vm, proc, arr)
         for _, element in arr:elements() do 
-            print("ELEMENT: ", _, element)
+            --print("ELEMENT: ", _, element)
             vm.OperandStack:push(element)
             vm:execArray(proc)
         end

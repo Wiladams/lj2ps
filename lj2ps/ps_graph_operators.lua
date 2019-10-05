@@ -1005,6 +1005,18 @@ end
 exports.show = show
 
 --ashow
+local function ashow(vm)
+    local str = vm.OperandStack:pop()
+    local ay = vm.OperandStack:pop()
+    local ax = vm.OperandStack:pop()
+
+    print("ASHOW: ", ax, ay, str.value)
+    vm.Driver:show({ax, ay}, str.value)
+
+    return true
+end
+exports.ashow = ashow
+
 --widthshow
 --awidthshow
 --xshow
