@@ -329,7 +329,9 @@ exports.atan = atan
 
 -- put random integer on the stack
 local function rand(vm)
-    vm.OperandStack:push(math.random())
+    local value = math.random(0,0x7fffffff)
+    vm.OperandStack:push(value)
+
     return true
 end
 exports.rand = rand
@@ -990,7 +992,7 @@ exports.cvx = cvx
 local function cvi(vm)
     local value = vm.OperandStack:pop()
     local num = tonumber(value)
-
+print("CVI: ", type(value), value)
     assert(num ~= nil)
     
     if num >= 0 then

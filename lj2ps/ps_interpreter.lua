@@ -33,7 +33,7 @@ end
     Instance Methods
 ]]
 
--- bs - type can be either 'string' or 'ectetstream' (table)
+-- bs - type can be either 'string' or 'octetstream'
 function Interpreter.runStream(self, bs)
 
     local scnr = Scanner(self.Vm, bs)

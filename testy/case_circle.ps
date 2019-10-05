@@ -1,0 +1,130 @@
+%!PS
+% vasarely
+% Elizabeth D. Zwicky
+% zwicky@sgi.com
+/vasarelysave save def	% prevent residual side effects
+%
+% Inspired by Vasarely's experiments with tilting circles and squares
+% (for instance "Tlinko" and "Betelgeuse"
+
+%% circles
+/part { circle } def /nnrand false def
+
+
+%% tilt the base shape a random amount?
+/twist false def
+% /twist true def
+
+
+/rainbow false def
+/rainrange .25 def
+
+% number of different designs per page
+/inheight 2 def
+/inwidth 2 def
+% number of repeats in a design
+/xtimes 10 def
+/ytimes 16 def
+
+%% This sets the relationship between the two hues: comptwo is maximum contrast
+/colorway {comptwo} def
+
+
+%% This sets the brightness and saturation of the colors; vivid makes
+%% them both bright
+/colorfam {vivid} def
+
+%% Only experts below this point!
+
+usertime srand
+/seed rand def
+
+/starcompensate false def
+/constroke 1 def
+
+
+
+/circle {
+  /radius radius 1.33 mul def
+  currentpoint /herey exch def /herex exch def
+   herex herey radius 0 360 arc
+} def 
+
+/ngon{ % polygon of n sides, n determined by nn
+  nside 2 div radius rmoveto
+   nn cvi {
+         nside neg 0 rlineto
+         360 360 nn div sub neg rotate
+       } repeat
+  closepath
+} def
+
+/nstar{ % star of n points, n determined by nstarslider
+  /radius radius 1.33 mul def
+  currentpoint /herey exch def /herex exch def
+   0 radius rmoveto
+       90 nstarangle 2 div add  neg rotate 
+	nn cvi {nstarside 0 rlineto
+	    180 180 nstarangle 2 mul sub sub neg rotate
+	    nstarside 0 rlineto
+	    180 180 360 nn div sub nstarangle 2 mul sub sub  rotate
+	} repeat
+        90 nstarangle 2 div add  rotate
+	closepath
+} def
+
+/nstarangle {180 360 nn div sub 3 div}  def
+/nstarside { 
+   2 
+     radius
+        1 
+          180 nn div 
+          sin 
+        div 
+     div 
+   mul 
+   nstarangle sin 
+   mul
+   180 
+     nstarangle 2 mul
+   sub 
+   sin 
+   div 
+} def
+
+/nside { 
+   2 
+   radius
+   360 nn div 2 div tan
+   mul
+   mul  
+} def
+
+
+/tan { /alpha exch def
+  alpha sin
+  1 alpha sin dup mul sub sqrt
+  div
+} def
+
+
+/pastel {
+   /backbright  high def
+   /backsat medlow def
+   /fillbright  high def
+   /fillsat medlow def
+   /eobright  high def
+   /eosat medlow def
+   constroke 0 eq {
+     /strokebright  high def
+     /strokesat medlow def
+   }
+   {
+      /strokebright  low def
+      /strokesat  high def
+   } ifelse
+} def
+
+
+
+showpage

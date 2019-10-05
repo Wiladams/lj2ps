@@ -816,6 +816,12 @@ exports.pathbbox = pathbbox
 --pathforall
 --upath
 --initclip
+local function initclip(vm)
+    --print("INITCLIP")
+    return true
+end
+exports.initclip = initclip
+
 --clip
 local function clip(vm)
     return true
