@@ -1,14 +1,14 @@
 package.path = "../?.lua;"..package.path
 
 local PSVM = require("lj2ps.ps_vm")
-local Interpreter = require("lj2ps.ps_interpreter")
+--local Interpreter = require("lj2ps.ps_interpreter")
 
 
 local vm = PSVM();              -- Create postscript virtual machine
-local interp = Interpreter(vm)  -- create an interpreter
+--local interp = Interpreter(vm)  -- create an interpreter
 
 --[=[
-interp:run([[
+vm:eval([[
 /F { %def
   findfont exch scalefont setfont
 } bind def
@@ -16,17 +16,17 @@ interp:run([[
 --]=]
 
 local function test_simple()
-  interp:run([[1 2 add pstack]])
+  vm:eval([[1 2 add pstack]])
 end
 
 local function test_array()
-  interp:run([[
+  vm:eval([[
 [1 2 3]
 ]])
 end
 
 local function test_procedure()
-  interp:run([[
+  vm:eval([[
 /add3 { 3 add} def
 5 add3
 pstack
@@ -34,7 +34,7 @@ pstack
 end
 
 local function test_if()
-  interp:run([[
+  vm:eval([[
 3 4 lt { (3 is less than 4) } if
 pstack
 ]])
@@ -42,21 +42,21 @@ pstack
 end
 
 local function test_ifelse()
-interp:run([[
+vm:eval([[
 4 3 lt {(TruePart)} {(FalsePart)} ifelse
 pstack
 ]])
 end
 
 local function test_for()
-  interp:run([[
+  vm:eval([[
 0 1 1 4 {add} for
 pstack
   ]])
 end
 
 local function test_fork()
-interp:run([[
+vm:eval([[
 /Tahoma findfont
 16 scalefont
 setfont
@@ -71,7 +71,7 @@ end
 
 local function test_def()
   print("==== test_def ====")
-  interp:run([[
+  vm:eval([[
 /ppi 72 def
 10 ppi mul
 pstack
@@ -80,7 +80,7 @@ end
 
 local function test_index()
   print("===== test_index ====")
-interp:run([[
+vm:eval([[
 1 2 3 1 index
 pstack
 ]])
@@ -88,7 +88,7 @@ end
 
 local function test_astore()
   print("==== test_astore ====")
-  interp:run([[
+  vm:eval([[
 (a) (bcd) (ef) 3 array astore
 ]])
   
@@ -104,7 +104,7 @@ end
 
 local function test_string()
 print("==== test_string ====")
-  interp:run([[
+  vm:eval([[
 (a) (bcd) (ef)
 pstack
 ]])
@@ -112,7 +112,7 @@ end
 
 function test_atan()
 print("==== test_atan ====")
-  interp:run([[
+  vm:eval([[
 0 1 atan
 1 0 atan
 -100 0 atan
@@ -123,7 +123,7 @@ end
 
 function test_cos()
   print("==== test_cos ====")
-  interp:run([[
+  vm:eval([[
 0 cos
 90 cos
 pstack
@@ -132,7 +132,7 @@ end
 
 function test_count()
   print("==== test_count ====")
-  interp:run([[
+  vm:eval([[
 clear count
 pstack
 clear 1 2 3 count
@@ -142,7 +142,7 @@ end
 
 function test_counttomark()
   print("==== test_counttomark ====")
-  interp:run([[
+  vm:eval([[
 1 2 3 mark
 4 5 6
 counttomark

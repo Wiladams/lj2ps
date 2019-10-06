@@ -20,5 +20,5 @@ local bytes = f:read("*a")
 f:close()
 
 print("==== RUN SCRIPT ====")
-interp:run(bytes)
+vm:eval(bytes)
 print("==== FINISHED ====")

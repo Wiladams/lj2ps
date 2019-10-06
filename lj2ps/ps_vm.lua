@@ -26,7 +26,7 @@ local DictionaryStack = require("lj2ps.ps_dictstack")
 
 local Blend2DDriver = require("lj2ps.b2ddriver")
 local Scanner = require("lj2ps.ps_scanner")
-local Interpreter = require("lj2ps.ps_interpreter")
+local octetstream = require("lj2ps.octetstream")
 
 
 local PSVM = {}
@@ -85,7 +85,7 @@ function PSVM.new(self, obj)
     ops["true"] = true
     ops["false"] = false
     ops["QUIET"] = true
-    
+
     
     obj.DictionaryStack:pushDictionary(ops)     -- systemdict, should contain system operators
     obj.DictionaryStack:pushDictionary(gops)     -- graphics operators
@@ -316,9 +316,35 @@ function PSVM.bind(self)
     self.OperandStack:push(arr)
 end
 
-function PSVM.eval(self, str)
-    local interp = Interpreter(self)
-    interp:run(str)
+
+function PSVM.runStream(self, bs)
+
+    local scnr = Scanner(self, bs)
+
+    -- Iterate through tokens
+    for _, token in scnr:tokens(bs) do
+        --print("INTERP: ", token.kind, token.value)
+        if TokenType[token.kind] == nil then
+            -- it's some other literal value type
+            print("INTERP, UNKNOWN Token Kind: ", token.kind)
+            --print("INTERP, push: ", TokenType[token.kind], token.value)
+            --self.OperandStack:push(token.value)
+        elseif token.kind == TokenType.EXECUTABLE_NAME then
+            --print("  PSVM.runstream(self.Vm:execName): ", token.value)
+            self:execName(token.value)
+        else
+            self.OperandStack:push(token.value)
+        end
+    end
+end
+
+
+function PSVM.eval(self, bs)
+    if type(bs) == "string" then
+        bs = octetstream(bs)
+    end
+
+    return self:runStream(bs)
 end
 
 return PSVM

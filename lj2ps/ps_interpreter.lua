@@ -1,4 +1,7 @@
-
+--[[
+    NOTE:  THIS FILE IS NO LONGER IN USE
+    THE FUNCTIONS HAVE BEEN INCORPORATED INTO THE PS_VM.LUA FILE
+]]
 local Scanner = require("lj2ps.ps_scanner")
 local octetstream = require("lj2ps.octetstream")
 local ps_common = require("lj2ps.ps_common")
@@ -69,6 +72,7 @@ function Interpreter.runStream(self, bs)
     end
 end
 
+--[[
 function Interpreter.run(self, bs)
     if type(bs) == "string" then
         bs = octetstream(bs)
@@ -76,5 +80,6 @@ function Interpreter.run(self, bs)
 
     return self:runStream(bs)
 end
+--]]
 
 return Interpreter

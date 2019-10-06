@@ -2,13 +2,13 @@ package.path = "../?.lua;"..package.path
 
 
 local PSVM = require("lj2ps.ps_vm")
-local Interpreter = require("lj2ps.ps_interpreter")
+--local Interpreter = require("lj2ps.ps_interpreter")
 
 local vm = PSVM();              -- Create postscript virtual machine
-local interp = Interpreter(vm)  -- create an interpreter
+--local interp = Interpreter(vm)  -- create an interpreter
 
 local function test_var()
-interp:run([[
+vm:eval([[
 /ppi 72 def
 10 ppi mul
 pstack
@@ -16,7 +16,7 @@ pstack
 end
 
 local function test_proc()
-interp:run([[
+vm:eval([[
 /inch {
   72 mul
 }  def
@@ -27,7 +27,7 @@ end
 
 -- Draw three overlapping boxes
 local function test_boxes()
-interp:run([[
+vm:eval([[
 /box {
     72 0 rlineto
     0 72 rlineto
@@ -62,7 +62,7 @@ showpage
 end
 
 local function test_nested()
-interp:run([[
+vm:eval([[
   /bdef {bind def} bind def
   /ldef {load def} bdef
   /xdef {exch def} bdef
@@ -77,7 +77,7 @@ interp:run([[
 end
 
 local function test_binddef()
-  interp:run([[  /bdef {bind def} bind def]])
+  vm:eval([[  /bdef {bind def} bind def]])
 end
 
 --test_var()

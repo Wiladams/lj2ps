@@ -12,7 +12,7 @@ local vm = PSVM();              -- Create postscript virtual machine
 local interp = Interpreter(vm)  -- create an interpreter
 
 local function test_example1()
-    interp:run([[
+    vm:eval([[
 %!
 %% Example 1
 
@@ -28,7 +28,7 @@ showpage
 end
 
 local function test_example2()
-    interp:run([[
+    vm:eval([[
 %!
 %% Example 2
 
@@ -49,7 +49,7 @@ showpage
 end
 
 local function test_example3()
-interp:run([[
+vm:eval([[
 %!
 %% Example 3
 
@@ -70,7 +70,7 @@ end
 
 
 local function test_example5()
-    interp:run([[
+    vm:eval([[
 %!
 %% Example 5
 
@@ -93,7 +93,7 @@ showpage
 end
 
 local function test_example9()
-    interp:run([[
+    vm:eval([[
 %!
 %%Example 9
 100 200 translate

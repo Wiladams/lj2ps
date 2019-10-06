@@ -26,24 +26,15 @@ The Postcript language environment has a large number of operators.  In general,
 The "Hello World" from the Lua side:
 
 ```lua
-package.path = "../?.lua;"..package.path
+local vm = require("lj2ps.ps_vm")()   -- Create postscript virtual machine            
 
-local PSVM = require("lj2ps.ps_vm")
-local Interpreter = require("lj2ps.ps_interpreter")
-
-
-local vm = PSVM();              -- Create postscript virtual machine
-local interp = Interpreter(vm)  -- create an interpreter
-
-
-interp:run([[
+vm:eval([[
   1 2 add 
   ==
 ]])
-
 ```
 
-It will output
+Will output
 
 > 3
 
