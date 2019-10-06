@@ -20,6 +20,7 @@ local Token = ps_common.Token
 
 local ops = require("lj2ps.ps_operators")
 local gops = require("lj2ps.ps_graph_operators")
+local fops = require("lj2ps.ps_operators_file")
 
 local Stack = require("lj2ps.ps_stack")
 local DictionaryStack = require("lj2ps.ps_dictstack")
@@ -89,7 +90,8 @@ function PSVM.new(self, obj)
     
     obj.DictionaryStack:pushDictionary(ops)     -- systemdict, should contain system operators
     obj.DictionaryStack:pushDictionary(gops)     -- graphics operators
-    
+    obj.DictionaryStack:pushDictionary(fops)
+        
     obj.DictionaryStack:pushDictionary({})      -- globaldict
     obj.DictionaryStack:pushDictionary({})      -- userdict
     obj.DictionaryStack:mark()

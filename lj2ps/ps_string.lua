@@ -24,6 +24,10 @@ local PSString_mt = {
 			return 'string'
         elseif idx == "capacity" then
             return self.__attributes.capacity
+        elseif idx == "reset" then
+            -- BUGBUG
+            -- maybe also zero things out?
+            return function(self) self.__attributes.length = 0 end
         elseif idx == "length" then
             return function(self) return self.__attributes.length end
         elseif idx == "put" then
