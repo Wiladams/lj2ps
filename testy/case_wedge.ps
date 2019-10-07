@@ -1,0 +1,24 @@
+%!PS
+
+/inch {72 mul} def
+
+/wedge {
+    newpath
+    0 0 moveto
+    1 0 translate
+    15 rotate
+    0 15 sin translate
+    0 0 15 sin -90 90 arc
+    closepath
+} def
+
+gsave
+    3.75 inch 7.25 inch translate
+    1 inch 1 inch scale
+    wedge 
+
+    1 setlinewidth 
+    stroke
+grestore
+
+showpage
