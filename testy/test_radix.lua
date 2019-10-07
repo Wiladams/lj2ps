@@ -42,7 +42,7 @@ end
 -- in lua, you can simply call tonumber(str, base)
 -- but here we want to actually calculate it out just
 -- to have an example of doing the calculation
-local function radixNumber(base, str)
+local function radixNumber(str, base)
     --print("radixNumber: ", base, str)
     -- traverse the string, adding powers as we go
     local n = #str
@@ -57,8 +57,8 @@ local function radixNumber(base, str)
     return sum
 end
 
-print(radixNumber(10,"123"))
-print(radixNumber(16,"7F"))
-print(radixNumber(2,"1011"))
+print(radixNumber("123", 10))
+print(radixNumber("7F", 16))
+print(radixNumber("1011", 2))
 
 print(tonumber("17", 8))
