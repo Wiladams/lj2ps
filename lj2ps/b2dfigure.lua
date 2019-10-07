@@ -148,6 +148,7 @@ end
 
 -- BUGBUG, need to capture lastX, lastY
 function PSFigure.arc(self, x, y, r, angle1, angle2)
+    --print("PSFigure.arc: ", x, y, r, angle1, angle2)
     local sweep = math.rad(angle2 - angle1)
     local bResult = self.CurrentContour:arcTo(x, y, r, r, math.rad(angle1), sweep, false)
 

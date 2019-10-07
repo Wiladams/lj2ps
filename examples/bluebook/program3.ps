@@ -1,0 +1,41 @@
+%!PS
+% Program 3 - Elliptic Arcs
+
+/ellipsedict 8 dict def
+ellipsedict  /mtrx matrix put
+
+/ellipse {
+    ellipsedict begin
+    /endangle exch def
+    /startangle exch def
+    /yrad exch def
+    /xrad exch def
+    /y exch def
+    /x exch def
+
+    /savematrix mtrx currentmatrix def
+    x y translate
+    xrad yrad scale
+    0 0 1 startangle endangle arc 
+    savematrix setmatrix
+    end
+} def
+
+
+newpath
+    144 400 72 144 0 360 ellipse
+stroke
+
+newpath
+    400 400 144 36 0 360 ellipse
+fill
+
+newpath
+    300 180 144 72 30 150 ellipse
+stroke
+
+newpath
+    480 150 30 50 270 90 ellipse
+fill
+
+showpage
