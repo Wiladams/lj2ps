@@ -4,6 +4,7 @@
 	http://pic.dhe.ibm.com/infocenter/aix/v6r1/index.jsp?topic=%2Fcom.ibm.aix.basetechref%2Fdoc%2Fbasetrf1%2Fctype.htm
 	http://www.cplusplus.com/reference/clibrary/cctype/
 	http://www.cplusplus.com/reference/cctype/
+	https://garbagecollected.org/2017/01/31/four-column-ascii/
 
 	These are good for old time standard 7-bit
 	ASCII characters (0x00 .. 0x7f)
