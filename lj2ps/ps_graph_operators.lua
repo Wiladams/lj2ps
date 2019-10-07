@@ -349,13 +349,12 @@ end
 exports.identmatrix  =identmatrix
 
 --defaultmatrix
---currentmatrix
+--matrix currentmatrix matrix
 local function currentmatrix(vm)
-    local m = vm.Driver:currentMatrix()
-    -- BUGBUG
-    -- need to turn a blend2d matrix into a
-    -- 6 element array
-    vm.OperandStack:push(m)
+    local m = vm.OperandStack:pop()
+    local m1 = vm.Driver:currentMatrix()
+
+    vm.OperandStack:push(m1)
 
     return true
 end

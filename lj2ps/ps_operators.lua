@@ -420,7 +420,7 @@ exports.putinterval = putinterval
 local function def(vm)
     local value = vm.OperandStack:pop()
     local key = vm.OperandStack:pop()
---print("DEF: ", key, value)
+print("DEF: ", key, value)
     return vm.DictionaryStack:def(key, value)
 end
 exports.def = def

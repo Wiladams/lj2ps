@@ -1,0 +1,43 @@
+%!PS
+% Repeated Shapes
+
+/inch {72 mul} def
+
+/wedge {
+    newpath
+    0 0 moveto
+    1 0 translate
+    15 rotate
+    0 15 sin translate
+    0 0 15 sin -90 90 arc
+    %closepath
+} def
+
+% One lone wedge at the top
+gsave
+    3.75 inch 7.25 inch translate
+    1 inch 1 inch scale
+    wedge 
+    % 0.02 setlinewidth 
+    1 setlinewidth 
+    stroke
+grestore
+
+gsave
+    4.25 inch 4.25 inch translate
+    1.75 inch 1.75 inch scale
+    % 0.02 setlinewidth
+    1 setlinewidth
+    1 1 12
+    {
+        12 div setgray
+        gsave
+            wedge
+            gsave fill grestore
+            0 setgray stroke
+        grestore
+        30 rotate
+    } for
+grestore
+
+showpage

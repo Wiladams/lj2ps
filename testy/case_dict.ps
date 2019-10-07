@@ -1,0 +1,14 @@
+%!PS
+% From BLUE Book Examples
+% Showing how local/global dictionaries work
+
+/thestring (global) def
+thestring =
+/exampledict 1 dict def
+exampledict begin
+    thestring =
+    /thestring (local) def
+    thestring =
+end
+
+thestring =

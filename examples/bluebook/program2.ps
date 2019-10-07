@@ -1,0 +1,36 @@
+%!PS
+/inch {72 mul} def
+/centersquare {
+    newpath
+     .5  .5 moveto  -.5  .5 lineto
+    -.5 -.5 lineto   .5 -.5 lineto
+    closepath
+} def
+
+gsave
+    2.5 inch 6 inch translate
+    1 16 div setlinewidth
+    1 1 5 {
+        gsave
+            .5 mul inch dup scale
+            centersquare
+            stroke
+        grestore
+    } for
+grestore
+
+gsave
+    6 inch 6 inch translate
+    1 setlinewidth
+    /cmtx matrix currentmatrix pstack def
+    1 1 5 {
+        gsave
+            .5 mul inch dup scale
+            centersquare
+            cmtx setmatrix
+            stroke
+        grestore
+    } for
+grestore
+
+showpage
