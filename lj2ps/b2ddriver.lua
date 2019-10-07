@@ -589,6 +589,13 @@ function Blend2DDriver.show(self, pos, txt)
     -- need to unflip temporarirly
     -- or the text will be upside down
     self.DC:save()
+
+    -- apply current transformation
+    local ctm = self.CurrentState.CTM
+    local m = BLMatrix2D()
+    m:set(ctm.m00, ctm.m01, ctm.m10, ctm.m11, ctm.m20, ctm.m21)
+    self.DC:transform(m)
+
     self.DC:translate(pos[1], pos[2])
     self.DC:scale(1,-1)
     local success, err = self.DC:fillTextUtf8(BLPoint(), font, txt, #txt)

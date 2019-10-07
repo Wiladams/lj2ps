@@ -74,48 +74,36 @@ exports.write = write
 -- writehexstring
 
 -- readstring
--- writestring
+--   file string readstring substring bool
+local function readstring(vm)
+    local str = vm.OperandStack:pop()
+    local src = vm.OperandStack:pop()
+    local n = str.capacity
 
-local function readSingleLine(src)
-    if src:isEOF() then return nil end
+    str:reset()
 
-    local starting = src:tell();
-    local ending = starting
-    local startPtr = src:getPositionPointer();
-
-    while not src:isEOF() do
-        local c = src:peekOctet();
-        if c < 0 then
-            break;
-        end
-
-        if c == CR then
-            c = src:peekOctet(1);
-            if c == LF then
-                ending = src:tell();
-                src:skip(2)
-                break;
-            end
-        elseif c == LF then
-            src:skip(1)
-            break;
-        end
-
-        src:skip(1)
-        ending = src:tell()
+    local offset = 0
+    while (not src:isEOF()) and offset < n do
+        local c, err = src:readOctet()
+        str[offset] = c
+        offset = offset + 1
     end
 
-    local len = ending - starting
-    local value = ffi.string(startPtr, len)
-
-    return value;
+    vm.OperandStack:push(str)
+    vm.OperandStack:push(not src:isEOF())
+    
+    return true
 end
+exports.readstring = readstring
+
+-- writestring
 
 -- readline
 --   file string readline substring bool
 local function readline(vm)
     local CR = string.byte("\r")
     local LF = string.byte("\n")
+    local sawnewline = false
 
     local str = vm.OperandStack:pop()
     local src = vm.OperandStack:pop()
@@ -132,10 +120,12 @@ local function readline(vm)
         --print(c, string.char(c))
         if (c == CR) then
             if src:peekOctet(1) == LF then
+                sawnewline = true
                 src:skip(2)
                 break
             end
         elseif c == LF then
+            sawnewline = true
             src:skip(1)
             break
         end
@@ -144,9 +134,9 @@ local function readline(vm)
         str[offset] = c
         offset = offset + 1
     end
---print("length, end: ", #str)
 
     vm.OperandStack:push(str)
+    vm.OperandStack:push(sawnewline)
 
     return true
 end
