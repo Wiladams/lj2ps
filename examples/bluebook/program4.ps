@@ -1,0 +1,45 @@
+%!PS
+
+/arrowdict 14 dict def
+arrowdict begin
+/mtrx matrix def
+end
+
+/arrow {
+    arrowdict begin
+    /headlength exch def
+    /halfheadthickness exch 2 div def
+    /halfthickness exch 2 div def
+    /tipy exch def /tipx exch def
+    /taily exch def /tailx exch def
+
+    /dx tipx tailx sub def
+    /dy tipy taily sub def
+    /arrowlength dx, dx mul dy dy mul add
+    sqrt def
+    /angle dy dx atan def
+    /base arrowlength headlength sub def
+
+    /savematrix mtrx currentmatrix def
+
+    tailx taily translate
+    angle rotate
+
+    0 halfthickness neg moveto
+    base halfthickness neg lineto
+    base halfheadthickness neg lineto
+    arrowlength 0 lineto
+    base halfheadthickness lineto
+    base halfthickness lineto
+    0 halfthickness lineto
+    closepath
+
+    savematrix setmatrix
+    end
+} def
+
+newpath 
+  318 340 72 340 10 30 72 arrow
+fill
+
+showpage

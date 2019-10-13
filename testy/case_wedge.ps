@@ -2,6 +2,16 @@
 
 /inch {72 mul} def
 
+/crosshair {
+    newpath
+    0 0 moveto
+    0 .25 rlineto
+    0 0 moveto
+    .25 0 rlineto
+    1 0 0 setrgbcolor
+    stroke
+} def
+
 /wedge {
     newpath
     0 0 moveto
@@ -12,13 +22,16 @@
     closepath
 } def
 
-gsave
+%gsave
     3.75 inch 7.25 inch translate
     1 inch 1 inch scale
+    crosshair
+
+    0 setgray
     wedge 
 
     1 setlinewidth 
     stroke
-grestore
+%grestore
 
 showpage

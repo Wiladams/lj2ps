@@ -1,6 +1,10 @@
 %!PS
-72 72 scale
+% run some setup stuff
+(case_setup.inc) run
+drawFrame
 
+72 72 scale
+1 1 translate
 
 % draw some axis lines
 newpath
@@ -8,6 +12,7 @@ newpath
 0 0 moveto
 2 2 lineto
 stroke
+
 
 newpath
 0 1 0 setrgbcolor
@@ -23,8 +28,12 @@ stroke
 
 % now draw some arcs
 newpath
+-.5 -.5 moveto 
 0 setgray
 0 0 1 0 45 arc
+closepath
+8 setlinewidth
 stroke
+
 
 showpage

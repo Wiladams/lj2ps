@@ -337,6 +337,7 @@ end
 
 --translate
 function Blend2DDriver.translate(self, tx, ty)
+    --print("Blend2DDriver.translate: ", tx, ty)
     local m = Matrix:createTranslation(tx, ty)
     self:concat(m)
 
@@ -395,7 +396,7 @@ end
 
 -- pathbox
 function Blend2DDriver.pathBox(self)
-    print("pathBox: ", self.CurrentState.CurrentFigure)
+    --print("pathBox: ", self.CurrentState.CurrentFigure)
     return self.CurrentState.CurrentFigure:boundingBox()
 end
 

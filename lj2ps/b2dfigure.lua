@@ -83,6 +83,7 @@ function PSFigure.attachContour(self, c)
     self.BasePath:addTransformedPath(c, nil, m1)
 
     --self.BasePath:addPath(c, nil)
+    
     return true
 end
 
@@ -121,12 +122,15 @@ end
 function PSFigure.moveTo(self, x, y)
     self.lastX = x
     self.lastY = y
-    
-    --print("Blend2DDriver.moveTo: ", x, y)
 
     self:newContour()
 
     self.CurrentContour:moveTo(x,y)
+
+    --local ctm = self.VM.Driver:getCTM()
+    --local x1, y1 = ctm:transformPoint(x,y)
+    --self.CurrentContour:moveTo(x1,y1)
+    --print("PSFigure.moveTo: ", x,y,x1, y1)
 
     return true
 end
@@ -143,6 +147,11 @@ function PSFigure.lineTo(self, x, y)
 
     self.CurrentContour:lineTo(x,y)
 
+    --local ctm = self.VM.Driver:getCTM()
+    --local x1, y1 = ctm:transformPoint(x,y)
+    --self.CurrentContour:lineTo(x1,y1)
+    --print("PSFigure.lineTo: ", x, y, x1, y1)
+
     return true
 end
 
@@ -152,6 +161,13 @@ function PSFigure.arc(self, x, y, r, angle1, angle2)
     local sweep = math.rad(angle2 - angle1)
     local bResult = self.CurrentContour:arcTo(x, y, r, r, math.rad(angle1), sweep, false)
 
+    --local ctm = self.VM.Driver:getCTM()
+    --local x1, y1 = ctm:transformPoint(x,y)
+    --local rx, ry = ctm:dtransform(r, r)
+    --local bResult = self.CurrentContour:arcTo(x1, y1, rx, ry, math.rad(angle1), sweep, false)
+
+    -- get last point, and do inverse transform on it
+    -- to figure out untransformed point
     local vtxOut = BLPoint()
     self.CurrentContour:getLastVertex(vtxOut)
     self.lastX = vtxOut.x
@@ -163,11 +179,17 @@ end
 function PSFigure.curveTo(self, x1,y1,x2,y2,x3,y3)
     self.lastX = x3
     self.lastY = y3
-
     return self.CurrentContour:cubicTo(x1,y1,x2,y2,x3,y3)
+
+    --local ctm = self.VM.Driver:getCTM()
+    --local x11, y11 = ctm:transformPoint(x1,y1)
+    --local x21, y21 = ctm:transformPoint(x2,y2)
+    --local x31, y31 = ctm:transformPoint(x3,y3)
+    --return self.CurrentContour:cubicTo(x11,y11,x21,y21,x31,y31)
 end
 
 function PSFigure.addTransformedPath(self, path, m)
+    --self.CurrentContour:addPath(path, nil)
     self.CurrentContour:addTransformedPath(path, nil, m)
 end
 

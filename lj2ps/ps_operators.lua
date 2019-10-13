@@ -210,8 +210,8 @@ local function maximum(vm)
 
     vm.OperandStack:push(math.max(a, b))
 end
---exports.max = maximum
 exports[".max"] = maximum
+exports["max"] = maximum
 
 local function minimum(vm)
     local b = vm.OperandStack:pop()
@@ -219,8 +219,8 @@ local function minimum(vm)
 
     vm.OperandStack:push(math.min(a, b))
 end
---exports.min = minimum
 exports[".min"] = minimum
+exports["min"] = minimum
 
 --[[
 -- one argument

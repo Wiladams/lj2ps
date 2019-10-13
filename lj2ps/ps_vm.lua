@@ -340,7 +340,6 @@ function PSVM.runStream(self, bs)
     end
 end
 
-
 function PSVM.eval(self, bs)
     if type(bs) == "string" then
         bs = octetstream(bs)
@@ -348,5 +347,19 @@ function PSVM.eval(self, bs)
 
     return self:runStream(bs)
 end
+
+function PSVM.runFile(self, filename)
+    local f = io.open(filename, "r")
+    if not f then
+        return nil, "file not opened: "..filename
+    end
+
+    local bytes = f:read("*a")
+    f:close()
+
+    self:eval(bytes)
+end
+
+
 
 return PSVM
