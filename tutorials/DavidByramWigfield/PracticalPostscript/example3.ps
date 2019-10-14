@@ -1,0 +1,34 @@
+%!PS
+%%Title: The Textbox
+%%Creator: Practical Postscript
+%%Author: William Adams
+
+(minidict.ps) run
+minidict begin
+
+/defaults save def
+/textbox {/lm 6 def /bm 0 def /rm 156 def /tm 300 def lm tm mt } def 
+/newline { tm 10 sub /tm exch def lm tm moveto } def 
+/center {dup stringwidth pop 2 div linewidth 2 div exch sub lm add tm moveto } def 
+/n {show newline} def
+/c {center n} def 
+/s {show} def 
+/L {newline} def 
+
+gsave 
+    50 90 translate 
+    textbox 
+    /Times-Roman findfont 8 scalefont setfont
+    (Even spacing is of more importance typo- ) n
+    (graphically than equal length.  Even spacing ) n
+    (is a great assistance to easy reading; hence ) n 
+    (its pleasantness, for the eye is not vexed by ) n
+    (the roughness, jerkiness, restlessness and ) n 
+    (spottiness which uneven spacing entails, ) n 
+    (even if such things are reduced to a mini- ) n 
+    (mum by careful setting. ) n L 
+grestore
+
+showpage
+defaults restore
+

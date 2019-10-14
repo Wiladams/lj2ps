@@ -1,0 +1,40 @@
+%!PS
+
+/defaults save def
+/bigcircle {12 12 8 0 360 arc 0 setgray .1 setlinewidth stroke} def
+/littlecircle {12 12 3 0 360 arc 0 setgray .1 setlinewidth stroke } def
+/rbox { 
+    -7 0 moveto 
+    0 199 rlineto 
+    299 0 rlineto 
+    0 -199 rlineto 
+    closepath
+    0.1 setlinewidth stroke
+} def
+
+/twocircles {
+    bigcircle 
+    littlecircle 
+} def
+
+/whiteborder {
+    {
+        twocircles 
+        11 0 translate
+    } repeat
+} def
+
+gsave 
+    70 95 translate 
+    rbox 
+    0.6 0.6 scale
+    
+    43 whiteborder
+    90 rotate 11 -13 translate 28 whiteborder
+    90 rotate 11 -13 translate 43 whiteborder
+    90 rotate 11 -13 translate 28 whiteborder
+grestore
+
+showpage
+
+defaults restore

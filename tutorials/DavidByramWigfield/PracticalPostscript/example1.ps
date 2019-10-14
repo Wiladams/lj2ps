@@ -1,0 +1,86 @@
+%!PS
+%%BeginProlog
+%%Title: Flower 
+%%Author: William A Adams
+%%Creator: Practical Postscript
+%%CreationDate: 13/10/2019
+%%EndProlog
+
+/defaults save def
+
+/box {
+    newpath 
+        0 0 moveto
+        0 20 lineto
+        20 20 lineto
+        20 0 lineto
+    closepath
+
+    gsave 
+        1 setgray
+        fill
+    grestore
+
+    0.1 setlinewidth
+    0 setgray
+    stroke
+} def
+
+% a petal with white fill, black outline
+/petal {
+    newpath
+    0 0 moveto
+    0 0 -7 13 0 7 curveto
+    0 7 7 13 0 0 curveto
+    closepath
+
+    gsave
+        0 setgray
+        fill
+    grestore
+
+    gsave
+    0.5 setlinewidth
+    1 setgray
+    stroke
+    grestore
+} def
+
+/flower {
+    gsave
+    10 10 translate
+
+    5 {
+        petal 72 rotate
+    } repeat
+    grestore
+} def
+
+/flowerborder {
+    {
+        box 
+        flower 
+        20 0 translate
+    } repeat
+} def
+
+
+
+
+% Main work body
+gsave 
+    50 90 translate
+    0.6 0.6 scale
+    26 flowerborder
+    90 rotate 20 0 translate 15 flowerborder
+    90 rotate 0 -20 translate 26 flowerborder
+    90 rotate 20 0 translate 15 flowerborder
+grestore
+
+% Put a flower inside the border
+130 150 translate
+5 5 scale
+flower
+
+showpage
+defaults restore

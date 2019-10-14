@@ -1,0 +1,29 @@
+%!PS
+%%Title: minidict
+%%Author: William A Adams
+%%Creator: Practical Postscript
+% This is meant to be included at the top of any file
+% that uses these shortcuts, after the prolog
+
+/minidict 24 dict def
+minidict begin
+/ld { load def } def
+/gs /gsave ld
+/gr /grestore ld
+/np /newpath ld
+/cp /closepath ld
+/mt /moveto ld
+/rt /rmoveto ld
+/li /lineto ld
+/rl /rlineto ld
+/ct /curveto ld
+/tr /translate ld 
+/st /stroke ld
+/set { gs setlinewidth st gr } def      % use # set to set line width
+/gray {gs setgray fill gr} def          % use # gray, to fill with gray
+/ro /rotate ld
+/rp /repeat ld
+/box {np mt rl rl rl cp set} def        % composite box, no fill
+/circle {np arc set} def                % composite circle, no fill
+end
+
