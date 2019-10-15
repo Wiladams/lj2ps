@@ -49,13 +49,15 @@ local PSVM_mt = {
             rawset(self, name, PSVM[name])
             return PSVM[name]
         end
-
+---[[
+    -- endArray
         -- Next, use the DictionaryStack to determine the name of
         -- something
         if ops[name] then
             local func = function() return ops[name](self) end
             return func
         end
+--]]
     end;
 }
 
@@ -129,7 +131,7 @@ function PSVM.execName(self, name)
     local otype = type(op)
     --print("PSVM.execName: ", name, op, otype)
     --print("PSVM.execName: ", name, op)
-    --print("PSVM.execName: ", name)
+    print("PSVM.execName: ", name)
 
     -- op can either be one of the literal types
     -- bool, number, string, null
