@@ -356,8 +356,10 @@ function PSVM.runFile(self, filename)
 
     local bytes = f:read("*a")
     f:close()
+    local bs = octetstream(bs)
+    self.CurrentFile = bs
 
-    self:eval(bytes)
+    self:runStream(bs)
 end
 
 

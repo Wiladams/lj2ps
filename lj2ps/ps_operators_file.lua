@@ -167,6 +167,16 @@ local function fileposition(vm)
 end
 exports.fileposition = fileposition
 
+-- setfileposition
+-- file int setfileposition -
+local function setfileposition(vm)
+    local n = vm.OperandStack:pop()
+    local f = vm.OperandStack:pop()
+    f:seekFromBeginning(n)
+
+    return true
+end
+
 -- flushfile
 --   file flushfile -
 local function flushfile(vm)
@@ -179,12 +189,22 @@ exports.flushfile = flushfile
 -- flush
 
 -- resetfile
+local function resetfile(vm)
+    local f = vm.OperandStack:pop()
+    f:seekFromBeginning(0)
+
+    return true
+end
+exports.resetfile = resetfile
+
 -- status
 
 -- run
 --   filename run -
 local function run(vm)
     local filename = vm.OperandStack:pop()
+    vm:runFile(filename)
+--[[
     local f = io.open(filename, "r")
 
     assert(f ~= nil)
@@ -193,7 +213,7 @@ local function run(vm)
     f:close()
 
     vm:eval(bytes)
-
+--]]
     return true
 end
 exports.run = run
