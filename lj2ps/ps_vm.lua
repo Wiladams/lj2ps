@@ -131,7 +131,7 @@ function PSVM.execName(self, name)
     local otype = type(op)
     --print("PSVM.execName: ", name, op, otype)
     --print("PSVM.execName: ", name, op)
-    print("PSVM.execName: ", name)
+    --print("PSVM.execName: ", name)
 
     -- op can either be one of the literal types
     -- bool, number, string, null
