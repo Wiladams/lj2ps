@@ -80,7 +80,7 @@ function PSVM.new(self, obj)
     obj.DictionaryStack = obj.DictionaryStack or DictionaryStack()
     obj.GraphicsStack = obj.GraphicsStack or Stack()
     obj.ClippingPathStack = obj.ClippingPathStack or Stack()
-    obj.Driver = obj.Driver or Blend2DDriver({dpi=192, VM = obj})
+    obj.Driver = obj.Driver or Blend2DDriver({dpi=obj.dpi or 192, VM = obj})
     
     setmetatable(obj, PSVM_mt)
 

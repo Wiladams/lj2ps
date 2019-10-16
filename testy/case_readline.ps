@@ -1,8 +1,9 @@
+%!PS
 /buff 256 string def
+
+/fontfile (resources/arrows.inc) (r) file def
+
 {%loop
-    currentfile buff readline not {exit} if
-    (%%EOF) anchorsearch {exit} if
-    token pop exch token pop exch 3 1 roll moveto
-    token pop exch token pop exch pop lineto
-    stroke
+    fontfile buff readline not {exit} if
+    ==
 } bind loop

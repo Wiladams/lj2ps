@@ -15,6 +15,8 @@ local function file(vm)
 
     -- construct an octetstream based on filename
     -- and intended access
+    --print("OP:file; ", access, filename)
+
     local f = io.open(filename, "r")
     assert(f ~= nil)
     local bytes = f:read("*a")
@@ -118,7 +120,7 @@ local function readline(vm)
 
     local offset = 0;
     while (not src:isEOF()) and offset < n do
-        print("readline:WHILE")
+        --print("readline:WHILE")
         local c = src:peekOctet()
         --print(c, string.char(c))
         if (c == CR) then
@@ -138,7 +140,7 @@ local function readline(vm)
         offset = offset + 1
     end
 
-    print("  str: ", str, sawnewline)
+    --print("  OP:readline; str: ", str, sawnewline)
     vm.OperandStack:push(str)
     vm.OperandStack:push(sawnewline)
 
