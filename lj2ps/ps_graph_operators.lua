@@ -152,6 +152,9 @@ local function map255(val)
     return math.min(math.floor(val*256),255)
 end
 
+-- mapToRange
+-- take a val [0..1], and map it to [0..range]
+--
 local function mapToRange(val, range)
     return math.min(math.floor(val*(range+1)),range)
 end
@@ -257,6 +260,22 @@ exports.setrgbacolor = setrgbacolor
 
 -- setcmykcolor
 -- currentcmykcolor
+-- cyan  magenta  yellow  black  setcmykcolor -
+local function setcmykcolor(vm)
+    local black = vm.OperandStack:pop()
+    local yellow = vm.OperandStack:pop()
+    local magenta = vm.OperandStack:pop()
+    local cyan = vm.OperandStack:pop()
+
+    local r = (1-cyan) * (1-black)
+    local g = (1-magenta) * (1-black)
+    local b = (1-yellow) * (1-black)
+
+    vm.Driver:setRgbaColor(r,g,b,1.0)
+
+    return true
+end
+exports.setcmykcolor = setcmykcolor
 
 --[[
 -- Graphics State - Device Dependent

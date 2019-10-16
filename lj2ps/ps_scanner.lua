@@ -25,6 +25,7 @@ local delimeterChars = createSet('()<>[]{}/%')
 local whitespaceChars = createSet('\t\n\f\r ')          -- whitespace characters
 local hexChars = createSet('0123456789abcdefABCDEF')    -- hex digits
 local digitChars = createSet('0123456789')
+local numBeginChars = createSet('+-.0123456789')
 
 local function isgraph(c)
 	return c > 0x20 and c < 0x7f
@@ -214,36 +215,45 @@ local function lex_name(self, bs)
 end
 
 -- scan a number
--- something got us here, it was either
--- a digit, a '-'
+-- something got us here, it was something in numBeginChars
+-- valid: 8.35928e-09
+-- numBeginChars["+-.[digit]"]
+-- If not valid number, return nil
 local function lex_number(self, bs)
     local starting = bs:tell();
     local startPtr = bs:getPositionPointer();
+--print("lex_number: ", starting)
+    -- First, let's look for a valid starting character
+    -- -, +, ., digit
+    if numBeginChars[bs:peekOctet()] then
+        --print("  SKIP 1")
+        bs:skip(1)
+    else
+        print("INVALID START of NUMBER: ", string.char(bs:peekOctet()))
+        return nil
+    end
 
-    -- get through all digits
-    -- -, digit, ., E, digits
-    if bs:peekOctet() == B'+' or bs:peekOctet() == B'-' then
+    -- scan until a delimeter found
+    while true do
+        if bs:isEOF() then
+            break
+        end
+
+        local c = bs:peekOctet()
+        --io.write(string.char(c))
+        
+        if whitespaceChars[c] then
+            --print("SPACE")
+            break
+        end
+
+        if delimeterChars[c] then
+            break
+        end
+
         bs:skip(1)
     end
 
-    -- next, MUST be 0 or [1..9]
-    while digitChars[bs:peekOctet()] do
-        bs:skip(1);
-    end
-
-    -- look for fraction part
-    --print("lex_number: ", string.char(bs:peekOctet()), string.char(bs:peekOctet(1)))
-    if (bs:peekOctet() == B'.') then
-        if digitChars[bs:peekOctet(1)] then
-            bs:skip(1);
-
-            while digitChars[bs:peekOctet()] do
-                bs:skip(1);
-            end
-        else
-            return lex_name(self, bs)
-        end
-    end
 
     local ending = bs:tell();
     local len = ending - starting;
@@ -252,10 +262,15 @@ local function lex_number(self, bs)
     local value = tonumber(str)
 
     --print("LEX_NUMBER: ", starting, len, str, value)
+
+    if not value then
+        return nil
+    end
+
+    --print("LEX_NUMBER: ", starting, len, str, value)
     local tok = Token({kind = TokenType.NUMBER, value=value, line=bs:tell()})
 
     return tok
-
 end
 
 
@@ -320,9 +335,17 @@ function Scanner.tokens(self)
                     -- deal with error if there was one
                 end
             else
-                if digitChars[c] or c == B'-' or c == B'.' then
+                -- handle the case of numbers
+                -- and names that begin with a number
+                if numBeginChars[c] then
+                    -- backup one and try to scan the number
                     bs:skip(-1)
+                    local sentinel = bs:tell()
                     local tok = lex_number(self, bs)
+                    if not tok then
+                        bs:seekFromBeginning(sentinel)
+                        tok = lex_name(self, bs)
+                    end
 
                     if tok then
                         if self.Vm:isBuildingProc() then
@@ -331,7 +354,6 @@ function Scanner.tokens(self)
                             return bs:tell(), tok
                         end
                     end
-                    
                 elseif isgraph(c) then
                     bs:skip(-1)
                     local tok = lex_name(self, bs)

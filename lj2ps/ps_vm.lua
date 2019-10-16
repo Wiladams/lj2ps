@@ -49,13 +49,15 @@ local PSVM_mt = {
             rawset(self, name, PSVM[name])
             return PSVM[name]
         end
-
+---[[
+    -- endArray
         -- Next, use the DictionaryStack to determine the name of
         -- something
         if ops[name] then
             local func = function() return ops[name](self) end
             return func
         end
+--]]
     end;
 }
 

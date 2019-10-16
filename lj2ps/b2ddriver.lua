@@ -542,7 +542,8 @@ end
     Device Setup
 ]]
 function Blend2DDriver.showPage(self)
-    BLImageCodec("BMP"):writeImageToFile(self.img, "output/ps_example.bmp")
+    --BLImageCodec("BMP"):writeImageToFile(self.img, "output/ps_example.bmp")
+    BLImageCodec("BMP"):writeImageToFile(self.img, "ps_example.bmp")
     return true
 end
 
