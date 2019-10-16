@@ -664,6 +664,7 @@ exports.rmoveto = rmoveto
 local function lineto(vm)
     local y = vm.OperandStack:pop()
     local x = vm.OperandStack:pop()
+    --print("lineto: ", x, y)
     vm.Driver:lineTo(x, y)
     
     return true

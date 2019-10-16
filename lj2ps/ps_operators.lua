@@ -606,6 +606,30 @@ local function string(vm)
 end
 exports.string = string
 
+-- anchorsearch
+-- string seek anchorsearch post match true
+-- string seek anchorsearch string false
+
+local function anchorsearch(vm)
+    local seek = vm.OperandStack:pop()
+    local str = vm.OperandStack:pop()
+
+    local startIdx,endIdx = string.find(str, seek)
+    if not startIdx then
+        vm.OperandStack:push(str)
+        vm.OperandStack:push(false)
+    else
+        local post = str:sub(endIdx+1)
+        vm.OperandStack:push(post)
+        vm.OperandStack:push(seek)
+        vm.OperandStack:push(true)
+    end
+
+    return true
+end
+exports.anchorsearch = anchorsearch
+
+
 --[[
 -- apply to arrays
 --]]

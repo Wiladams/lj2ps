@@ -1,0 +1,20 @@
+%!PS
+%%BoundingBox: 0 0 150 150
+%%EndComments
+100 300 translate
+
+/buff 256 string def
+{%loop
+
+    % assumes no errors in the data...
+    currentfile buff readline not {exit} if
+    (%%EOF) anchorsearch {exit} if
+    token pop exch token pop exch 3 1 roll moveto
+    token pop exch token pop exch pop lineto
+    stroke
+} bind loop
+96 17 20 30
+15.5 75.25 120 145.789
+30 89.75 168.5 76.5
+80 40 60 140
+%%EOF

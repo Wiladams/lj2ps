@@ -2,6 +2,9 @@
     Operators related to files
 ]]
 local octetstream = require("lj2ps.octetstream")
+local ps_common = require("lj2ps.ps_common")
+local Scanner = require("lj2ps.ps_scanner")
+
 local exports = {}
 
 -- file
@@ -115,7 +118,7 @@ local function readline(vm)
 
     local offset = 0;
     while (not src:isEOF()) and offset < n do
-        --print("WHILE")
+        print("readline:WHILE")
         local c = src:peekOctet()
         --print(c, string.char(c))
         if (c == CR) then
@@ -135,6 +138,7 @@ local function readline(vm)
         offset = offset + 1
     end
 
+    print("  str: ", str, sawnewline)
     vm.OperandStack:push(str)
     vm.OperandStack:push(sawnewline)
 
@@ -143,6 +147,38 @@ end
 exports.readline = readline
 
 -- token
+-- file token ps_token
+--
+local function token(vm)
+    print("OP:token - BEGIN")
+    local f = vm.OperandStack:pop()
+    local scnr = f.Scanner
+    if not scnr then
+        -- if there's not already a scanner assigned to the
+        -- file, then create one and assign it
+        scnr = Scanner(vm, f)
+        f.Scanner = scnr
+    end
+
+    -- Just get the next available token
+    local foundOne = false
+    local foundTok = nil
+    for _, tok in scnr:tokens() do
+        foundTok = tok
+        print("OP:token: ", tok.kind, tok.value)
+        break
+    end
+
+    if foundTok ~= nil then
+        vm.OperandStack:push(tok)
+        vm.OperandStack:push(true)
+    else
+        vm.OperandStack:push(false)
+    end
+
+    return true
+end
+exports.token = token
 
 -- bytesavailable
 --    file bytesavailable int
@@ -204,16 +240,7 @@ exports.resetfile = resetfile
 local function run(vm)
     local filename = vm.OperandStack:pop()
     vm:runFile(filename)
---[[
-    local f = io.open(filename, "r")
 
-    assert(f ~= nil)
-
-    local bytes = f:read("*a")
-    f:close()
-
-    vm:eval(bytes)
---]]
     return true
 end
 exports.run = run
@@ -221,6 +248,16 @@ exports.run = run
 -- currentfile
 --   - currentfile file
 local function currentfile(vm)
+    if vm.CurrentFile then
+        vm.OperandStack:push(vm.CurrentFile)
+        --vm.OperandStack:push(true)
+    else
+        vm.OperandStack:push(ps_common.NULL)
+        --vm.OperandStack:push(false)
+    end
+
+    return true
 end
+exports.currentfile = currentfile
 
 return exports
