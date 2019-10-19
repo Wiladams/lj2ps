@@ -8,7 +8,7 @@ local ps_common = require("lj2ps.ps_common")
 local Stack = require("lj2ps.ps_stack")
 local Array = require("lj2ps.array")
 local Dictionary = require("lj2ps.dictionary")
-local String = require("lj2ps.ps_string")
+local PSString = require("lj2ps.ps_string")
 
 
 
@@ -197,7 +197,10 @@ exports.idiv = idiv
 local function mod(vm)
     local b = vm.OperandStack:pop()
     local a = vm.OperandStack:pop()
-    vm.OperandStack:push(a%b)
+
+    local value = a % b 
+--print("OP:mod; ", a, b, value)
+    vm.OperandStack:push(value)
 
     return true
 end
@@ -425,14 +428,14 @@ local function def(vm)
 end
 exports.def = def
 
--- load
--- key load value        search stack for key, place value on operand stack
+-- load     % search stack for key, place value on operand stack
+-- key load value        
 local function load(vm)
     local key = vm.OperandStack:pop()
     local value = vm.DictionaryStack:load(key)
     --print("LOAD: ", key, value)
     if not value then
-        vm.OperandStack:push(ps_common.NULL)
+        error("OP:load; undefined key - "..key)
     else
         vm.OperandStack:push(value)
     end
@@ -599,12 +602,40 @@ local function dict(vm)
 end
 exports.dict = dict
 
-local function string(vm)
+
+
+exports["string"] = function(vm)
     local n = vm.OperandStack:pop()
-    local str = String(n)
+    local str = PSString(n)
     vm.OperandStack:push(str)
 end
-exports.string = string
+
+-- search
+--string  seek  search  post  match  pre  true
+--                      string false
+local function search(vm)
+    local seek = vm.OperandStack:pop()
+    local str = vm.OperandStack:pop()
+
+    local startIdx,endIdx = string.find(str, seek)
+    if not startIdx then
+        vm.OperandStack:push(str)
+        vm.OperandStack:push(false)
+    else
+        local pre = ""
+        if startIdx > 1 then
+            pre = str:sub(1,startIdx-1)
+        end
+        local post = str:sub(endIdx+1)
+        vm.OperandStack:push(post)
+        vm.OperandStack:push(seek)
+        vm.OperandStack:push(pre)
+        vm.OperandStack:push(true)
+    end
+
+    return true
+end
+exports.search = search
 
 -- anchorsearch
 -- string seek anchorsearch post match true
@@ -615,7 +646,7 @@ local function anchorsearch(vm)
     local str = vm.OperandStack:pop()
 
     local startIdx,endIdx = string.find(str, seek)
-    if not startIdx then
+    if not startIdx or startIdx ~= 1 then
         vm.OperandStack:push(str)
         vm.OperandStack:push(false)
     else
@@ -1046,7 +1077,7 @@ end
 local function cvs(vm)
     local str = vm.OperandStack:pop()
     local value = vm.OperandStack:pop()
-    local str2 = String(tostring(value))
+    local str2 = PSString(tostring(value))
 
     str:putInterval(0, str2)
     vm.OperandStack:push(str)

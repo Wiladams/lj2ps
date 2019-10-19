@@ -1,10 +1,10 @@
 local ffi = require("ffi")
 
 local ps_common = require("lj2ps.ps_common")
+local PSString = require("lj2ps.ps_string")
 
 local Token = ps_common.Token;
 local TokenType = ps_common.TokenType;
-
 
 local B = string.byte
 
@@ -76,15 +76,30 @@ lexemeMap[B']'] = function(self, bs)
 end
 
 -- string literal
+local name_buff = PSString(65535)
 lexemeMap[B'('] = function(self, bs)
     -- start reading a literal text string
     -- until we see a terminating ')'
     local starting = bs:tell()
     local startPtr = bs:getPositionPointer();
+    name_buff:reset()
+
     while not bs:isEOF() do
         local c = bs:peekOctet()
         if c == B')' then
             break;
+        end
+
+        -- deal with various forms of embedded chars
+        if c == B'\\' then
+            if escapeChars[bs:peekOctet(1)] then
+                -- embed the char
+                name_buff:append(bs:peekOctet(1))
+            else
+                -- ran into a char that's escaped but not one
+                -- that we recognize
+                break
+            end
         end
 
         bs:skip(1);
@@ -184,7 +199,9 @@ local function lex_name(self, bs)
     --print("lex_name")
     local starting = bs:tell();
     local startPtr = bs:getPositionPointer();
+    name_buff:reset()
 
+    -- read to end of stream, or til delimeter
     while not bs:isEOF() do
         local c = bs:peekOctet()
         if delimeterChars[c] or whitespaceChars[c] then
@@ -197,7 +214,7 @@ local function lex_name(self, bs)
     local ending = bs:tell();
     local len = ending - starting;
     local value = ffi.string(startPtr, len)
---print("value: ", value)
+--print("lex_name; value: ", value)
 
     local tok =  Token{kind = TokenType.EXECUTABLE_NAME, value = value, position=bs:tell()}
 

@@ -233,7 +233,7 @@ function PSVM.bindArray(self, arr)
 
     for i=0,#arr-1 do
         local tok = arr[i]
-        --print("  ARR: ", tok, type(tok))
+        --print("  PSVM.bindArray; ARR: ", type(tok), tok)
 
         if tok.kind then
             --print("bindArray, KIND: ", TokenType[tok.kind], tok.value)
@@ -253,7 +253,6 @@ function PSVM.bindArray(self, arr)
                 -- LITERAL_NAME
                 self.OperandStack:push(tok)
             elseif tok.kind == TokenType.EXECUTABLE_NAME then
-                -- EXECUTABLE_NAME
                 -- lookup the executable thing and put that on the stack
                 local op = self.DictionaryStack:load(tok.value)
                 if op and type(op) == "function" then
