@@ -896,6 +896,18 @@ end
 exports.rectstroke = rectstroke
 
 --rectfill
+local function rectfill(vm)
+    local height = vm.OperandStack:pop()
+    local width = vm.OperandStack:pop()
+    local y = vm.OperandStack:pop()
+    local x = vm.OperandStack:pop()
+
+    vm.Driver:rectFill(x,y,width,height)
+
+    return true
+end
+exports.rectfill = rectfill
+
 --ustroke
 --ufill
 --ueofill

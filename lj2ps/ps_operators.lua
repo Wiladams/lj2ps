@@ -1077,8 +1077,18 @@ end
 local function cvs(vm)
     local str = vm.OperandStack:pop()
     local value = vm.OperandStack:pop()
-    local str2 = PSString(tostring(value))
+    local valuestr 
 
+    -- BUGBUG, deal with string precision
+    if type(value) == "number" then
+        valuestr = string.format("%3.1f", value)
+    else
+        valuestr = tostring(value)
+    end
+
+    local str2 = PSString(valuestr)
+
+    str:reset()
     str:putInterval(0, str2)
     vm.OperandStack:push(str)
 

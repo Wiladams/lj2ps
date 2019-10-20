@@ -53,7 +53,7 @@ function Blend2DDriver.new(self, obj)
     -- must do this stroke transform order so
     -- the stroke line thickness does not grow with the
     -- scaling factor, but only obeys the setLineWidth
-    obj.DC:setStrokeTransformOrder(C.BL_STROKE_TRANSFORM_ORDER_BEFORE)
+    --obj.DC:setStrokeTransformOrder(C.BL_STROKE_TRANSFORM_ORDER_BEFORE)
 
 
     -- the postscript user space uses units that are 72/inch (practically, printer 'points')
@@ -305,6 +305,16 @@ end
 
 
 -- Coordinate System and Matrix Operators
+function Blend2DDriver.applyCTM(self)
+    --print("applyCTM")
+    local ctm = self.CurrentState.CTM
+    local m = BLMatrix2D()
+    m:set(ctm.m00, ctm.m01, ctm.m10, ctm.m11, ctm.m20, ctm.m21)
+    --print(m)
+    --print("----")
+    self.DC:transform(m)
+end
+
 -- concat
 function Blend2DDriver.concat(self, m)
     self.CurrentState.CTM:preMultiplyBy(m)
@@ -524,8 +534,26 @@ function Blend2DDriver.fill(self)
     return true
 end
 
+function Blend2DDriver.rectFill(self, x, y, width, height)
+    --print("rectFill: ", x, y, width, height)
+
+    self.DC:save()
+    self:applyCTM()
+    self.DC:fillRectD(BLRect(x, y, width, height))
+    
+    self.DC:restore()
+
+    return true
+end
+
 function Blend2DDriver.rectStroke(self, x, y, width, height)
+    --print("rectStroke")
+    self.DC:save()
+    
+    self:applyCTM()
     self.DC:strokeRectD(BLRect(x, y, width, height))
+    
+    self.DC:restore()
 
     return true
 end
@@ -585,6 +613,7 @@ end
 function Blend2DDriver.show(self, pos, txt)
     local dst = BLPoint(pos[1],pos[2])
     local font = self.CurrentState.Font
+    txt = tostring(txt)
 
     --print("Blend2DDriver.show: ", dst, font, txt, #txt)
 

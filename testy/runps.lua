@@ -2,5 +2,5 @@
 -- luajit runps.lua <filename>.ps
 --
 package.path = '../?.lua;'..package.path; 
-local vm = require('lj2ps.ps_vm')({dpi=192}); 
+local vm = require('lj2ps.ps_vm')({dpi=300}); 
 print(vm:runFile(arg[1]))
