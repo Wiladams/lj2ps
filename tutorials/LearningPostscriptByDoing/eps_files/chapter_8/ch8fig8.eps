@@ -11,24 +11,32 @@
 /ymin xmin def /ymax xmax def
 /dx 0.02 def
 %%EndProlog
+
 u dup scale
 % drawaxes
+
 0.05 xmin sub 0.05 ymin sub translate 
 lw1 setlinewidth
 xmin ymin moveto xmax ymin lineto
 xmin ymin moveto xmin ymax lineto  
 stroke
+
 % labels near axes
+
 xmin ymin 0.03 sub moveto f1 xmin 4 string cvs show
 xmax 0.01 sub ymin 0.03 sub moveto f1 xmax 4 string cvs show
 xmin 0.04 sub ymin moveto f1 ymin 4 string cvs show
 xmin 0.02 sub ymax 0.03 sub moveto f1 ymax 4 string cvs show
+
 % draw identity graph
+
 newpath
 lw2 setlinewidth 0.7 setgray
 xmin ymin moveto xmax ymax lineto
 stroke
+
 % draw cosine graph
+
 newpath
 lw2 setlinewidth  1 0 0 setrgbcolor
 /x xmin def
@@ -38,7 +46,9 @@ x x cosine moveto
  x x cosine lineto  
 } loop
 stroke
+
 % compute and draw orbit
+
 newpath
 lw2 setlinewidth  0 0 1 setrgbcolor
 /initial 1 def % first some initial iterations 
@@ -47,13 +57,27 @@ lw2 setlinewidth  0 0 1 setrgbcolor
 1 1 initial { 
   /x x cosine def
 } for
+
+
 x x cosine moveto
 currentpoint 
-gsave newpath 0.006 0 360 arc fill grestore  
+gsave 
+    newpath 
+    0.006 0 360 arc 
+    fill 
+grestore  
+
+
+%BUGBUG - need arc to force a moveto
+x x cosine moveto
+
+0.5 setlinewidth
 1 1 orbitlength {
   /x x cosine def 
-  x x lineto x x cosine lineto
+  x x lineto 
+  x x cosine lineto
 } for
 stroke
+
 showpage
 %%EOF

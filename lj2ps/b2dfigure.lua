@@ -120,6 +120,8 @@ end
     moveTo will initiate a new contour on the existing figure.
 --]]
 function PSFigure.moveTo(self, x, y)
+    --print("PSFigure.moveTo: ", x, y)
+
     self.lastX = x
     self.lastY = y
 

@@ -923,7 +923,9 @@ exports["for"] = function(vm)
     end)
 
     local res, val = coroutine.resume(co)
-    --print("FOR, res: ", res, val)
+    if not res then
+        print("OP:for, res: ", res, val)
+    end
 
     return true
 end
@@ -942,6 +944,9 @@ exports["repeat"] = function(vm)
     end)
 
     local res, val = coroutine.resume(co, vm, proc, n)
+    if not res then
+        print("OP:repeat, res: ", res, val)
+    end
 
     return true
 end
@@ -957,7 +962,10 @@ local function loop(vm)
     end)
 
     local res, val = coroutine.resume(co, vm)
-    --print("LOOP, res: ", res, val)
+
+    if not res then
+        print("OP:loop, res: ", res, val)
+    end
 
     return true
 end
@@ -980,8 +988,11 @@ local function forall(vm)
         end
     end)
 
-    local success, val = coroutine.resume(co, vm, proc, arr)
-    --print("SUCCESS, VAL: ", success, val)
+    local res, val = coroutine.resume(co, vm, proc, arr)
+
+    if not res then
+        print("OP:forall, res: ", res, val)
+    end
 
     return true
 end
@@ -989,7 +1000,7 @@ exports.forall = forall
 
 --exit
 local function exit(vm)
-    --print("EXIT")
+    --print("OP:exit")
     coroutine.yield("exit")
 
     return true
