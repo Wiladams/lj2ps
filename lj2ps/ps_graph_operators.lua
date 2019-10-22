@@ -1064,6 +1064,8 @@ local function stringwidth(vm)
     vm.OperandStack:push(wx)
     vm.OperandStack:push(wy)
 
+print("OP:stringwidth: ", wx, wy)
+    
     return true
 end
 exports.stringwidth = stringwidth

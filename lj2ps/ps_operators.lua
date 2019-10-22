@@ -638,6 +638,8 @@ local function search(vm)
             pre = str:sub(1,startIdx-1)
         end
         local post = str:sub(endIdx+1)
+        post = PSString(post)
+        pre = PSString(pre)
         vm.OperandStack:push(post)
         vm.OperandStack:push(seek)
         vm.OperandStack:push(pre)
@@ -1011,9 +1013,10 @@ exports.forall = forall
 
 --exit
 local function exit(vm)
-    --print("OP:exit")
-    coroutine.yield("exit")
 
+    local res, val = coroutine.yield("exit")
+    print("OP:exit - ", res, val)
+    
     return true
 end
 exports.exit = exit
