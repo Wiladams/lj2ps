@@ -1,9 +1,7 @@
 local ffi = require("ffi")
 local C = ffi.C 
 
---local blapi = require("blend2d")
 local errors = require("blend2d.blerror")
---local functor = require("functor")
 
 local fsys = require("lj2ps.filesystem")
 local FileSystem = fsys.FileSystem;

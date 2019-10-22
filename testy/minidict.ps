@@ -35,7 +35,7 @@ end                                 % userdict must be closed
 
 
 % Define the dictionary
-/minidict 40 dict minidict begin
+/minidict 40 dict def minidict begin
 % simple substitutions
 /ld { load def } def
 /gs /gsave ld
@@ -65,8 +65,10 @@ end                                 % userdict must be closed
 /midpage {pw rm sub 2 div fm translate textbox } def
 /find {search {pop 3 -1 roll 1 add 3 1 roll}{pop exit} ifelse} def
 /spacecount { 
-    0 exch ( ) {find } 
-    loop
+    0 exch ( ) 
+    {
+        find 
+    } loop
 } def
 
 % too many words for the line?
@@ -90,7 +92,7 @@ end                                 % userdict must be closed
 /c {dup stringwidth pop 2 div rm 2 div exch sub lm add tm moveto s L} bind def
 
 % place text: linewrap to next line: page jump
-/S {dup sacecount {toofar? {L s s}{jump s s} ifelse} repeat pop } bind def
+/S {dup spacecount {toofar? {L s s}{jump s s} ifelse} repeat pop } bind def
 /CS {gsave cmyk S currentpoint grestore moveto } def
 
 % linewrap a paragraph: advance to next line; page jump

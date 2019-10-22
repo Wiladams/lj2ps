@@ -89,13 +89,20 @@ function PSVM.new(self, obj)
     ops["false"] = false
     ops["QUIET"] = true
 
-    
+    -- obj.systemdict = {}
+    -- stuff all the operators into the systemdict
     obj.DictionaryStack:pushDictionary(ops)     -- systemdict, should contain system operators
     obj.DictionaryStack:pushDictionary(gops)     -- graphics operators
-    obj.DictionaryStack:pushDictionary(fops)
-        
-    obj.DictionaryStack:pushDictionary({})      -- globaldict
-    obj.DictionaryStack:pushDictionary({})      -- userdict
+    obj.DictionaryStack:pushDictionary(fops)    -- file operators
+
+    obj.userdict = {}
+    obj.globaldict = {}
+
+    obj.DictionaryStack:pushDictionary(obj.globaldict)      -- globaldict
+    obj.DictionaryStack:pushDictionary(obj.userdict)      -- userdict
+
+    -- Mark the dictionary stack so that if we do a clear
+    -- we can stop at the mark
     obj.DictionaryStack:mark()
 
 
@@ -352,7 +359,8 @@ end
 function PSVM.runFile(self, filename)
     local f = io.open(filename, "r")
     if not f then
-        return nil, "file not opened: "..filename
+        error("PSVM.runFile, error: ", f, filename)
+        --return nil, "file not opened: "..filename
     end
 
     local bytes = f:read("*a")
@@ -360,7 +368,7 @@ function PSVM.runFile(self, filename)
     local bs = octetstream(bytes)
     self.CurrentFile = bs
 
-    self:runStream(bs)
+    return self:runStream(bs)
 end
 
 

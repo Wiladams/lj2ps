@@ -417,6 +417,17 @@ end
 exports.putinterval = putinterval
 
 -- Dictionary Operations
+-- userdict
+-- put userdict on the stack
+-- userdict userdict
+local function userdict(vm)
+    local ud = vm.userdict
+    print("OP:userdict; ", ud)
+    vm.OperandStack:push(ud)
+
+    return true
+end
+exports.userdict = userdict
 
 -- def
 -- key value def    Associate key with value in current dictionary

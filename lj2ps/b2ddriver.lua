@@ -611,9 +611,16 @@ function Blend2DDriver.charPath(self, str)
 end
 
 function Blend2DDriver.show(self, pos, txt)
+    txt = tostring(txt)
+print("Blend2DDriver.show: ", pos, pos[1], pos[2])
+    self:moveTo(pos[1], pos[2])
+    self:charPath(txt)
+    self:fill()
+
+    --[[    
     local dst = BLPoint(pos[1],pos[2])
     local font = self.CurrentState.Font
-    txt = tostring(txt)
+    local dx, dy = self:stringWidth(txt)
 
     --print("Blend2DDriver.show: ", dst, font, txt, #txt)
 
@@ -630,9 +637,9 @@ function Blend2DDriver.show(self, pos, txt)
     self.DC:translate(pos[1], pos[2])
     self.DC:scale(1,-1)
     local success, err = self.DC:fillTextUtf8(BLPoint(), font, txt, #txt)
-    
-    self.DC:restore()
 
+    self.DC:restore()
+--]]
 
     return true
 end

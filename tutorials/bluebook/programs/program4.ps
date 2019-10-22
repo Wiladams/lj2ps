@@ -10,12 +10,14 @@ end
     /headlength exch def
     /halfheadthickness exch 2 div def
     /halfthickness exch 2 div def
-    /tipy exch def /tipx exch def
-    /taily exch def /tailx exch def
+    /tipy exch def 
+    /tipx exch def
+    /taily exch def 
+    /tailx exch def
 
     /dx tipx tailx sub def
     /dy tipy taily sub def
-    /arrowlength dx, dx mul dy dy mul add
+    /arrowlength dx dx mul dy dy mul add
     sqrt def
     /angle dy dx atan def
     /base arrowlength headlength sub def
