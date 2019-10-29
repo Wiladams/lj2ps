@@ -1031,7 +1031,6 @@ exports.selectfont = selectfont
 local function show(vm)
     local str = vm.OperandStack:pop()
 
-
     vm.Driver:show(str)
 
     return true
@@ -1044,12 +1043,12 @@ local function ashow(vm)
     local ay = vm.OperandStack:pop()
     local ax = vm.OperandStack:pop()
 
-    print("ASHOW: ", ax, ay, str.value)
+    print("OP:ashow; ", ax, ay, str.value)
     vm.Driver:show({ax, ay}, str.value)
 
     return true
 end
-exports.ashow = ashow
+--exports.ashow = ashow
 
 --widthshow
 --awidthshow
