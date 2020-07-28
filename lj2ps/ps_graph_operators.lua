@@ -631,6 +631,10 @@ local function currentpoint(vm)
     -- get Position from current GraphState
     -- push x, y onto operand stack
     local pos = vm.Driver:getCurrentPosition()
+    if not pos then
+        error("currentpoint; is not currently defined")
+    end
+
     vm.OperandStack:push(pos[1])
     vm.OperandStack:push(pos[2])
 
@@ -664,7 +668,8 @@ exports.rmoveto = rmoveto
 local function lineto(vm)
     local y = vm.OperandStack:pop()
     local x = vm.OperandStack:pop()
-    --print("lineto: ", x, y)
+    --print("OP:lineto: ", x, y)
+    
     vm.Driver:lineTo(x, y)
     
     return true
@@ -1026,10 +1031,7 @@ exports.selectfont = selectfont
 local function show(vm)
     local str = vm.OperandStack:pop()
 
-    -- use the current point as location
-    local pos = vm.Driver:getCurrentPosition()
-    --print("show: ", pos[1], pos[2], str)
-    vm.Driver:show(pos, str)
+    vm.Driver:show(str)
 
     return true
 end
@@ -1041,12 +1043,12 @@ local function ashow(vm)
     local ay = vm.OperandStack:pop()
     local ax = vm.OperandStack:pop()
 
-    print("ASHOW: ", ax, ay, str.value)
+    print("OP:ashow; ", ax, ay, str.value)
     vm.Driver:show({ax, ay}, str.value)
 
     return true
 end
-exports.ashow = ashow
+--exports.ashow = ashow
 
 --widthshow
 --awidthshow

@@ -1,15 +1,22 @@
 %!PS
 /Helvetica findfont 36 scalefont setfont
-
+/msg (HAPPY BIRTHDAY) def
 0 200 moveto
 72 200 lineto
-(HAPPY BIRTHDAY) true charpath
+msg true charpath
+
 
 1 setlinewidth
 0 setgray
-stroke
+%stroke
 
-0 0 1 setrgbcolor
-100 0 rlineto
+% The stroke eliminates the currentpoint
+% so we calculate it anew
+%msg stringwidth
+%pop     % pop the dy portion off the string size
+%72 add 200 moveto
+%0 0 1 setrgbcolor
+%100 0 rlineto
+stroke
 
 showpage

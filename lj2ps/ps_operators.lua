@@ -277,7 +277,7 @@ end
 exports.truncate = truncate
 
 local function sqrt(vm)
-    vm.OperandStack:push(math.floor(vm.OperandStack:pop()))
+    vm.OperandStack:push(math.sqrt(vm.OperandStack:pop()))
     return true
 end
 exports.sqrt = sqrt

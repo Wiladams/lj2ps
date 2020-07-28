@@ -47,8 +47,18 @@ end
 --[[
     Properties
 ]]
+function PSFigure.setCurrentPosition(x, y)
+    self.lastX = x
+    self.lastY = y
+
+    return true
+end
 
 function PSFigure.currentPosition(self)
+    if (not self.lastX) or (not self.lastY) then
+        return nil
+    end
+    
     return {self.lastX, self.lastY}
 end
 
@@ -71,6 +81,15 @@ local function PSMatrixToBLMatrix2D(m)
     m1:set(m.m00, m.m01, m.m10, m.m11, m.m20, m.m21)
 
     return m1
+end
+
+function PSFigure.getLastVertex(self)
+    -- get last point, and do inverse transform on it
+    -- to figure out untransformed point
+    local vtxOut = BLPoint()
+    self.BasePath:getLastVertex(vtxOut)
+    
+    return tonumber(vtxOut.x), tonumber(vtxOut.y)
 end
 
 function PSFigure.attachContour(self, c)
@@ -120,7 +139,7 @@ end
     moveTo will initiate a new contour on the existing figure.
 --]]
 function PSFigure.moveTo(self, x, y)
-    --print("PSFigure.moveTo: ", x, y)
+    print("PSFigure.moveTo: ", x, y)
 
     self.lastX = x
     self.lastY = y
@@ -142,7 +161,7 @@ end
 --lineto
 --rlineto
 function PSFigure.lineTo(self, x, y)
-    --print("PSFigure.lineTo: ", x, y)
+    print("PSFigure.lineTo: ", x, y)
 
     self.lastX = x
     self.lastY = y
@@ -193,6 +212,9 @@ end
 function PSFigure.addTransformedPath(self, path, m)
     --self.CurrentContour:addPath(path, nil)
     self.CurrentContour:addTransformedPath(path, nil, m)
+    
+    -- need to calculate last point
+    self.lastX, self.lastY = self:getLastVertex()
 end
 
 --[[

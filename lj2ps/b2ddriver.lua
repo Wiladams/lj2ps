@@ -412,7 +412,12 @@ end
 
 --currentpoint
 function Blend2DDriver.getCurrentPosition(self)
-    return self.CurrentState.CurrentFigure:currentPosition()
+    local pos = self.CurrentState.CurrentFigure:currentPosition()
+    if not pos then
+        error("Blend2DDriver.getCurrentPosition(); current position not defined")
+    end
+
+    return pos
 end
 
 --[[
@@ -590,6 +595,7 @@ end
 function Blend2DDriver.charPath(self, str)
     local pos = self:getCurrentPosition()
     local font = self.CurrentState.Font
+    --print("Blend2DDriver.charPath(): ", str, pos[1], pos[2])
 
     local gb = BLGlyphBuffer()
     gb:setText(str)
@@ -610,14 +616,22 @@ function Blend2DDriver.charPath(self, str)
     return true
 end
 
-function Blend2DDriver.show(self, pos, txt)
+function Blend2DDriver.show(self, txt)
     txt = tostring(txt)
-print("Blend2DDriver.show: ", pos, pos[1], pos[2])
-    self:moveTo(pos[1], pos[2])
-    self:charPath(txt)
-    self:fill()
+    
+    -- use the current point as location
+    local pos = self:getCurrentPosition()
+    if not pos then
+        error("Blend2DDriver.show: currentpoint; is not currently defined")
+    end
 
-    --[[    
+        
+print("Blend2DDriver.show: ", pos[1], pos[2])
+    --self:moveTo(pos[1], pos[2])
+    --self:charPath(txt)
+    --self:fill()
+
+    ---[[    
     local dst = BLPoint(pos[1],pos[2])
     local font = self.CurrentState.Font
     local dx, dy = self:stringWidth(txt)
@@ -640,6 +654,8 @@ print("Blend2DDriver.show: ", pos, pos[1], pos[2])
 
     self.DC:restore()
 --]]
+    -- adjust current point
+    self.CurrentState.CurrentFigure:setCurrentPosition(pos[1]+dx, pos[2])
 
     return true
 end
