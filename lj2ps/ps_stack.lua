@@ -135,11 +135,11 @@ end
 function Stack.roll(self,n,j)
     
     if j > 0 then   -- roll the stack up (counter clockwise)
-        for i=1,j do
+        for outer=1,j do
             local tmp = self:top()
 
-            for i=1,n-1 do
-                local dst = self.last-(i-1)
+            for inner=1,n-1 do
+                local dst = self.last-(inner-1)
                 local src = self.last-i
                 self[dst] = self[src]
             end
@@ -147,7 +147,7 @@ function Stack.roll(self,n,j)
             self[self.last-n+1] = tmp
         end  --  outer loop
     elseif j < 0 then   -- roll the stack 'down' (clockwise)
-        for i=1,math.abs(j) do
+        for outer=1,math.abs(j) do
             local tmp = self[self.last-(n-1)]
 
             for i=1,n-1 do
